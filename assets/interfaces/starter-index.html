@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>{{TITLE}}</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="report-head">
+      <div class="report-head__main">
+        <p class="eyebrow">Локальный отчёт</p>
+        <h1>{{TITLE}}</h1>
+        <p class="report-head__lede">Сформулируйте главное изменение и его последствия.</p>
+      </div>
+      <div class="report-head__aside" aria-label="Параметры отчёта">
+        <p>Период: укажите период</p>
+        <p>Обновлено: {{DATE}}</p>
+        <p>Источник: укажите источник</p>
+      </div>
+    </header>
+
+    <section class="scoreboard" aria-label="Ключевые показатели" style="--metrics: 3">
+      <div class="metric">
+        <strong class="metric__value">—</strong>
+        <span class="metric__label">Первый показатель</span>
+      </div>
+      <div class="metric">
+        <strong class="metric__value">—</strong>
+        <span class="metric__label">Второй показатель</span>
+      </div>
+      <div class="metric">
+        <strong class="metric__value">—</strong>
+        <span class="metric__label">Третий показатель</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Сводка</h2>
+        <p>Укажите период, источник и поясните данные, если без этого их можно понять неверно.</p>
+      </div>
+      <div class="split">
+        <div class="stack">
+          <h3>Данные не добавлены</h3>
+          <p class="muted">Замените этот блок основным графиком, списком изменений или другим материалом отчёта.</p>
+        </div>
+        <aside class="stack">
+          <h3>Сигналы</h3>
+          <p class="muted">Оставьте наблюдения, которые требуют внимания или решения.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section--tight">
+      <div class="section-head">
+        <h2>Детали</h2>
+        <p>Таблица нужна для точного сравнения значений.</p>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Параметр</th><th>Состояние</th><th>Значение</th></tr></thead>
+        <tbody><tr><td colspan="3" class="muted">Данные не добавлены</td></tr></tbody>
+      </table>
+    </section>
+
+    <footer class="footer">
+      <span>Локальный HTML · без внешних зависимостей</span>
+      <span>{{DATE}}</span>
+    </footer>
+  </main>
+</body>
+</html>

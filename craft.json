@@ -1,0 +1,35 @@
+{
+  "name": "Craft",
+  "version": "0.1.0",
+  "language": "ru",
+  "surfaces": {
+    "interface": {
+      "templates": ["report", "design-system"],
+      "entrypoints": [
+        "assets/interfaces/starter-index.html",
+        "assets/interfaces/specimen.html"
+      ]
+    },
+    "slides": {
+      "templates": ["deck"],
+      "entrypoints": [
+        "assets/slides/starter/index.html",
+        "assets/slides/specimen.html"
+      ]
+    }
+  },
+  "dynamicCssProperties": [
+    "--column-ratio",
+    "--columns",
+    "--metrics",
+    "--space",
+    "--stack-gap",
+    "--swatch",
+    "--value"
+  ],
+  "requirements": {
+    "fontFiles": 4,
+    "offline": true,
+    "buildRequired": false
+  }
+}

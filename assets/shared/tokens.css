@@ -1,0 +1,71 @@
+/* Ядро Craft: общие токены идентичности для всех форматов. */
+@font-face {
+  font-family: "Geologica";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("fonts/geologica-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: "Geologica";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("fonts/geologica-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Onest";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("fonts/onest-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: "Onest";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("fonts/onest-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: dark;
+  --craft-bg: #111;
+  --craft-surface: #1a1a1a;
+  --craft-surface-muted: #161616;
+  --craft-sunken: #0d0d0d;
+  --craft-line: #2a2a2a;
+  --craft-line-strong: #eee;
+  --craft-text: #eee;
+  --craft-text-body: rgb(238 238 238 / .82);
+  --craft-muted: #a8a8a8;
+  --craft-accent: #ff5a67;
+  --craft-accent-base: #e63946;
+  --craft-accent-fill: #c5303d;
+  --craft-accent-fill-hover: #a92633;
+  --craft-on-accent: #fff;
+  --craft-on-accent-muted: rgb(255 255 255 / .78);
+  --craft-on-accent-line: rgb(255 255 255 / .28);
+  --craft-overlay-line: rgb(255 255 255 / .16);
+  --craft-disabled: #666;
+  --craft-code-text: #d4d0cc;
+  --craft-code-gold: #c9a96e;
+  --craft-code-blue: #7a9ab5;
+  --craft-good: #7fb38a;
+  --craft-warn: #d4b87a;
+  --craft-bad: #ff5a67;
+  --craft-print-bg: #f8f8f8;
+  --craft-print-surface: #eaeaea;
+  --craft-print-line: #ccc;
+  --craft-print-text: #111;
+  --craft-print-text-body: rgb(17 17 17 / .82);
+  --craft-print-muted: #555;
+  --craft-print-accent: #a92633;
+  --craft-font-display: "Geologica", "Liberation Sans", system-ui, sans-serif;
+  --craft-font-text: "Onest", "Liberation Sans", system-ui, sans-serif;
+  --craft-font-mono: "JetBrains Mono", "JetBrainsMono NF", ui-monospace, monospace;
+}

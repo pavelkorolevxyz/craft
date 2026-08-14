@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Craft · Интерфейсы</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="specimen.css">
+  <script src="specimen.js" defer></script>
+</head>
+<body>
+  <div class="system-layout">
+    <nav class="system-nav" aria-label="Разделы дизайн-системы">
+      <div>
+        <a class="system-name" href="#top">Craft</a>
+        <p class="system-version">Версия 0.1</p>
+      </div>
+      <div class="system-links">
+        <a href="#foundation">Правила</a>
+        <a href="#color">Цвет</a>
+        <a href="#type">Типографика</a>
+        <a href="#spacing">Ритм</a>
+        <a href="#controls">Управление</a>
+        <a href="#data">Данные</a>
+      </div>
+      <p class="system-nav__note">Geologica + Onest<br>Работает без сети</p>
+    </nav>
+
+    <main class="system-main" id="top">
+      <header class="system-intro">
+        <div>
+          <h1>Локальные интерфейсы</h1>
+          <p class="system-intro__lede">Токены и компоненты для отчётов, дашбордов и небольших рабочих инструментов.</p>
+        </div>
+        <dl class="system-meta">
+          <div><dt>Формат</dt><dd>HTML + CSS</dd></div>
+          <div><dt>Зависимости</dt><dd>Нет</dd></div>
+          <div><dt>Минимальная ширина</dt><dd>320 px</dd></div>
+        </dl>
+      </header>
+
+      <section class="system-section" id="foundation">
+        <div class="system-section__head">
+          <h2>Правила</h2>
+          <p>Эти правила связывают разные инструменты одной визуальной системой.</p>
+        </div>
+        <div class="rule-list" role="list">
+          <article role="listitem"><h3>Использовать весь экран</h3><p>Рабочая поверхность занимает доступную ширину и минимум высоту окна браузера.</p><span>Без внешнего ограничения</span></article>
+          <article role="listitem"><h3>Ограничивать текст, не интерфейс</h3><p>Длинная строка остаётся в пределах 65–75 знаков. Таблицы и графики используют доступное место.</p><span>65–75 знаков</span></article>
+          <article role="listitem"><h3>Отделять секции линиями</h3><p>Полная рамка нужна только самостоятельному компоненту.</p><span>Линия всегда 1 px</span></article>
+          <article role="listitem"><h3>Подписывать состояние</h3><p>Цвет выделяет сигнал, а текст объясняет его.</p><span>Текст + цвет</span></article>
+        </div>
+      </section>
+
+      <section class="system-section" id="color">
+        <div class="system-section__head">
+          <h2>Цвет</h2>
+          <p>Красный отмечает действие, активное состояние или важный сигнал. Остальная палитра нейтральная.</p>
+        </div>
+        <div class="token-table" role="list" aria-label="Цветовые токены">
+          <div class="token-row" role="listitem"><i style="--swatch:#111"></i><strong>Фон</strong><code>--bg</code><span>#111111</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#1a1a1a"></i><strong>Поверхность</strong><code>--surface</code><span>#1a1a1a</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#2a2a2a"></i><strong>Линия</strong><code>--line</code><span>#2a2a2a</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#eee"></i><strong>Текст</strong><code>--text</code><span>#eeeeee</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#a8a8a8"></i><strong>Вторичный</strong><code>--muted</code><span>#a8a8a8</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#ff5a67"></i><strong>Акцент</strong><code>--accent</code><span>#ff5a67</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#c5303d"></i><strong>Заливка</strong><code>--accent-fill</code><span>#c5303d</span></div>
+        </div>
+      </section>
+
+      <section class="system-section" id="type">
+        <h2 class="standalone-title">Типографика</h2>
+        <div class="type-specimens">
+          <div class="type-row"><span>Заголовок страницы · 48/51</span><strong class="sample-page">Сводка за неделю</strong></div>
+          <div class="type-row"><span>Заголовок секции · 34/38</span><strong class="sample-section">Что требует решения</strong></div>
+          <div class="type-row"><span>Локальный заголовок · 22/28</span><strong class="sample-local">Стабильность потока</strong></div>
+          <div class="type-row"><span>Основной текст · 18/29</span><p class="sample-body">Интерфейс показывает состояние, объясняет изменение и предлагает следующее действие.</p></div>
+          <div class="type-row"><span>Служебный текст · 13/18</span><p class="sample-meta">Обновлено 14 августа · источник: локальные данные</p></div>
+        </div>
+      </section>
+
+      <section class="system-section rhythm-section" id="spacing">
+        <div>
+          <h2>Ритм</h2>
+          <p>Базовый шаг — 4 px. Шкала содержит семь значений.</p>
+        </div>
+        <div class="space-scale">
+          <div><span>04</span><i style="--space:4px"></i></div>
+          <div><span>08</span><i style="--space:8px"></i></div>
+          <div><span>12</span><i style="--space:12px"></i></div>
+          <div><span>16</span><i style="--space:16px"></i></div>
+          <div><span>24</span><i style="--space:24px"></i></div>
+          <div><span>32</span><i style="--space:32px"></i></div>
+          <div><span>48</span><i style="--space:48px"></i></div>
+        </div>
+      </section>
+
+      <section class="system-section" id="controls">
+        <div class="system-section__head">
+          <h2>Управление</h2>
+          <p>У элементов управления есть состояния наведения, фокуса и недоступности.</p>
+        </div>
+        <div class="control-demo">
+          <div class="control-group">
+            <span class="control-label">Действия</span>
+            <div class="control-line"><button class="button button--primary">Сформировать</button><button class="button">Экспортировать</button><button class="button" disabled>Недоступно</button></div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="period">Период</label>
+            <select id="period"><option>Последние 7 дней</option><option>Последние 30 дней</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="search">Поиск</label>
+            <input id="search" type="search" placeholder="Название или идентификатор">
+          </div>
+          <div class="control-group">
+            <span class="control-label">Состояния</span>
+            <div class="control-line"><span class="status status--good">стабильно</span><span class="status status--warn">проверить</span><span class="status status--bad">блокер</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="system-section" id="data">
+        <div class="data-heading">
+          <h2>Данные</h2>
+          <p>Запись чисел и единиц измерения в русскоязычном интерфейсе.</p>
+        </div>
+        <div class="format-metrics" aria-label="Примеры форматирования чисел">
+          <div><strong>1 240</strong><span>целое число</span></div>
+          <div><strong>98,7%</strong><span>процент</span></div>
+          <div><strong>18 мс</strong><span>время</span></div>
+        </div>
+        <table class="data-table format-table">
+          <thead><tr><th>Тип</th><th>Правило</th><th>Пример</th></tr></thead>
+          <tbody>
+            <tr><td>Количество</td><td>Пробел между разрядами</td><td>1 240</td></tr>
+            <tr><td>Доля</td><td>Одна десятичная, если она значима</td><td>98,7%</td></tr>
+            <tr><td>Длительность</td><td>Неразрывный пробел перед единицей</td><td>18 мс</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <footer class="system-footer"><span>Каталог компонентов · версия 0.1</span><span>Локальный HTML</span></footer>
+    </main>
+  </div>
+</body>
+</html>

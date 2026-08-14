@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Craft · Слайды</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="deck">
+<div class="slides">
+
+  <!-- 01 · Обложка -->
+  <section class="slide s-cover surface-accent">
+    <div class="lanes" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="pad">
+      <h1 class="type-hero">Название доклада в одну-две строки</h1>
+    </div>
+    <p class="byline">Имя Фамилия</p>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 02 · Обо мне -->
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">Обо мне</p>
+      <div class="about">
+        <div>
+          <p class="name">Имя Фамилия</p>
+          <p>Роль и место работы</p>
+          <p>Чем занимаетесь и почему говорите об этом</p>
+          <p class="handle">@канал</p>
+        </div>
+        <figure class="photo">
+          <!-- <img class="media-cover" src="../shots/photo.jpg" alt="Фото спикера"> -->
+          <div class="placeholder">фото</div>
+        </figure>
+      </div>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 03 · Разделитель -->
+  <section class="slide s-section">
+    <div class="jersey">1</div>
+    <div class="pad">
+      <h2 class="type-hero">Название<br>раздела</h2>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 04 · Оглавление · стартовый протокол -->
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">План</p>
+      <ul class="bullets">
+        <li class="frag" data-n="01"><div><h3>Название раздела</h3></div></li>
+        <li class="frag" data-n="02"><div><h3>Название раздела</h3></div></li>
+        <li class="frag" data-n="03"><div><h3>Название раздела</h3></div></li>
+        <li class="frag" data-n="04"><div><h3>Название раздела</h3></div></li>
+        <li class="frag" data-n="05"><div><h3>Название раздела</h3></div></li>
+      </ul>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 05 · Тезис -->
+  <section class="slide s-statement surface-accent">
+    <div class="pad">
+      <h2 class="type-hero">Один слайд раскрывает <u>одну мысль</u></h2>
+      <p class="type-note">Добавьте пояснение, только если без него тезис непонятен</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 06 · Список -->
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">Заголовок слайда</p>
+      <ul class="bullets">
+        <li class="frag" data-n="01"><div><h3>Утверждение в одну строку</h3><small>подпись: цифра, источник или уточнение</small></div></li>
+        <li class="frag" data-n="02"><div><h3>Утверждение в одну строку</h3></div></li>
+        <li class="frag" data-n="03"><div><h3>Утверждение в одну строку</h3></div></li>
+        <li class="frag" data-n="04"><div><h3>Утверждение в одну строку</h3></div></li>
+        <li class="frag" data-n="05"><div><h3>Утверждение в одну строку</h3></div></li>
+        <li class="frag" data-n="06"><div><h3>Утверждение в одну строку</h3></div></li>
+      </ul>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 07 · Сравнение: правая половина раскрывается следующей страницей -->
+  <section class="slide s-comparison">
+    <div class="comparison-split">
+      <div class="comparison-side is-before">
+        <p class="comparison-title">Было</p>
+        <div class="comparison-body">
+          <p class="comparison-label">Подпись к исходному состоянию</p>
+          <p class="comparison-value">0 000</p>
+          <ul class="comparison-points plain-list">
+            <li><span>Ручная проверка</span></li>
+            <li><span>Долгое согласование изменений</span></li>
+            <li><span>Результат зависит от внимательности команды</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="comparison-side is-after frag">
+        <p class="comparison-title">Стало</p>
+        <div class="comparison-body">
+          <p class="comparison-label">Подпись к новому состоянию</p>
+          <p class="comparison-value">000</p>
+          <ul class="comparison-points plain-list">
+            <li><span>Автопроверка</span></li>
+            <li><span>Изменения видны сразу</span></li>
+            <li><span>Команда работает по единым правилам</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 08 · Цитата -->
+  <section class="slide s-quote">
+    <div class="pad">
+      <figure style="margin:0">
+        <blockquote>Цитата в одну-две строки, не длиннее</blockquote>
+      </figure>
+      <figcaption><b>Кто сказал</b>где и при каких обстоятельствах</figcaption>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 09 · Табло · метрики -->
+  <section class="slide">
+    <div class="pad" style="padding-inline:0;padding-bottom:0">
+      <p class="slide-title" style="left:var(--pad-x)">Заголовок слайда</p>
+      <div class="scoreboard">
+        <div class="frag"><div class="v type-metric">00%</div><div class="k">что означает это число</div></div>
+        <div class="frag"><div class="v type-metric">0,0×</div><div class="k">что означает это число</div></div>
+        <div class="frag"><div class="v type-metric">0</div><div class="k">что означает это число</div></div>
+      </div>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 10 · Код -->
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">Заголовок слайда</p>
+      <pre class="code" data-language="javascript" data-highlight-lines="4"><code>// комментарий к фрагменту
+function example(input) {
+    const result = transform(input);
+    if (!result) return null;  // строка, ради которой слайд
+    return `готово: ${result}`;
+}</code></pre>
+      <p class="type-note">Объясните вывод из кода, а не читайте его построчно</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 11 · Иллюстрация с подписью -->
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">Заголовок слайда</p>
+      <div class="figure columns place-fill" style="--column-ratio:1.45fr 1fr">
+        <div class="frame">схема · скриншот · график</div>
+        <div class="cap stack">
+          <h3 class="type-heading">Что здесь показано</h3>
+          <p class="type-note">Укажите, на что смотреть и какой вывод следует из изображения.</p>
+        </div>
+      </div>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 12 · Скриншот во весь слайд -->
+  <section class="slide s-shot">
+    <figure class="shot">
+      <!-- <img class="media-cover" src="../shots/screen.png" alt="Что на скриншоте"> -->
+      <div class="placeholder">сюда скриншот 16:9, без полей</div>
+      <figcaption>Подпись: на что смотреть</figcaption>
+    </figure>
+    <p class="slide-title">Заголовок слайда</p>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 13 · Таблица -->
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">Заголовок слайда</p>
+      <table class="data-table">
+        <thead><tr><th>Название</th><th>Категория</th><th class="num">Количество</th><th class="num">Доля</th></tr></thead>
+        <tbody>
+          <tr><td>Значение</td><td>Категория</td><td class="num">0 000</td><td class="num">00%</td></tr>
+          <tr><td>Значение</td><td>Категория</td><td class="num">000</td><td class="num">00%</td></tr>
+          <tr><td>Значение</td><td>Категория</td><td class="num">0 000</td><td class="num">00%</td></tr>
+          <tr data-total><td>Итого</td><td>Все категории</td><td class="num">0 000</td><td class="num">00%</td></tr>
+        </tbody>
+      </table>
+      <p class="type-note">Откуда данные и за какой период</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 14 · Шаги -->
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">Заголовок слайда</p>
+      <div class="steps">
+        <div class="frag"><div class="n">01</div><h3>Шаг</h3><p>Короткое описание.</p></div>
+        <div class="frag"><div class="n">02</div><h3>Название шага</h3><p>Описание шага, которое занимает две строки.</p></div>
+        <div class="frag"><div class="n">03</div><h3>Более длинный заголовок</h3><p>Более длинное описание шага: достаточно текста, чтобы проверить три строки.</p></div>
+        <div class="frag"><div class="n">04</div><h3>Финал</h3><p>Одно предложение средней длины.</p></div>
+      </div>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 15 · Заголовочный слайд внутри доклада -->
+  <section class="slide s-title-card">
+    <div class="lanes" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="pad">
+      <h2 class="type-hero">Заголовок в одну-две строки</h2>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 16 · Итоги -->
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">Выводы</p>
+      <ul class="takeaways plain-list">
+        <li class="frag"><span>Сначала назовите главное ограничение</span></li>
+        <li class="frag"><span>Проверяйте решение на реальном содержании, а не на одинаковых заглушках</span></li>
+        <li class="frag"><span>Не заставляйте необычный слайд обходить правила системы</span></li>
+      </ul>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 17 · Ресурс: обычный заголовок, медиа и связанный QR -->
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">Название ресурса</p>
+      <div class="resource-layout">
+        <figure class="resource-media">
+          <!-- <img src="../shots/resource.png" alt="Интерфейс ресурса"> -->
+          <div class="placeholder">скриншот ресурса</div>
+        </figure>
+        <div class="resource-link">
+          <div class="link-qr">
+            <img src="specimen/qr-example.svg" alt="QR: example.com">
+          </div>
+          <a href="https://example.com/"><span class="where">example.com</span></a>
+        </div>
+      </div>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 18 · Финал -->
+  <section class="slide s-end">
+    <div class="pad">
+      <h2 class="type-hero">Спасибо<br>за внимание</h2>
+      <p class="handle">@канал</p>
+      <div class="qr-link">
+        <div class="qr">
+          <img src="specimen/qr-example.svg" alt="QR: example.com">
+        </div>
+        <p class="where">example.com</p>
+      </div>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+</div>
+</div>
+
+<div class="help-panel" role="status" aria-hidden="true" hidden>
+  <div class="help-actions">
+    <button type="button" data-deck-action="grid" aria-label="Обзор слайдов">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/>
+        <rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>
+      </svg>
+      <span class="shortcut-key" aria-hidden="true">G</span>
+    </button>
+    <button class="help-strip" type="button" data-deck-action="strip" aria-label="Обзор слайдов лентой">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="4" y="4" width="16" height="4" rx="1"/><rect x="4" y="10" width="16" height="4" rx="1"/><rect x="4" y="16" width="16" height="4" rx="1"/>
+      </svg>
+      <span class="shortcut-key" aria-hidden="true">L</span>
+    </button>
+    <button type="button" data-deck-action="fullscreen" aria-label="Полный экран">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"/>
+      </svg>
+      <span class="shortcut-key" aria-hidden="true">F</span>
+    </button>
+  </div>
+  <div class="help-nav" aria-label="Навигация по слайдам">
+    <button type="button" data-deck-go="-1" aria-label="Предыдущий слайд">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5 7.5 12l7 7"/></svg>
+    </button>
+    <span class="help-page"></span>
+    <button type="button" data-deck-go="1" aria-label="Следующий слайд">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg>
+    </button>
+  </div>
+  <button class="help-close" type="button" data-deck-action="hide-help" aria-label="Скрыть панель управления">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m6 6 12 12M18 6 6 18"/>
+    </svg>
+    <span class="shortcut-key" aria-hidden="true">H</span>
+  </button>
+</div>
+<div class="help-reveal-zone">
+  <button class="help-reveal" type="button" aria-label="Показать панель управления">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 14 5-5 5 5M5 19h14"/></svg>
+    <span class="shortcut-key" aria-hidden="true">H</span>
+  </button>
+</div>
+
+<script src="vendor/highlight.min.js"></script>
+<script src="code-highlight.js"></script>
+<script src="deck.js"></script>
+</body>
+</html>

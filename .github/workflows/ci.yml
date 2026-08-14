@@ -1,0 +1,112 @@
+name: Проверки Craft
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Быстрые проверки
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить исходники
+        uses: actions/checkout@v5
+      - name: Настроить Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Настроить Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Проверить контракты
+        run: make check
+
+  browser:
+    name: Браузерные проверки
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - name: Получить исходники
+        uses: actions/checkout@v5
+      - name: Настроить Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Настроить Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Установить инструменты проверки PDF
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Проверить шаблоны в браузере
+        run: make test
+        env:
+          CHROMIUM: google-chrome
+      - name: Создать контрольные рендеры
+        run: make render
+        env:
+          CHROMIUM: google-chrome
+      - name: Сохранить рендеры
+        uses: actions/upload-artifact@v7
+        with:
+          name: craft-render-review
+          path: artifacts/render
+          if-no-files-found: error
+
+  visual:
+    name: Визуальное сравнение
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    needs: browser
+    steps:
+      - name: Получить исходники
+        uses: actions/checkout@v5
+      - name: Настроить Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Установить инструменты визуального сравнения
+        run: sudo apt-get update && sudo apt-get install -y imagemagick
+      - name: Сравнить рендеры с эталонами
+        id: visual-comparison
+        continue-on-error: true
+        run: make visual-test
+        env:
+          CHROMIUM: google-chrome
+      - name: Сохранить найденные различия
+        uses: actions/upload-artifact@v7
+        if: steps.visual-comparison.outcome == 'failure'
+        with:
+          name: craft-visual-diffs
+          path: artifacts/diff
+
+  release:
+    name: Публикация релиза
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    needs: browser
+    permissions:
+      contents: write
+    steps:
+      - name: Получить исходники
+        uses: actions/checkout@v5
+      - name: Настроить Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Собрать архивы
+        run: python3 scripts/build.py --clean
+      - name: Опубликовать релиз
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.zip
+            dist/manifest.json
+            dist/SHA256SUMS

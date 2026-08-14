@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<link rel="stylesheet" href="../../shared/tokens.css">
+<link rel="stylesheet" href="../base.css">
+<link rel="stylesheet" href="../theme.css">
+</head>
+<body>
+<div class="deck">
+<div class="slides">
+  <section class="slide s-cover surface-accent">
+    <div class="pad"><h1 class="type-hero">{{TITLE}}</h1></div>
+    <p class="byline">Имя автора</p>
+    <p class="slide-number"></p>
+  </section>
+
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">Контекст</p>
+      <div class="stack place-center">
+        <h2 class="type-title">Один вывод на слайд</h2>
+        <p class="type-lede">Дайте факт, без которого следующая мысль будет непонятна.</p>
+      </div>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <section class="slide s-statement surface-accent">
+    <div class="pad"><h2 class="type-hero">Главная мысль раздела</h2></div>
+    <p class="slide-number"></p>
+  </section>
+
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">Аргументы</p>
+      <ul class="bullets">
+        <li class="frag" data-n="01"><div><h3>Первый аргумент</h3><small>цифра, источник или уточнение</small></div></li>
+        <li class="frag" data-n="02"><div><h3>Второй аргумент</h3></div></li>
+        <li class="frag" data-n="03"><div><h3>Третий аргумент</h3></div></li>
+      </ul>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <section class="slide">
+    <div class="pad">
+      <p class="slide-title">Код</p>
+      <pre class="code" data-language="javascript" data-highlight-lines="2"><code>function example(input) {
+    return transform(input);
+}</code></pre>
+      <p class="type-note">Оставьте только строки, на которых строится вывод.</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <section class="slide s-end">
+    <div class="pad">
+      <h2 class="type-hero">Спасибо</h2>
+      <p class="handle">@адрес</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+</div>
+</div>
+
+<div class="help-panel" role="status" aria-hidden="true" hidden>
+  <div class="help-actions">
+    <button type="button" data-deck-action="grid" aria-label="Обзор слайдов"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg><span class="shortcut-key" aria-hidden="true">G</span></button>
+    <button class="help-strip" type="button" data-deck-action="strip" aria-label="Обзор лентой"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="4"/><rect x="4" y="10" width="16" height="4"/><rect x="4" y="16" width="16" height="4"/></svg><span class="shortcut-key" aria-hidden="true">L</span></button>
+    <button type="button" data-deck-action="fullscreen" aria-label="Полный экран"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"/></svg><span class="shortcut-key" aria-hidden="true">F</span></button>
+  </div>
+  <div class="help-nav" aria-label="Навигация по слайдам">
+    <button type="button" data-deck-go="-1" aria-label="Предыдущий слайд"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5 7.5 12l7 7"/></svg></button>
+    <span class="help-page"></span>
+    <button type="button" data-deck-go="1" aria-label="Следующий слайд"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg></button>
+  </div>
+  <button class="help-close" type="button" data-deck-action="hide-help" aria-label="Скрыть управление"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg><span class="shortcut-key" aria-hidden="true">H</span></button>
+</div>
+<div class="help-reveal-zone"><button class="help-reveal" type="button" aria-label="Показать управление"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 14 5-5 5 5M5 19h14"/></svg><span class="shortcut-key" aria-hidden="true">H</span></button></div>
+
+<script src="../vendor/highlight.min.js"></script>
+<script src="../code-highlight.js"></script>
+<script src="../deck.js"></script>
+</body>
+</html>
