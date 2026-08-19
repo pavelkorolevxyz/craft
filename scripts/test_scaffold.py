@@ -74,15 +74,27 @@ def test_slides(key: str, output: Path, work: Path) -> None:
     dumped = dump_probe(
         output,
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}));"
+        "const current=document.querySelector('.slide[data-active]')?.dataset.index;"
+        "const deck=document.querySelector('.deck');"
+        "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
+        "deck.scrollTop=(deck.scrollHeight-deck.clientHeight)*.37;"
+        "const stripBefore=Math.round(deck.scrollTop/(deck.scrollHeight-deck.clientHeight)*100);"
+        "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
+        "const stripAfter=Math.round(deck.scrollLeft/(deck.scrollWidth-deck.clientWidth)*100);"
+        "deck.scrollLeft=(deck.scrollWidth-deck.clientWidth)*.62;"
+        "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
+        "const stripReturn=Math.round(deck.scrollTop/(deck.scrollHeight-deck.clientHeight)*100);"
         "document.title=`probe:${document.querySelectorAll('.slide').length}:${document.querySelectorAll('.slide[data-active]').length}:`+"
-        "document.querySelector('.slide[data-active]')?.dataset.index",
+        "`${current}:${stripBefore}:${stripAfter}:${stripReturn}:${deck.dataset.stripDirection}`",
         1280,
         720,
     )
-    match = re.search(r"<title>probe:(\d+):(\d+):(\d+)</title>", dumped)
+    match = re.search(r"<title>probe:(\d+):(\d+):(\d+):(\d+):(\d+):(\d+):(\w+)</title>", dumped)
     assert match, f"{key}: проверка механики колоды не выполнена"
-    pages, active, current = map(int, match.groups())
+    pages, active, current, strip_before, strip_after, strip_return = map(int, match.groups()[:6])
+    strip_direction = match.group(7)
     assert pages >= 6 and active == 1 and current == 2, f"{key}: недопустимое состояние колоды {match.groups()}"
+    assert strip_direction == "vertical" and strip_before == strip_after == 37 and strip_return == 62, f"{key}: позиция ленты не сохранена {match.groups()}"
 
     pdf = work / f"{key}.pdf"
     run(*chromium_args(1280, 720), f"--print-to-pdf={pdf}", output.joinpath("index.html").as_uri())

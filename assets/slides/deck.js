@@ -119,15 +119,36 @@
     stripButton.setAttribute('aria-label', `Переключить ленту на ${nextDirection}`);
   }
 
+  function stripScrollProgress() {
+    const horizontal = deck.dataset.stripDirection === 'horizontal';
+    const position = horizontal ? deck.scrollLeft : deck.scrollTop;
+    const limit = horizontal
+      ? deck.scrollWidth - deck.clientWidth
+      : deck.scrollHeight - deck.clientHeight;
+    return limit > 0 ? Math.max(0, Math.min(1, position / limit)) : 0;
+  }
+
+  function restoreStripScroll(progress) {
+    const horizontal = deck.dataset.stripDirection === 'horizontal';
+    const limit = horizontal
+      ? deck.scrollWidth - deck.clientWidth
+      : deck.scrollHeight - deck.clientHeight;
+    deck.scrollTo({
+      left: horizontal ? limit * progress : 0,
+      top: horizontal ? 0 : limit * progress,
+    });
+  }
+
   function toggleStrip() {
     if (deck.dataset.mode !== 'strip') {
       deck.dataset.stripDirection ||= 'vertical';
       toggleOverview('strip', true);
     } else {
+      const progress = stripScrollProgress();
       deck.dataset.stripDirection = deck.dataset.stripDirection === 'horizontal'
         ? 'vertical'
         : 'horizontal';
-      slides[current].scrollIntoView({ block: 'center', inline: 'center' });
+      restoreStripScroll(progress);
     }
     syncStripButton();
   }
