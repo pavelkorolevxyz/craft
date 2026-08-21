@@ -76,22 +76,28 @@
   };
   let current = pageFromHash();
   let previous = null;
+  let revealed = null;
   let hideHelpAfterPageInput = false;
 
   function render(scroll = false) {
-    // Анимация — свойство перехода вперёд, а не состояния слайда.
-    // Первый кадр колоды — прямая ссылка, снимок экрана, печать в PDF —
-    // показывает конечное положение. Возврат назад его тоже показывает
-    // сразу: докладчик вернулся к уже сказанному, и заново проигранное
-    // раскрытие обещало бы новость там, где её нет.
+    // Движение принадлежит переходу вперёд, а не состоянию слайда, и
+    // достаётся только тому, что раскрылось именно на этом шаге, — его
+    // тема помечает атрибутом data-reveal. Всё остальное сразу стоит в
+    // конечном положении: первый кадр колоды (прямая ссылка, снимок
+    // экрана, печать в PDF), возврат назад и уже показанные шаги. Так
+    // тема пишет анимацию одним правилом и не считает шаги сама.
     const forward = previous !== null && current > previous;
     previous = current;
 
     slides.forEach((slide, index) => {
-      const active = index === current;
-      slide.toggleAttribute('data-active', active);
-      slide.toggleAttribute('data-entered', active && forward);
+      slide.toggleAttribute('data-active', index === current);
     });
+
+    revealed?.removeAttribute('data-reveal');
+    // Слайд без шагов раскрывается целиком, поэтому метку берёт он сам.
+    const steps = slides[current].querySelectorAll('.frag[data-shown]');
+    revealed = forward ? steps[steps.length - 1] ?? slides[current] : null;
+    revealed?.setAttribute('data-reveal', '');
 
     if (helpPageInput) helpPageInput.value = pad(current + 1);
     if (helpPageTotal) helpPageTotal.textContent = `/ ${total}`;
