@@ -74,27 +74,28 @@ def test_slides(key: str, output: Path, work: Path) -> None:
     dumped = dump_probe(
         output,
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}));"
-        "const current=document.querySelector('.slide[data-active]')?.dataset.index;"
+        "const afterArrow=document.querySelector('.slide[data-active]')?.dataset.index;"
+        "document.dispatchEvent(new KeyboardEvent('keydown',{key:'End'}));"
         "const deck=document.querySelector('.deck');"
+        "const centerError=()=>{const a=document.querySelector('.slide[data-active]').getBoundingClientRect();const d=deck.getBoundingClientRect();return Math.round(Math.max(Math.abs(a.left+a.width/2-(d.left+deck.clientWidth/2)),Math.abs(a.top+a.height/2-(d.top+deck.clientHeight/2))))};"
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
-        "deck.scrollTop=(deck.scrollHeight-deck.clientHeight)*.37;"
-        "const stripBefore=Math.round(deck.scrollTop/(deck.scrollHeight-deck.clientHeight)*100);"
+        "const stripVerticalError=centerError();"
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
-        "const stripAfter=Math.round(deck.scrollLeft/(deck.scrollWidth-deck.clientWidth)*100);"
-        "deck.scrollLeft=(deck.scrollWidth-deck.clientWidth)*.62;"
+        "const stripHorizontalError=centerError();"
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
-        "const stripReturn=Math.round(deck.scrollTop/(deck.scrollHeight-deck.clientHeight)*100);"
+        "const stripReturnError=centerError();"
         "document.title=`probe:${document.querySelectorAll('.slide').length}:${document.querySelectorAll('.slide[data-active]').length}:`+"
-        "`${current}:${stripBefore}:${stripAfter}:${stripReturn}:${deck.dataset.stripDirection}`",
+        "`${afterArrow}:${document.querySelector('.slide[data-active]')?.dataset.index}:${stripVerticalError}:${stripHorizontalError}:${stripReturnError}:${deck.dataset.stripDirection}`",
         1280,
         720,
     )
-    match = re.search(r"<title>probe:(\d+):(\d+):(\d+):(\d+):(\d+):(\d+):(\w+)</title>", dumped)
+    match = re.search(r"<title>probe:(\d+):(\d+):(\d+):(\d+):(\d+):(\d+):(\d+):(\w+)</title>", dumped)
     assert match, f"{key}: проверка механики колоды не выполнена"
-    pages, active, current, strip_before, strip_after, strip_return = map(int, match.groups()[:6])
-    strip_direction = match.group(7)
-    assert pages >= 6 and active == 1 and current == 2, f"{key}: недопустимое состояние колоды {match.groups()}"
-    assert strip_direction == "vertical" and strip_before == strip_after == 37 and strip_return == 62, f"{key}: позиция ленты не сохранена {match.groups()}"
+    pages, active, after_arrow, current, vertical_error, horizontal_error = map(int, match.groups()[:6])
+    return_error = int(match.group(7))
+    strip_direction = match.group(8)
+    assert pages >= 6 and active == 1 and after_arrow == 2 and current == pages, f"{key}: недопустимое состояние колоды {match.groups()}"
+    assert strip_direction == "vertical" and max(vertical_error, horizontal_error, return_error) <= 1, f"{key}: активный слайд ленты не по центру {match.groups()}"
 
     pdf = work / f"{key}.pdf"
     run(*chromium_args(1280, 720), f"--print-to-pdf={pdf}", output.joinpath("index.html").as_uri())

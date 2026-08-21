@@ -95,6 +95,15 @@ body {
   flex-direction: column;
 }
 
+/* Пустое место по краям позволяет поставить в центр даже первый и
+   последний слайд. Из размера вычитается gap: flex добавляет его между
+   распоркой и крайней плиткой. */
+.deck[data-mode="strip"][data-strip-direction="vertical"] .slides::before,
+.deck[data-mode="strip"][data-strip-direction="vertical"] .slides::after {
+  content: "";
+  flex: 0 0 max(0px, calc(50dvh - 5vw - var(--strip-slide-width) * 9 / 32));
+}
+
 .deck[data-mode="strip"] .slide {
   width: var(--strip-slide-width);
 }
@@ -107,6 +116,12 @@ body {
   width: max-content;
   height: 100%;
   flex-direction: row;
+}
+
+.deck[data-mode="strip"][data-strip-direction="horizontal"] .slides::before,
+.deck[data-mode="strip"][data-strip-direction="horizontal"] .slides::after {
+  content: "";
+  flex: 0 0 max(0px, calc(50dvw - 5vw - var(--strip-slide-width) / 2));
 }
 
 .deck[data-mode="strip"][data-strip-direction="horizontal"] .slide {
@@ -307,6 +322,7 @@ body {
   .help-panel, .help-reveal-zone { display: none; }
   .deck { display: block; height: auto; padding: 0; }
   .slides { display: block; }
+  .slides::before, .slides::after { display: none !important; }
   .slide {
     display: block !important;
     width: 100%;

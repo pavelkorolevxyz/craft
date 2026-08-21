@@ -82,7 +82,9 @@
     if (nextButton) nextButton.disabled = current === total - 1;
     history.replaceState(null, '', `#${current + 1}`);
 
-    if (scroll && (deck.dataset.mode === 'grid' || deck.dataset.mode === 'strip')) {
+    if (scroll && deck.dataset.mode === 'strip') {
+      centerStripOnCurrent();
+    } else if (scroll && deck.dataset.mode === 'grid') {
       slides[current].scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
 
@@ -101,7 +103,11 @@
     if (on) deck.dataset.mode = mode;
     else delete deck.dataset.mode;
     document.body.style.overflow = on ? 'auto' : 'hidden';
-    if (on) slides[current].scrollIntoView({ block: 'center', inline: 'center' });
+    if (on && mode === 'strip') {
+      centerStripOnCurrent();
+    } else if (on) {
+      slides[current].scrollIntoView({ block: 'center', inline: 'center' });
+    }
     syncStripButton();
   }
 
@@ -119,23 +125,21 @@
     stripButton.setAttribute('aria-label', `Переключить ленту на ${nextDirection}`);
   }
 
-  function stripScrollProgress() {
+  function centerStripOnCurrent() {
+    // Старая ось после смены направления больше не имеет смысла.
+    // Сначала сбрасываем её, затем измеряем новую раскладку и ставим
+    // активный слайд точно в центр области просмотра.
+    deck.scrollTo({ left: 0, top: 0 });
+    const slideRect = slides[current].getBoundingClientRect();
+    const deckRect = deck.getBoundingClientRect();
     const horizontal = deck.dataset.stripDirection === 'horizontal';
-    const position = horizontal ? deck.scrollLeft : deck.scrollTop;
-    const limit = horizontal
-      ? deck.scrollWidth - deck.clientWidth
-      : deck.scrollHeight - deck.clientHeight;
-    return limit > 0 ? Math.max(0, Math.min(1, position / limit)) : 0;
-  }
-
-  function restoreStripScroll(progress) {
-    const horizontal = deck.dataset.stripDirection === 'horizontal';
-    const limit = horizontal
-      ? deck.scrollWidth - deck.clientWidth
-      : deck.scrollHeight - deck.clientHeight;
     deck.scrollTo({
-      left: horizontal ? limit * progress : 0,
-      top: horizontal ? 0 : limit * progress,
+      left: horizontal
+        ? slideRect.left + slideRect.width / 2 - (deckRect.left + deck.clientWidth / 2)
+        : 0,
+      top: horizontal
+        ? 0
+        : slideRect.top + slideRect.height / 2 - (deckRect.top + deck.clientHeight / 2),
     });
   }
 
@@ -144,11 +148,10 @@
       deck.dataset.stripDirection ||= 'vertical';
       toggleOverview('strip', true);
     } else {
-      const progress = stripScrollProgress();
       deck.dataset.stripDirection = deck.dataset.stripDirection === 'horizontal'
         ? 'vertical'
         : 'horizontal';
-      restoreStripScroll(progress);
+      centerStripOnCurrent();
     }
     syncStripButton();
   }
