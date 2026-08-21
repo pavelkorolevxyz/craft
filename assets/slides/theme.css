@@ -763,66 +763,30 @@
 /* ============================================================
    Движение раскрытия
 
-   Двигается только то, чьё движение и есть содержание: величина
-   растёт, ось идёт по времени, связь ведёт от узла к узлу. Появление
-   текста, переходы между слайдами и бесконечные петли сюда не входят —
-   на докладе они соперничают с говорящим.
+   В теме ровно одно движение — рост столбца графика, и он же
+   единственный случай, где движение и есть содержание: столбец
+   доезжает до значения, и это доезжание показывает сравнение.
+   Прочерченная ось, выезжающая связь, появление текста, переходы между
+   слайдами — всё это украшение, которое на докладе соперничает с
+   говорящим, и в теме его нет.
 
-   Бюджет: одно движение на страницу, не дольше 900 мс, одна кривая на
-   всю тему. Право на движение выдаёт deck.js атрибутом data-reveal —
-   его получает то, что раскрылось на этом переходе вперёд. Печать
-   гасит анимации целиком (base.css), поэтому статические форматы
-   показывают конечный кадр без отдельных оговорок здесь.
+   Право на движение выдаёт deck.js атрибутом data-reveal: его получает
+   то, что раскрылось на переходе вперёд. Поэтому на следующих шагах,
+   при возврате назад и на первом кадре страницы столбец сразу стоит на
+   значении, а печать гасит анимации целиком (base.css).
    ============================================================ */
 
-.slide { --reveal-ease: cubic-bezier(.22, 1, .36, 1); }
-
-/* Линия прочерчивается от своего начала к концу. Вертикальный запас
-   в inset() отрицательный: наконечник стрелки выше своей линии, и
-   обрезать его по краю линии нельзя. */
-@keyframes reveal-line-right { from { clip-path: inset(-100% 100% -100% 0); } }
-@keyframes reveal-line-left { from { clip-path: inset(-100% 0 -100% 100%); } }
-@keyframes reveal-line-down { from { clip-path: inset(0 -100% 100% -100%); } }
-@keyframes reveal-line-up { from { clip-path: inset(100% -100% 0 -100%); } }
-/* Отметка на уже прочерченной линии: точка события, наконечник. */
-@keyframes reveal-mark { from { scale: 0; } }
-
-/* --- график: столбец доезжает от нуля к значению --- */
-/* Рост столбца и есть то сравнение, ради которого слайд существует.
-   Замедление к концу — значение читается на остановке, а не в разгоне.
+/* Замедление к концу: значение читается на остановке, а не в разгоне.
    Задержка по строкам задаёт порядок чтения сверху вниз. */
 @keyframes chart-track-grow { from { width: 0; } }
 
 [data-reveal] .chart-track i {
-  animation: chart-track-grow 900ms var(--reveal-ease) var(--reveal-delay, 0ms) both;
+  animation: chart-track-grow 900ms cubic-bezier(.22, 1, .36, 1) var(--chart-delay, 0ms) both;
 }
-.chart-row:nth-child(2) { --reveal-delay: 90ms; }
-.chart-row:nth-child(3) { --reveal-delay: 180ms; }
-.chart-row:nth-child(4) { --reveal-delay: 270ms; }
-.chart-row:nth-child(n+5) { --reveal-delay: 360ms; }
-
-/* --- таймлайн: ось доходит до нового события, потом встаёт точка --- */
-/* Отрезок принадлежит предыдущему событию: он и появляется, когда
-   раскрывается следующее. Точка ждёт, пока ось до неё дойдёт, — иначе
-   линия чертится к тому, что уже стоит на месте. */
-.timeline > li:has(+ [data-reveal]) > i::before {
-  animation: reveal-line-right 380ms var(--reveal-ease) both;
-}
-.timeline > [data-reveal] > i::after {
-  animation: reveal-mark 200ms var(--reveal-ease) var(--reveal-delay, 0ms) both;
-}
-.timeline > [data-reveal]:not(:first-child) { --reveal-delay: 260ms; }
-
-/* --- схема: связь ведёт от узла к узлу --- */
-/* Направление стрелки — это и есть направление процесса. Обратная
-   связь обходит схему поверху тремя отрезками: вверх, назад, вниз —
-   маршрут читается по движению, а не прослеживается глазами. */
-[data-reveal] > .flow-arrow { animation: reveal-line-right 380ms var(--reveal-ease) both; }
-[data-reveal] > .flow-arrow--down { animation-name: reveal-line-down; }
-
-.flow-return[data-reveal]::after { animation: reveal-line-up 220ms var(--reveal-ease) both; }
-.flow-return[data-reveal]::before { animation: reveal-line-left 320ms var(--reveal-ease) 200ms both; }
-.flow-return[data-reveal] > i { animation: reveal-line-down 220ms var(--reveal-ease) 500ms both; }
+.chart-row:nth-child(2) { --chart-delay: 90ms; }
+.chart-row:nth-child(3) { --chart-delay: 180ms; }
+.chart-row:nth-child(4) { --chart-delay: 270ms; }
+.chart-row:nth-child(n+5) { --chart-delay: 360ms; }
 
 /* Цифры выравниваются по табличной ширине везде, где их сравнивают. */
 .slide-number, .type-metric, .comparison-value, .bullets > li::before,
