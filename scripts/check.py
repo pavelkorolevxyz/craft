@@ -12,10 +12,10 @@ from urllib.parse import unquote, urlsplit
 from lib import ASSETS, MANIFEST, ROOT, node, run
 
 TEXT_SUFFIXES = {".css", ".html", ".js", ".json", ".md", ".py"}
+# output/ — черновая песочница вне репозитория, её содержимое не проверяется.
+IGNORED_DIRS = {".git", ".ralph", "output", "dist", "artifacts", "__pycache__"}
 CSS_FILES = list(ASSETS.rglob("*.css"))
 HTML_FILES = [ROOT / path for surface in MANIFEST["surfaces"].values() for path in surface["entrypoints"]]
-EXAMPLE_HTML_FILES = [ROOT / "examples/observability/index.html", ROOT / "examples/merge-reviews/index.html"]
-EXAMPLE_CSS_FILES = [path for path in (ROOT / "examples").rglob("*.css") if path.is_file()]
 MARK_SELECTOR = re.compile(r"\.icon\b|-mark\b|-dot\b|-status\b|::before|::after|\bsvg\b")
 RAW_COLOR = re.compile(r"(?<![\w-])(?:#[0-9a-fA-F]{3,8}\b|(?:rgb|hsl)a?\([^)]*\))")
 
@@ -86,11 +86,7 @@ def check_required() -> None:
         ASSETS / "slides/base.css",
         ASSETS / "slides/theme.css",
         ASSETS / "slides/deck.js",
-        ROOT / "examples/observability/dashboard.css",
-        ROOT / "examples/observability/dashboard.js",
-        ROOT / "examples/observability/telemetry.js",
         *HTML_FILES,
-        *EXAMPLE_HTML_FILES,
     ]
     for path in required:
         assert path.is_file(), f"отсутствует {path.relative_to(ROOT)}"
@@ -100,7 +96,7 @@ def check_required() -> None:
 
 
 def check_assets() -> None:
-    for path in [*HTML_FILES, *EXAMPLE_HTML_FILES]:
+    for path in HTML_FILES:
         parser = AssetParser()
         parser.feed(path.read_text(encoding="utf-8"))
         for value in parser.assets:
@@ -149,19 +145,11 @@ def check_borders() -> None:
             assert not any(pair <= directions for pair in adjacent), f"угловая рамка в {path.relative_to(ROOT)}: {selector}"
             assert not any(pair <= directions for pair in opposite), f"две направленные границы могут слипнуться в {path.relative_to(ROOT)}: {selector}"
 
-    dashboard = (ROOT / "examples/observability/dashboard.css").read_text(encoding="utf-8")
-    assert re.search(r"\.panel__body--table\s*\{[^}]*display:\s*flex", dashboard), \
-        "таблица в общей строке панелей должна растягивать внутренний контейнер"
-    assert re.search(r"\.panel__body--table\s+\.data-table\s*\{[^}]*height:\s*100%", dashboard), \
-        "таблица в общей строке панелей должна заполнять доступную высоту"
-    assert re.search(r"\.panel__body--table\s+\.data-table\s+tbody\s+tr:last-child\s+td\s*\{[^}]*border-bottom:\s*0", dashboard), \
-        "конечная рамка таблицы не должна дублировать разделитель сетки"
-
 
 def check_state_marks() -> None:
     """Сигнальный цвет живёт в графической метке, а не в тексте состояния."""
     signal = re.compile(r"(?<![\w-])color\s*:\s*var\(--(ok|warn|error|data-[a-z]+)\)")
-    for path in [*CSS_FILES, *EXAMPLE_CSS_FILES]:
+    for path in CSS_FILES:
         text = path.read_text(encoding="utf-8")
         for match in re.finditer(r"([^{}]+)\{([^{}]*)\}", text):
             selector = match.group(1).strip()
@@ -173,8 +161,7 @@ def check_state_marks() -> None:
 
 
 def check_accessibility_contract() -> None:
-    heading_files = [*HTML_FILES, *EXAMPLE_HTML_FILES]
-    for path in heading_files:
+    for path in HTML_FILES:
         if not path.is_file():
             continue
         parser = HeadingParser()
@@ -212,7 +199,7 @@ def check_content() -> None:
         ROOT / "scripts/scaffold.py": {"TITLE", "DATE"},
     }
     for path in ROOT.rglob("*"):
-        if not path.is_file() or path.suffix not in TEXT_SUFFIXES or {".git", ".ralph"} & set(path.parts):
+        if not path.is_file() or path.suffix not in TEXT_SUFFIXES or IGNORED_DIRS & set(path.parts):
             continue
         text = path.read_text(encoding="utf-8", errors="ignore")
         placeholders = set(re.findall(r"\{\{([A-Z][A-Z0-9_]*)\}\}", text))
@@ -221,7 +208,7 @@ def check_content() -> None:
     searchable = "\n".join(
         path.read_text(encoding="utf-8", errors="ignore")
         for path in ROOT.rglob("*")
-        if path.is_file() and path.suffix in TEXT_SUFFIXES and not ({".git", ".ralph"} & set(path.parts))
+        if path.is_file() and path.suffix in TEXT_SUFFIXES and not (IGNORED_DIRS & set(path.parts))
     ).lower()
     personal_terms = ["pa" + "vel", "koro" + "lev", "па" + "вел", "коро" + "л"]
     assert not any(term in searchable for term in personal_terms), "персональные названия не входят в Craft"
@@ -230,9 +217,9 @@ def check_content() -> None:
 def check_language() -> None:
     assert MANIFEST.get("language") == "ru", "в craft.json должен быть указан русский язык"
     allowed_latin = {
-        "aa", "api", "cdn", "chromium", "ci", "cli", "craft", "css", "edge-01", "esc", "example.com",
+        "aa", "api", "cdn", "chromium", "ci", "cli", "craft", "css", "esc", "example.com",
         "geologica", "highlight.js", "html", "imagemagick", "javascript", "json", "markdown", "node.js", "onest",
-        "p95", "p99", "pdf", "px", "python", "qr", "saas", "svg", "url", "wcag",
+        "pdf", "px", "python", "qr", "svg", "url", "wcag",
     }
 
     for path in [ROOT / "README.md", ROOT / "SKILL.md", *sorted((ROOT / "references").rglob("*.md"))]:
@@ -245,20 +232,15 @@ def check_language() -> None:
         unknown = words - allowed_latin
         assert not unknown, f"английские слова в {path.relative_to(ROOT)}: {', '.join(sorted(unknown))}"
 
-    # Термины предметной области примера: имя репозитория, ветка и название сущности,
-    # у которых нет принятого русского эквивалента.
-    domain_latin = {
-        ROOT / "examples/merge-reviews/index.html": {"main", "merge", "mr", "northstar", "request", "requests", "web-app"},
-    }
 
-    for path in [*HTML_FILES, *EXAMPLE_HTML_FILES]:
+    for path in HTML_FILES:
         parser = LanguageParser()
         parser.feed(path.read_text(encoding="utf-8"))
         assert parser.lang == "ru", f"в {path.relative_to(ROOT)} должен быть lang=ru"
         visible = " ".join(parser.text)
         visible = re.sub(r"\{\{[A-Z][A-Z0-9_]*\}\}|#[0-9a-fA-F]{3,8}\b", "", visible)
         words = {word.lower().rstrip("-") for word in re.findall(r"\b[A-Za-z][A-Za-z0-9.-]*\b", visible) if len(word) > 1}
-        unknown = words - allowed_latin - domain_latin.get(path, set())
+        unknown = words - allowed_latin
         assert not unknown, f"английский текст в {path.relative_to(ROOT)}: {', '.join(sorted(unknown))}"
 
     for path in sorted((ROOT / "scripts").glob("*.py")):
@@ -296,8 +278,6 @@ def check_javascript() -> None:
         ASSETS / "interfaces/specimen.js",
         ASSETS / "slides/deck.js",
         ASSETS / "slides/code-highlight.js",
-        ROOT / "examples/observability/dashboard.js",
-        ROOT / "examples/observability/telemetry.js",
     )
     for path in paths:
         run(node(), "--check", path)

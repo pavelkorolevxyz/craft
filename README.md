@@ -26,10 +26,10 @@ npx skills add . --global
 В корне клонированного репозитория выполните:
 
 ```bash
-python3 scripts/scaffold.py ./output --surface interface --template report --title "Название"
+python3 scripts/scaffold.py ./output/отчёт --surface interface --template report --title "Название"
 ```
 
-Откройте `output/index.html` через `file://`. Для презентации замените параметры на `--surface slides --title "Название доклада"`.
+Откройте `output/отчёт/index.html` через `file://`. Папка `output/` не входит в репозиторий и служит песочницей для черновых материалов. Для презентации замените параметры на `--surface slides --title "Название доклада"`.
 
 ## Примеры
 
@@ -55,13 +55,6 @@ python3 scripts/scaffold.py ./output --surface interface --template report --tit
 
 `make render` создаёт изображения, а `make visual-test` сравнивает их с текущими эталонами.
 
-### Готовые инструменты
-
-Обе страницы открываются через `file://` и показывают правила в работе:
-
-- `examples/observability/` — дашборд состояния кластера: графики, журнал, фильтры и печать;
-- `examples/merge-reviews/` — очередь и детали: список, выбор строки, горячие клавиши и светлая тема.
-
 ## Создание материала
 
 ```bash
@@ -84,7 +77,6 @@ assets/
 ├── shared/       общие токены и локальные шрифты
 ├── interfaces/   тема, стартовый шаблон и каталог интерфейсов
 └── slides/       тема 16:9, механика, стартовый шаблон и каталог слайдов
-examples/         готовые инструменты, собранные по правилам Craft
 references/       общая грамматика и правила отдельных форматов
 scripts/          генерация, проверки, рендеринг и выпуск релизов
 craft.json        машиночитаемый реестр форматов
