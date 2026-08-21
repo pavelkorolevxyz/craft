@@ -11,6 +11,7 @@
   --accent: var(--craft-accent);
   --accent-fill: var(--craft-accent-fill);
   --on-accent: var(--craft-on-accent);
+  --selection: var(--craft-selection);
   --good: var(--craft-good);
   --warn: var(--craft-warn);
   --bad: var(--craft-bad);
@@ -39,7 +40,11 @@ button, input, select, textarea { font: inherit; }
 a { color: var(--accent); text-underline-offset: .18em; }
 a:hover { color: var(--text); }
 img, svg { display: block; max-width: 100%; }
-::selection { color: var(--on-accent); background: var(--accent-fill); }
+/* Цвет букв не трогаем: заливка полупрозрачная, текст читается свой.
+   var() внутри ::selection берётся с элемента, которому принадлежит
+   выделение, поэтому акцентным плоскостям достаточно переопределить
+   --selection у себя. */
+::selection { background: var(--selection); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .shell { width: 100%; min-height: 100vh; }
@@ -113,6 +118,9 @@ h3 { font-size: 22px; line-height: 1.25; }
 .status--warn { --status: var(--warn); }
 .status--bad { --status: var(--bad); }
 
+.section--accent, .callout, .button--primary, .data-table .total td {
+  --selection: var(--craft-selection-on-accent);
+}
 .callout { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.5rem; align-items: end; padding: 40px var(--gutter); background: var(--accent-fill); color: var(--on-accent); }
 .callout strong { max-width: 22ch; font: 700 36px/1.08 var(--font-display); letter-spacing: -.03em; }
 .callout p { max-width: 38ch; margin: 0; }

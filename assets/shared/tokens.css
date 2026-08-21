@@ -48,6 +48,11 @@
   --craft-accent-fill: #c5303d;
   --craft-accent-fill-hover: #a92633;
   --craft-on-accent: #fff;
+  /* Выделение текста тонирует строку, а не закрашивает её: сквозь заливку
+     виден исходный цвет букв, поэтому кегль и начертание не «прыгают».
+     На акцентной плоскости красным тонировать нечего — там белый. */
+  --craft-selection: rgb(230 57 70 / .32);
+  --craft-selection-on-accent: rgb(255 255 255 / .3);
   --craft-on-accent-muted: rgb(255 255 255 / .78);
   --craft-on-accent-line: rgb(255 255 255 / .28);
   --craft-overlay-line: rgb(255 255 255 / .16);

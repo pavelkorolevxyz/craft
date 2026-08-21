@@ -14,11 +14,9 @@
 
   <!-- 01 · Обложка -->
   <section class="slide s-cover surface-accent">
-    <div class="lanes" aria-hidden="true">
-      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-    </div>
+    <svg class="lanes" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M-550 1000L0-100 M-450 1000L100-100 M-350 1000L200-100 M-250 1000L300-100 M-150 1000L400-100 M-50 1000L500-100 M50 1000L600-100 M150 1000L700-100 M250 1000L800-100 M350 1000L900-100 M450 1000L1000-100 M550 1000L1100-100 M650 1000L1200-100 M750 1000L1300-100 M850 1000L1400-100 M950 1000L1500-100 M1050 1000L1600-100 M1150 1000L1700-100 M1250 1000L1800-100 M1350 1000L1900-100 M1450 1000L2000-100 M1550 1000L2100-100"/>
+    </svg>
     <div class="pad">
       <h1 class="type-hero">Название доклада в одну-две строки</h1>
     </div>
@@ -48,6 +46,9 @@
 
   <!-- 03 · Разделитель -->
   <section class="slide s-section">
+    <svg class="lanes" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M-550 1000L0-100 M-450 1000L100-100 M-350 1000L200-100 M-250 1000L300-100 M-150 1000L400-100 M-50 1000L500-100 M50 1000L600-100 M150 1000L700-100 M250 1000L800-100 M350 1000L900-100 M450 1000L1000-100 M550 1000L1100-100 M650 1000L1200-100 M750 1000L1300-100 M850 1000L1400-100 M950 1000L1500-100 M1050 1000L1600-100 M1150 1000L1700-100 M1250 1000L1800-100 M1350 1000L1900-100 M1450 1000L2000-100 M1550 1000L2100-100"/>
+    </svg>
     <div class="jersey">1</div>
     <div class="pad">
       <h2 class="type-hero">Название<br>раздела</h2>
@@ -60,11 +61,11 @@
     <div class="pad">
       <p class="slide-title">План</p>
       <ul class="bullets">
-        <li class="frag" data-n="01"><div><h3>Название раздела</h3></div></li>
-        <li class="frag" data-n="02"><div><h3>Название раздела</h3></div></li>
-        <li class="frag" data-n="03"><div><h3>Название раздела</h3></div></li>
-        <li class="frag" data-n="04"><div><h3>Название раздела</h3></div></li>
-        <li class="frag" data-n="05"><div><h3>Название раздела</h3></div></li>
+        <li class="frag" data-n="01"><div><h3>Введение</h3></div></li>
+        <li class="frag" data-n="02"><div><h3>Контекст и ограничения</h3></div></li>
+        <li class="frag" data-n="03"><div><h3>Как устроено решение</h3></div></li>
+        <li class="frag" data-n="04"><div><h3>Проверка на реальных данных</h3></div></li>
+        <li class="frag" data-n="05"><div><h3>Выводы и следующие шаги</h3></div></li>
       </ul>
     </div>
     <p class="slide-number"></p>
@@ -82,14 +83,14 @@
   <!-- 06 · Список -->
   <section class="slide">
     <div class="pad">
-      <p class="slide-title">Заголовок слайда</p>
+      <p class="slide-title">Список</p>
       <ul class="bullets">
-        <li class="frag" data-n="01"><div><h3>Утверждение в одну строку</h3><small>подпись: цифра, источник или уточнение</small></div></li>
-        <li class="frag" data-n="02"><div><h3>Утверждение в одну строку</h3></div></li>
-        <li class="frag" data-n="03"><div><h3>Утверждение в одну строку</h3></div></li>
-        <li class="frag" data-n="04"><div><h3>Утверждение в одну строку</h3></div></li>
-        <li class="frag" data-n="05"><div><h3>Утверждение в одну строку</h3></div></li>
-        <li class="frag" data-n="06"><div><h3>Утверждение в одну строку</h3></div></li>
+        <li class="frag" data-n="01"><div><h3>Короткий тезис</h3><small>Источник или уточнение к конкретному пункту</small></div></li>
+        <li class="frag" data-n="02"><div><h3>Утверждение средней длины</h3></div></li>
+        <li class="frag" data-n="03"><div><h3>Более длинный тезис, который проверяет перенос строки</h3></div></li>
+        <li class="frag" data-n="04"><div><h3>Ещё один аргумент</h3></div></li>
+        <li class="frag" data-n="05"><div><h3>Формулировка с дополнительным условием и оговоркой</h3></div></li>
+        <li class="frag" data-n="06"><div><h3>Финальный вывод</h3></div></li>
       </ul>
     </div>
     <p class="slide-number"></p>
@@ -129,22 +130,22 @@
   <!-- 08 · Цитата -->
   <section class="slide s-quote">
     <div class="pad">
-      <figure style="margin:0">
+      <figure>
         <blockquote>Цитата в одну-две строки, не длиннее</blockquote>
+        <figcaption><b>Кто сказал</b>где и при каких обстоятельствах</figcaption>
       </figure>
-      <figcaption><b>Кто сказал</b>где и при каких обстоятельствах</figcaption>
     </div>
     <p class="slide-number"></p>
   </section>
 
   <!-- 09 · Табло · метрики -->
   <section class="slide">
-    <div class="pad" style="padding-inline:0;padding-bottom:0">
-      <p class="slide-title" style="left:var(--pad-x)">Заголовок слайда</p>
+    <div class="pad">
+      <p class="slide-title">Ключевые показатели</p>
       <div class="scoreboard">
-        <div class="frag"><div class="v type-metric">00%</div><div class="k">что означает это число</div></div>
-        <div class="frag"><div class="v type-metric">0,0×</div><div class="k">что означает это число</div></div>
-        <div class="frag"><div class="v type-metric">0</div><div class="k">что означает это число</div></div>
+        <div><div class="frag"><div class="v type-metric">00%</div><div class="k">короткая подпись</div></div></div>
+        <div><div class="frag"><div class="v type-metric">0,0×</div><div class="k">пояснение среднего размера</div></div></div>
+        <div><div class="frag"><div class="v type-metric">0</div><div class="k">более длинное объяснение значения и его контекста</div></div></div>
       </div>
     </div>
     <p class="slide-number"></p>
@@ -153,7 +154,7 @@
   <!-- 10 · Код -->
   <section class="slide">
     <div class="pad">
-      <p class="slide-title">Заголовок слайда</p>
+      <p class="slide-title">Код</p>
       <pre class="code" data-language="javascript" data-highlight-lines="4"><code>// комментарий к фрагменту
 function example(input) {
     const result = transform(input);
@@ -166,12 +167,12 @@ function example(input) {
   </section>
 
   <!-- 11 · Иллюстрация с подписью -->
-  <section class="slide">
+  <section class="slide s-figure">
     <div class="pad">
-      <p class="slide-title">Заголовок слайда</p>
-      <div class="figure columns place-fill" style="--column-ratio:1.45fr 1fr">
-        <div class="frame">схема · скриншот · график</div>
-        <div class="cap stack">
+      <p class="slide-title">Иллюстрация с пояснением</p>
+      <div class="figure columns content-aside place-fill">
+        <div class="frame"><div class="placeholder">схема · скриншот · график</div></div>
+        <div class="content-block">
           <h3 class="type-heading">Что здесь показано</h3>
           <p class="type-note">Укажите, на что смотреть и какой вывод следует из изображения.</p>
         </div>
@@ -187,20 +188,20 @@ function example(input) {
       <div class="placeholder">сюда скриншот 16:9, без полей</div>
       <figcaption>Подпись: на что смотреть</figcaption>
     </figure>
-    <p class="slide-title">Заголовок слайда</p>
+    <p class="slide-title">Полноэкранный скриншот</p>
     <p class="slide-number"></p>
   </section>
 
   <!-- 13 · Таблица -->
   <section class="slide">
     <div class="pad">
-      <p class="slide-title">Заголовок слайда</p>
+      <p class="slide-title">Таблица</p>
       <table class="data-table">
         <thead><tr><th>Название</th><th>Категория</th><th class="num">Количество</th><th class="num">Доля</th></tr></thead>
         <tbody>
-          <tr><td>Значение</td><td>Категория</td><td class="num">0 000</td><td class="num">00%</td></tr>
-          <tr><td>Значение</td><td>Категория</td><td class="num">000</td><td class="num">00%</td></tr>
-          <tr><td>Значение</td><td>Категория</td><td class="num">0 000</td><td class="num">00%</td></tr>
+          <tr><td>Короткое название</td><td>Основная</td><td class="num">0 000</td><td class="num">00%</td></tr>
+          <tr><td>Параметр средней длины</td><td>Дополнительная</td><td class="num">000</td><td class="num">00%</td></tr>
+          <tr><td>Более длинное название параметра</td><td>Редкая категория</td><td class="num">0 000</td><td class="num">00%</td></tr>
           <tr data-total><td>Итого</td><td>Все категории</td><td class="num">0 000</td><td class="num">00%</td></tr>
         </tbody>
       </table>
@@ -212,7 +213,7 @@ function example(input) {
   <!-- 14 · Шаги -->
   <section class="slide">
     <div class="pad">
-      <p class="slide-title">Заголовок слайда</p>
+      <p class="slide-title">Последовательность шагов</p>
       <div class="steps">
         <div class="frag"><div class="n">01</div><h3>Шаг</h3><p>Короткое описание.</p></div>
         <div class="frag"><div class="n">02</div><h3>Название шага</h3><p>Описание шага, которое занимает две строки.</p></div>
@@ -223,20 +224,93 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 15 · Заголовочный слайд внутри доклада -->
-  <section class="slide s-title-card">
-    <div class="lanes" aria-hidden="true">
-      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+  <!-- 15 · График с выводом -->
+  <section class="slide s-chart">
+    <div class="pad">
+      <p class="slide-title">График с выводом</p>
+      <div class="chart-layout content-aside content-aside--separated place-fill">
+        <div class="bar-chart" role="img" aria-label="Пример горизонтального столбчатого графика из четырёх категорий">
+          <div class="chart-row is-focus"><span>Короткая</span><strong>00</strong><div class="chart-track"><i style="--value:88%"></i></div></div>
+          <div class="chart-row"><span>Средняя категория</span><strong>00</strong><div class="chart-track"><i style="--value:68%"></i></div></div>
+          <div class="chart-row"><span>Категория с длинным названием</span><strong>00</strong><div class="chart-track"><i style="--value:48%"></i></div></div>
+          <div class="chart-row"><span>Ещё одна</span><strong>00</strong><div class="chart-track"><i style="--value:30%"></i></div></div>
+        </div>
+        <div class="content-block">
+          <h3 class="type-heading">Главный вывод из данных</h3>
+          <p class="type-note">Укажите источник, период и единицу измерения.</p>
+        </div>
+      </div>
     </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 16 · Таймлайн -->
+  <section class="slide s-timeline">
+    <div class="pad">
+      <p class="slide-title">Таймлайн</p>
+      <ol class="timeline place-fill">
+        <li class="frag"><span class="timeline-key">01</span><i aria-hidden="true"></i><h3>Старт</h3><p>Первое событие</p></li>
+        <li class="frag"><span class="timeline-key">02</span><i aria-hidden="true"></i><h3>Изменение</h3><p>Что произошло дальше</p></li>
+        <li class="frag"><span class="timeline-key">03</span><i aria-hidden="true"></i><h3>Сейчас</h3><p>Текущий этап</p></li>
+        <li class="frag"><span class="timeline-key">04</span><i aria-hidden="true"></i><h3>Следующий шаг</h3><p>Ближайшая точка</p></li>
+        <li class="frag"><span class="timeline-key">05</span><i aria-hidden="true"></i><h3>Результат</h3><p>Конечное состояние</p></li>
+      </ol>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 17 · Схема процесса -->
+  <section class="slide s-flow">
+    <div class="pad">
+      <p class="slide-title">Схема процесса</p>
+      <div class="flow place-fill">
+        <div class="flow-node"><strong>Источник</strong></div>
+        <div class="flow-step frag">
+          <b class="flow-arrow" aria-hidden="true"></b>
+          <div class="flow-node flow-node--accent"><strong>Преобразование</strong></div>
+        </div>
+        <div class="flow-step frag">
+          <b class="flow-arrow" aria-hidden="true"></b>
+          <div class="flow-node"><strong>Результат</strong></div>
+        </div>
+        <div class="flow-step flow-step--down frag">
+          <b class="flow-arrow flow-arrow--down" aria-hidden="true"></b>
+          <div class="flow-node"><strong>Журнал</strong></div>
+        </div>
+        <b class="flow-return frag" aria-hidden="true"><i></i></b>
+      </div>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 18 · Сравнение изображений: та же композиция, что и текстовое сравнение -->
+  <section class="slide s-comparison s-visual-compare">
+    <div class="comparison-split">
+      <div class="comparison-side is-before">
+        <p class="comparison-title">До</p>
+        <div class="comparison-body">
+          <div class="frame"><div class="placeholder">первый скриншот</div></div>
+        </div>
+      </div>
+      <div class="comparison-side is-after frag">
+        <p class="comparison-title">После</p>
+        <div class="comparison-body">
+          <div class="frame"><div class="placeholder">второй скриншот</div></div>
+        </div>
+      </div>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 19 · Заголовочный слайд внутри доклада -->
+  <section class="slide s-title-card">
     <div class="pad">
       <h2 class="type-hero">Заголовок в одну-две строки</h2>
     </div>
     <p class="slide-number"></p>
   </section>
 
-  <!-- 16 · Итоги -->
+  <!-- 20 · Итоги -->
   <section class="slide">
     <div class="pad">
       <p class="slide-title">Выводы</p>
@@ -249,27 +323,27 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 17 · Ресурс: обычный заголовок, медиа и связанный QR -->
-  <section class="slide">
+  <!-- 21 · Ресурс: обычный заголовок, медиа и связанный QR -->
+  <section class="slide s-figure">
     <div class="pad">
-      <p class="slide-title">Название ресурса</p>
-      <div class="resource-layout">
-        <figure class="resource-media">
-          <!-- <img src="../shots/resource.png" alt="Интерфейс ресурса"> -->
-          <div class="placeholder">скриншот ресурса</div>
-        </figure>
-        <div class="resource-link">
-          <div class="link-qr">
-            <img src="specimen/qr-example.svg" alt="QR: example.com">
+      <p class="slide-title">Ресурс и QR-код</p>
+      <div class="figure columns content-aside place-fill">
+        <!-- Замените .frame на <img class="media-contain" src="../shots/resource.png" alt="Интерфейс ресурса"> -->
+        <div class="frame"><div class="placeholder">скриншот ресурса</div></div>
+        <div class="content-block">
+          <div class="qr-link">
+            <div class="qr">
+              <img src="specimen/qr-example.svg" alt="QR: example.com">
+            </div>
+            <a href="https://example.com/"><p class="where">example.com</p></a>
           </div>
-          <a href="https://example.com/"><span class="where">example.com</span></a>
         </div>
       </div>
     </div>
     <p class="slide-number"></p>
   </section>
 
-  <!-- 18 · Финал -->
+  <!-- 22 · Финал -->
   <section class="slide s-end">
     <div class="pad">
       <h2 class="type-hero">Спасибо<br>за внимание</h2>
@@ -313,7 +387,10 @@ function example(input) {
     <button type="button" data-deck-go="-1" aria-label="Предыдущий слайд">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5 7.5 12l7 7"/></svg>
     </button>
-    <span class="help-page"></span>
+    <label class="help-page">
+      <input class="help-page-input" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="Перейти к странице">
+      <span class="help-page-total" aria-hidden="true"></span>
+    </label>
     <button type="button" data-deck-go="1" aria-label="Следующий слайд">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg>
     </button>

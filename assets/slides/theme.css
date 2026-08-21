@@ -38,6 +38,12 @@
   --on-accent: var(--site-on-dark-bg);
   --on-accent-muted: var(--craft-on-accent-muted);
   --on-accent-line: var(--craft-on-accent-line);
+  /* Выделение тонирует строку, а не закрашивает: цвет букв остаётся свой. */
+  --selection: var(--craft-selection);
+
+  /* Контур блока: яркий у изображения, спокойный у схемы и разлиновки. */
+  --edge-strong: var(--white);
+  --edge: var(--muted);
 
   --paper: var(--black);
   --ink: var(--white);
@@ -55,10 +61,26 @@
   --pad-y: 5cqh;
 }
 
-.slide { font-family: var(--font-text); color: var(--white); }
+.slide {
+  font-family: var(--font-text); color: var(--white);
+  /* Запасные значения для разлиновки: см. .pad, где те же токены
+     заданы в долях слайда. */
+  --rule: 1px;
+  --rule-strong: 3px;
+}
 .pad {
   padding: calc(var(--pad-y) + 6cqh) var(--pad-x);
   justify-content: center; gap: 3cqh;
+
+  /* Разлиновка задана в долях слайда, а не в пикселях: в обзоре плитка
+     мельче кадра в пять-шесть раз, и линия обязана худеть вместе с ней,
+     иначе во столько же раз выглядит жирнее нужного. Тоньше пикселя
+     линия не бывает, поэтому пол в 1px: на плитке вся разлиновка
+     сходится к нему и потому выглядит ровно, без скачков толщины.
+     На показе значения возвращаются к привычным 1px и 3px.
+     cqw здесь считается от .slide — контейнера слайда. */
+  --rule: max(1px, .0625cqw);
+  --rule-strong: max(1px, .1875cqw);
 }
 
 /* ============================================================
@@ -74,12 +96,15 @@
 /* На яркой заливке нейтрали строятся только прозрачностью белого. */
 .surface-accent,
 .comparison-side.is-after,
+.flow-node--accent,
 .data-table tr[data-total] {
   --white: var(--on-accent);
   --muted: var(--on-accent-muted);
   --line: var(--on-accent-line);
   --hairline: var(--on-accent-line);
   --orange-hot: var(--on-accent);
+  /* Красным по красному тонировать нечего — на заливке выделение белое. */
+  --selection: var(--craft-selection-on-accent);
 }
 /* Панель допустима только внутри композиции, не как третий фон страницы. */
 .surface-panel  { background: var(--black-2); color: var(--white); }
@@ -90,6 +115,14 @@
   display: flex;
   flex-direction: column;
   gap: var(--gap, 2.4cqh);
+}
+/* Стандартный поясняющий блок: локальный заголовок и короткая заметка.
+   Комбинируется с columns, frame, графиками и другими примитивами. */
+.content-block {
+  display: grid;
+  align-content: center;
+  gap: var(--gap, 1.4cqh);
+  max-width: var(--content-block-width, 32ch);
 }
 .cluster {
   display: flex;
@@ -102,6 +135,16 @@
   grid-template-columns: var(--column-ratio, repeat(var(--columns, 2), minmax(0, 1fr)));
   gap: var(--gap, 3cqw);
 }
+/* Основной материал и дополнительная информация справа используют
+   одну пропорцию независимо от типа основного содержимого. */
+.content-aside {
+  --content-block-width: none;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: 3cqw;
+}
+/* Для основного блока с подписями у правого края нужен больший разрыв,
+   чтобы подписи не сливались с пояснением в соседней колонке. */
+.content-aside--separated { gap: 6cqw; }
 .place-center { justify-content: center; }
 .place-fill { flex: 1; min-height: 0; }
 .bleed-x {
@@ -117,10 +160,21 @@
 .text-accent { color: var(--orange-hot); }
 .text-muted { color: var(--muted); }
 
+/* Строка списка: тонкая линия сверху, плотность задаёт --row-pad.
+   На этой основе строятся оба списка колоды; различает их только маркер. */
+.plain-list, .bullets { list-style: none; margin: 0; padding: 0; display: grid; }
+.plain-list > li, .bullets > li {
+  padding: var(--row-pad, 2.6cqh) 0;
+  border-top: var(--rule) solid var(--hairline);
+}
+.plain-list > li:first-child, .bullets > li:first-child { border-top: 0; }
+/* Плотность следует фактическому числу пунктов; кегль не меняется. */
+.plain-list:has(> li:nth-child(4)), .bullets:has(> li:nth-child(4)) { --row-pad: 1.7cqh; }
+.plain-list:has(> li:nth-child(6)), .bullets:has(> li:nth-child(6)) { --row-pad: 1cqh; }
+
 /* Ненумерованный список: залитый акцентный круг стоит непосредственно
    перед текстом. Отдельной колонки и вертикального разделителя нет. */
 .plain-list {
-  list-style: none; margin: 0; padding: 0; display: grid;
   --marker-size: .72cqw;
   --marker-gap: 1.2cqw;
 }
@@ -129,10 +183,7 @@
   grid-template-columns: var(--marker-size) 1fr;
   column-gap: var(--marker-gap);
   align-items: center;
-  padding: var(--row-pad, 2.6cqh) 0;
-  border-top: 1px solid var(--hairline);
 }
-.plain-list > li:first-child { border-top: 0; }
 .plain-list > li::before {
   content: "";
   width: var(--marker-size); height: var(--marker-size);
@@ -141,20 +192,21 @@
 }
 
 
-/* диагональ дорожек: только там, где нужен разгон */
+/* Векторная диагональ дорожек: линии выходят за границы viewBox,
+   поэтому узор без разрывов закрывает слайд от края до края. */
 .lanes {
-  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
-  display: flex; gap: 3.2cqw;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
 }
-/* Отдельные плоскости вместо CSS-градиента: Chromium печатает
-   repeating-linear-gradient корректно, но Evince теряет его в PDF. */
-.lanes > i {
-  flex: 0 0 3.2cqw;
-  height: 160%;
-  margin-top: -30%;
-  background: currentColor;
+.lanes path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 48;
   opacity: .09;
-  transform: skewX(-26.565deg);
 }
 
 /* --- служебка: заголовок слайда сверху слева, номер снизу справа.
@@ -173,7 +225,7 @@
 .slide-number {
   right: var(--pad-x); bottom: var(--pad-y);
   font: 700 2.9cqw/1 var(--font-display); letter-spacing: -.03em;
-  font-variant-numeric: tabular-nums; opacity: .92;
+  opacity: .92;
 }
 .slide-number span {
   font: 500 .4em/1 var(--font-text); letter-spacing: .04em;
@@ -192,9 +244,8 @@
 .type-heading { font: 600 2.1cqw/1.25 var(--font-display); letter-spacing: -.02em; margin: 0; }
 .type-lede { font: 400 2.35cqw/1.46 var(--font-text); margin: 0; max-width: 36ch; }
 .type-note { font: 400 1.6cqw/1.5 var(--font-text); margin: 0; color: var(--muted); }
-.type-metric {
-  font: 700 6.6cqw/1 var(--font-display);
-  font-variant-numeric: tabular-nums;
+.type-metric, .comparison-value {
+  font: 700 var(--metric-size, 6.6cqw)/1 var(--font-display);
   letter-spacing: -.04em;
 }
 /* На тёмном вторичный текст серый; на ярком это белый с прозрачностью. */
@@ -202,12 +253,18 @@
 .surface-accent .type-note { color: var(--muted); opacity: 1; }
 .surface-panel .type-note { color: var(--muted); }
 .surface-accent .slide-title, .surface-accent .slide-number { color: var(--on-accent); }
-.kicker {
-  font: 500 1.5cqw/1 var(--font-text); letter-spacing: .04em;
+/* Короткая подпись внутри блока: отметка времени, сторона сравнения,
+   категория графика, пояснение к показателю. Одна роль — один кегль. */
+.timeline-key, .comparison-label, .chart-row > span, .scoreboard .k {
+  color: var(--muted);
+  font: 500 1.5cqw/1.4 var(--font-text);
+  margin: 0;
 }
 
 /* --- 01 обложка --- */
-.s-cover .type-hero { font-size: 8.2cqw; line-height: 1.02; max-width: 13ch; text-wrap: balance; }
+.s-cover .type-hero, .s-title-card .type-hero {
+  font-size: 8.2cqw; line-height: 1.02; max-width: 13ch; text-wrap: balance;
+}
 /* автор стоит в паре к номеру: тот же край, та же линия, тот же кегль */
 .byline {
   position: absolute; left: var(--pad-x); bottom: var(--pad-y);
@@ -218,11 +275,14 @@
 .s-cover .slide-number { display: none; }
 
 /* --- 02 раздел --- */
+.s-section .lanes path {
+  stroke: var(--site-surface-sunken);
+  opacity: 1;
+}
 .s-section .pad { justify-content: center; gap: 1.5cqh; }
 .s-section .jersey {
   position: absolute; right: 3cqw; top: 50%; transform: translateY(-50%);
-  font: 700 30cqw/.78 var(--font-display); letter-spacing: -.04em; color: var(--white); opacity: .07;
-  font-variant-numeric: tabular-nums;
+  font: 700 30cqw/.78 var(--font-display); letter-spacing: -.04em; color: var(--white);
 }
 .s-section .type-hero { position: relative; font-size: 6.4cqw; }
 
@@ -233,33 +293,24 @@
 .s-statement .type-hero { font-size: 6.6cqw; max-width: 15ch; }
 .s-statement u { text-decoration: none; box-shadow: inset 0 -.08em 0 0 var(--white); }
 
-/* --- 05 список --- */
-.bullets { list-style: none; margin: 0; padding: 0; display: grid; }
-.bullets li {
+/* --- 05 список: номер в своей колонке, отделённой вертикальной линией --- */
+.bullets > li {
   position: relative;
   display: grid; grid-template-columns: 7cqw 1fr; gap: 0; align-items: stretch;
-  padding: 2.2cqh 0; border-top: 1px solid var(--hairline);
 }
-.bullets li:first-child { border-top: 0; }
 .bullets li > div { padding-left: 2cqw; }
 .bullets li::after {
   content: "";
   position: absolute; left: 7cqw; inset-block: 0;
-  border-left: 1px solid var(--hairline);
+  border-left: var(--rule) solid var(--hairline);
 }
 .bullets li::before {
   content: attr(data-n);
   text-align: center;
   font: 700 3.1cqw/1 var(--font-display); letter-spacing: -.03em; color: var(--orange-hot);
-  font-variant-numeric: tabular-nums;
 }
 .bullets li h3 { font: 600 2.25cqw/1.25 var(--font-display); letter-spacing: -.02em; margin: 0 0 .7cqh; }
 .bullets li small { font: 400 1.6cqw/1.5 var(--font-text); opacity: .85; }
-/* Плотность списка следует фактическому числу коротких пунктов.
-   Кегль не опускается ниже проектного минимума. */
-.bullets:has(> li:nth-child(4)) li { padding-block: 1.45cqh; }
-.bullets:has(> li:nth-child(6)) li { padding-block: .9cqh; }
-
 /* --- 06 сравнение: справа «стало» появляется следующей страницей --- */
 .comparison-split {
   position: absolute; inset: 0;
@@ -282,12 +333,8 @@
   font: 500 1.5cqw/1.3 var(--font-text);
   color: var(--muted); margin: 0;
 }
-.comparison-value {
-  font: 700 5.8cqw/.95 var(--font-display);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -.04em;
-  margin: 0;
-}
+/* Число в половине слайда — тот же .type-metric, только компактнее. */
+.comparison-value { --metric-size: 5.8cqw; margin: 0; }
 /* В половине слайда строки компактнее. */
 .comparison-points {
   --row-pad: 1.1cqh;
@@ -299,26 +346,26 @@
 .is-after .comparison-label { color: var(--muted); opacity: 1; }
 
 /* --- 07 цитата --- */
-.s-quote .pad { justify-content: center; gap: 3.4cqh; }
+.s-quote .pad { justify-content: center; }
+.s-quote figure { margin: 0; display: grid; gap: 3.4cqh; }
 .s-quote blockquote {
   margin: 0; font: 600 4.6cqw/1.18 var(--font-display); letter-spacing: -.025em; max-width: 22ch;
 }
 .s-quote figcaption { font: 400 1.7cqw/1.46 var(--font-text); opacity: .85; }
 .s-quote figcaption b { display: block; font-weight: 600; opacity: 1; }
 
-/* --- 08 табло --- */
+/* --- 08 табло: те же колонки, что и у шагов, разделённые тонкой линией --- */
 .scoreboard {
-  color: var(--white);
   display: grid; grid-template-columns: repeat(3, 1fr); flex: 1;
-  gap: 1px; border: 1px solid var(--line); background: var(--line);
+  align-content: center;
 }
-.scoreboard > div {
-  padding: 4cqh 2.4cqw;
-  display: grid; align-content: center; gap: 1.4cqh;
-  background: var(--black);
+.scoreboard > div { padding-right: 2.4cqw; display: grid; align-content: start; }
+.scoreboard > div:not(:first-child) {
+  padding-left: 2.4cqw;
+  border-left: var(--rule) solid var(--hairline);
 }
+.scoreboard > div > .frag { display: grid; gap: 1.4cqh; }
 .scoreboard .v { color: var(--orange-hot); }
-.scoreboard .k { font: 400 1.6cqw/1.46 var(--font-text); opacity: .85; }
 
 /* --- 09 код --- */
 /* Синтаксис красит локальный Highlight.js; моноширинный шрифт используется только здесь. */
@@ -366,16 +413,29 @@
 
 /* --- 10 иллюстрация --- */
 .figure { align-items: center; }
+/* В медиа-шаблоне изображение начинается сразу под стандартным
+   заголовком и занимает всю оставшуюся полезную высоту. */
+.s-figure .figure { align-items: stretch; }
+.s-figure .frame { aspect-ratio: auto; }
+
 .frame {
-  aspect-ratio: 16/10; border: 1px solid var(--white);
-  display: grid; place-items: center; position: relative;
-  font: 500 1.5cqw/1 var(--font-text); letter-spacing: .02em; opacity: .85;
+  aspect-ratio: 16/10;
+  border: var(--rule) solid var(--edge-strong);
+  position: relative;
+  display: grid;
 }
-.frame::after {
-  content: ""; position: absolute; inset: 1.4cqh 1.2cqw;
-  border: 1px dashed var(--hairline);
+/* Пока изображения нет — видно, какое место оно займёт.
+   Один и тот же блок стоит внутри .frame, .photo и .shot. */
+.placeholder {
+  position: absolute;
+  inset: var(--placeholder-inset, 1.4cqh 1.2cqw);
+  border: var(--rule) dashed var(--line);
+  display: grid;
+  place-items: center;
+  font: 400 1.5cqw/1 var(--font-text);
+  color: var(--muted);
 }
-.figure .cap { --gap: 1.4cqh; }
+.figure .content-block { --gap: 1.4cqh; min-height: 0; }
 
 /* --- 11 протокол результатов --- */
 .data-table { border-collapse: collapse; width: 100%; font: 500 2cqw/1.28 var(--font-text); }
@@ -383,42 +443,228 @@
 .data-table th {
   font: inherit;
   color: var(--muted);
-  border-bottom: 3px solid var(--white);
+  border-bottom: var(--rule-strong) solid var(--white);
 }
-.data-table tbody tr { border-bottom: 1px solid var(--hairline); }
+.data-table tbody tr { border-bottom: var(--rule) solid var(--hairline); }
 .data-table .num {
   font-family: var(--font-text);
-  font-variant-numeric: tabular-nums;
   text-align: right;
 }
 .data-table tr[data-total] { background: var(--orange); color: var(--on-accent); }
 
 /* --- 12 дистанция --- */
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); flex: 1; align-content: center; }
-.steps > div { padding: 0 1.8cqw; display: grid; gap: 1.1cqh; align-content: start; border-top: 3px solid var(--hairline); padding-top: 2cqh; }
+.steps > div { padding: 0 1.8cqw; display: grid; gap: 1.1cqh; align-content: start; border-top: var(--rule-strong) solid var(--hairline); padding-top: 2cqh; }
 /* Последний раскрытый элемент и есть текущий шаг. */
 .steps > .frag[data-shown]:not(:has(~ .frag[data-shown])) {
   border-top-color: var(--orange-hot);
 }
 .steps .n {
-  font: 700 2.5cqw/1 var(--font-display); letter-spacing: -.03em; color: var(--orange-hot); font-variant-numeric: tabular-nums;
+  font: 700 2.5cqw/1 var(--font-display); letter-spacing: -.03em; color: var(--orange-hot);
 }
-.steps h3 { font: 600 1.8cqw/1.25 var(--font-display); letter-spacing: -.02em; margin: 0; }
-.steps p { font: 400 1.55cqw/1.5 var(--font-text); opacity: .8; margin: 0; }
+/* Заголовок и пояснение колонки одинаковы у шагов и у событий таймлайна. */
+.steps h3, .timeline h3 { font: 600 1.8cqw/1.25 var(--font-display); letter-spacing: -.02em; margin: 0; }
+.steps p, .timeline p { font: 400 1.55cqw/1.5 var(--font-text); color: var(--muted); margin: 0; }
 
-/* --- 13 заголовочная перебивка: тёмная родственница обложки --- */
-.s-title-card .lanes > i {
-  background: var(--site-surface-sunken);
-  opacity: 1;
+/* --- график: подпись и значение стоят над дорожкой, вывод — по центру графика --- */
+.chart-layout {
+  min-height: 0;
+  display: grid;
+  align-content: center;
+  align-items: center;
 }
-.s-title-card .pad { justify-content: center; }
-.s-title-card .type-hero {
+.bar-chart { display: grid; gap: 3.4cqh; }
+.chart-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  row-gap: 1.2cqh;
+  column-gap: 1.2cqw;
+}
+.chart-row > span { color: var(--muted); font: 500 1.6cqw/1.2 var(--font-text); }
+.chart-row > strong {
+  color: var(--white);
+  font: 650 1.9cqw/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.chart-track { grid-column: 1 / -1; height: 1.6cqh; background: var(--black-2); overflow: hidden; }
+.chart-track i { display: block; width: var(--value); height: 100%; background: var(--white); }
+.chart-row.is-focus > span, .chart-row.is-focus > strong { color: var(--orange-hot); }
+.chart-row.is-focus .chart-track i { background: var(--orange-hot); }
+
+/* --- таймлайн: непрерывная ось времени, событие отмечено точкой на ней --- */
+.timeline {
+  --timeline-gap: 2cqw;
+  min-height: 0;
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 5), minmax(0, 1fr));
+  align-content: center;
+}
+.timeline li { min-width: 0; padding-right: var(--timeline-gap); }
+.timeline li > i { position: relative; display: block; height: 1.25cqw; margin: 2.4cqh 0 2.6cqh; }
+/* Отрезки соседних событий смыкаются в одну линию. */
+.timeline li > i::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: calc(-1 * var(--timeline-gap));
+  top: 50%;
+  border-top: var(--rule) solid var(--hairline);
+}
+/* Ось доходит только до последнего раскрытого события. */
+.timeline li:last-child > i::before,
+.timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) > i::before { display: none; }
+/* Акцент держит событие, о котором идёт речь: последнее раскрытое
+   или явно отмеченное на нераскрывающемся таймлайне. */
+.timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) > i::after,
+.timeline .is-current > i::after { background: var(--orange-hot); }
+.timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) .timeline-key,
+.timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) h3,
+.timeline .is-current .timeline-key,
+.timeline .is-current h3 { color: var(--orange-hot); }
+.timeline li > i::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.25cqw;
+  height: 1.25cqw;
+  border-radius: 50%;
+  background: var(--muted);
+  outline: .3cqw solid var(--black);
+}
+.timeline-key { display: block; }
+.timeline p { margin-top: .8cqh; max-width: 18ch; }
+
+/* --- схема процесса: равные прямоугольники, стрелка на весь промежуток ---
+   Связи рисуются полосками фона, а не рамками: одна деталь — один отрезок,
+   поэтому горизонтальную, вертикальную и обратную связь описывает один приём. --- */
+.flow {
+  --flow-gap: 5cqw;
+  --flow-drop: 9cqh;
+  --flow-return: 8cqh;
+  min-height: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: auto auto auto;
+  column-gap: var(--flow-gap);
+  align-content: center;
+}
+.flow > .flow-node, .flow > .flow-step { grid-row: 2; }
+.flow-step { position: relative; min-width: 0; display: grid; }
+.flow-node {
+  min-width: 0;
+  display: grid;
+  place-content: center;
+  padding: 4cqh 2cqw;
+  text-align: center;
+  border: var(--rule) solid var(--edge);
+}
+.flow-node > strong { font: 600 2.1cqw/1.2 var(--font-display); letter-spacing: -.02em; }
+.flow-node--accent { background: var(--orange); border-color: var(--orange); }
+
+/* Связь занимает весь промежуток, наконечник упирается в следующий узел. */
+.flow-arrow {
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  width: var(--flow-gap);
+  height: var(--rule);
+  transform: translateY(-50%);
+  background: var(--muted);
+}
+.flow-arrow::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: .9cqw;
+  height: .9cqw;
+  transform: translateY(-50%);
+  background: var(--muted);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+/* Ветка вниз: та же связь, повёрнутая на четверть. */
+.flow > .flow-step--down { grid-row: 3; grid-column: 2; padding-top: var(--flow-drop); }
+.flow-arrow--down {
+  top: 0;
+  right: auto;
+  left: 50%;
+  width: var(--rule);
+  height: var(--flow-drop);
+  transform: translateX(-50%);
+}
+.flow-arrow--down::after {
+  top: auto;
+  right: auto;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+/* Обратная связь: прямоугольный обход поверху от последнего узла к первому. */
+.flow-return {
+  grid-row: 1;
+  grid-column: 1 / -1;
   position: relative;
-  font-size: 8.2cqw;
-  line-height: 1.02;
-  max-width: 13ch;
-  text-wrap: balance;
+  height: var(--flow-return);
+  margin-inline: calc((100% - 2 * var(--flow-gap)) / 6);
 }
+.flow-return::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--rule);
+  background: var(--muted);
+}
+.flow-return::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: var(--rule);
+  background: var(--muted);
+}
+.flow-return > i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--rule);
+  background: var(--muted);
+}
+.flow-return > i::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: .9cqw;
+  height: .9cqw;
+  transform: translateX(-50%);
+  background: var(--muted);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* --- визуальное сравнение: то же сравнение, только в теле стоит изображение --- */
+/* Изображение занимает половину целиком, поэтому нужен запас
+   под названием стороны и над номером страницы. */
+.s-visual-compare .comparison-side {
+  padding: calc(var(--pad-y) + 10cqh) var(--pad-x) calc(var(--pad-y) + 8cqh);
+}
+.s-visual-compare .comparison-body { flex: 1; min-height: 0; align-content: stretch; }
+.s-visual-compare .frame { width: 100%; height: 100%; aspect-ratio: auto; }
+
+/* --- заголовочная перебивка: обложка без мотива и служебки --- */
+.s-title-card .pad { justify-content: center; }
 /* --- обо мне: слева кто, справа фото --- */
 .about {
   display: grid; grid-template-columns: 1fr auto; gap: 5cqw; align-items: center;
@@ -427,74 +673,37 @@
 .about p { font: 400 2.1cqw/1.45 var(--font-text); margin: 0 0 1cqh; max-width: 34ch; }
 .about .handle { font: 500 2.1cqw/1.45 var(--font-text); color: var(--orange-hot); margin-top: 2cqh; }
 .photo {
+  position: relative;
   margin: 0; width: 26cqw; aspect-ratio: 3/4;
   background: var(--black-2); overflow: hidden;
 }
-.photo .placeholder {
-  width: 100%; height: 100%;
-  border: 1px dashed var(--line);
-  display: grid; place-items: center;
-  font: 400 1.5cqw/1 var(--font-text); color: var(--muted);
-}
+.photo .placeholder { --placeholder-inset: 0; }
 
 /* --- итоги: выводы одной строкой каждый --- */
-/* Разметка приходит из .plain-list; рецепт задаёт только кегль. */
-.takeaways {
-  --row-pad: 2.6cqh;
-  font: 500 2.9cqw/1.25 var(--font-head); letter-spacing: -.025em;
-}
-.takeaways:has(> li:nth-child(4)) { --row-pad: 1.7cqh; }
-.takeaways:has(> li:nth-child(6)) { --row-pad: 1cqh; }
+/* Разметка и плотность приходят из .plain-list; рецепт задаёт только кегль. */
+.takeaways { font: 500 2.9cqw/1.25 var(--font-head); letter-spacing: -.025em; }
 
-/* --- ресурс: обычный заголовок, медиа и связанный QR --- */
-.resource-layout {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 64cqw) 12cqw;
-  align-items: center;
-  justify-content: start;
-  gap: 2cqw;
-}
-.resource-media {
-  margin: 0;
-  width: 100%;
-  border: 1px solid var(--hairline);
-  overflow: hidden;
-}
-.resource-media:has(.placeholder) { aspect-ratio: 4 / 3; }
-.resource-media > img { display: block; width: 100%; height: auto; }
-.resource-media .placeholder {
-  width: 100%; height: 100%;
-  display: grid; place-items: center;
-  font: 400 1.5cqw/1 var(--font-text); color: var(--muted);
-}
-.resource-link { position: relative; width: 12cqw; height: 12cqw; }
-.resource-link a,
-.links a { color: inherit; text-decoration: none; }
-.resource-link a {
-  position: absolute;
-  top: calc(100% + 1cqh);
-  left: 0;
-  width: max-content;
-  white-space: nowrap;
-}
-.where {
-  font: 500 1.8cqw/1.25 var(--font-text);
-  color: var(--orange-hot);
-  text-align: left;
-}
-.link-qr {
+/* --- QR: один блок для ресурса внутри доклада и для финала ---
+   Квадрат с акцентным контуром и адрес рядом — один элемент. --- */
+.qr {
   width: 12cqw;
   aspect-ratio: 1;
   border: .24cqw solid var(--orange-hot);
   display: grid;
   place-items: center;
   overflow: hidden;
-  font: 500 1.4cqw/1 var(--font-text);
+  font: 500 1.4cqw/1.4 var(--font-text);
   color: var(--muted);
 }
-.link-qr img { width: 100%; height: 100%; object-fit: contain; }
+.qr img { width: 100%; height: 100%; object-fit: contain; }
+.qr-link { display: grid; gap: 1cqh; justify-items: start; }
+.qr-link a { color: inherit; text-decoration: none; }
+.where {
+  font: 500 1.8cqw/1.25 var(--font-text);
+  color: var(--orange-hot);
+  margin: 0;
+  white-space: nowrap;
+}
 
 /* --- скриншот во весь слайд: поля не нужны, картинка и есть содержание --- */
 .s-shot .pad { padding: 0; }
@@ -503,13 +712,7 @@
   display: grid; place-items: center;
   background: var(--black-2);
 }
-/* пока картинки нет — видно, какое место она займёт */
-.shot .placeholder {
-  position: absolute; inset: 3cqh 2cqw;
-  border: 1px dashed var(--line);
-  display: grid; place-items: center;
-  font: 400 1.5cqw/1 var(--font-text); color: var(--muted);
-}
+.shot .placeholder { --placeholder-inset: 3cqh 2cqw; }
 /* Подложка уходит за край только по горизонтали. Она вынесена в
    псевдоэлемент, поэтому padding не сдвигает базовую линию текста. */
 .s-shot .slide-title, .s-shot .slide-number, .shot figcaption {
@@ -550,26 +753,16 @@
   right: var(--pad-x);
   top: 50%;
   transform: translateY(-50%);
-  display: grid;
-  grid-template-columns: minmax(0, auto) 12cqw;
+  grid-auto-flow: column;
   align-items: center;
   gap: 2cqw;
 }
-.s-end .where {
-  grid-column: 1;
-  grid-row: 1;
-  font: 500 1.5cqw/1.3 var(--font-text);
-  color: var(--orange-hot);
-  text-align: right;
-  margin: 0;
+.s-end .qr { order: 2; }
+.s-end .where { font-size: 1.5cqw; text-align: right; }
+
+/* Цифры выравниваются по табличной ширине везде, где их сравнивают. */
+.slide-number, .type-metric, .comparison-value, .bullets > li::before,
+.steps .n, .timeline-key, .chart-row > strong, .data-table .num,
+.s-section .jersey {
+  font-variant-numeric: tabular-nums;
 }
-/* QR и адрес остаются рядом и воспринимаются как один элемент. */
-.s-end .qr {
-  grid-column: 2;
-  grid-row: 1;
-  width: 12cqw; aspect-ratio: 1;
-  border: .24cqw solid var(--orange-hot);
-  display: grid; place-items: center; overflow: hidden;
-  font: 400 1.4cqw/1.4 var(--font-text); color: var(--muted);
-}
-.s-end .qr img { width: 100%; height: 100%; object-fit: contain; }

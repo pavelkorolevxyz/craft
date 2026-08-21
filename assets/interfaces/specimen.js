@@ -4,10 +4,28 @@ const sections = links
   .filter(Boolean);
 
 if (links.length && sections.length) {
+  let currentId;
   const setCurrent = (id) => {
+    if (id === currentId) return;
+    currentId = id;
+
+    let currentLink;
     for (const link of links) {
-      if (link.hash === `#${id}`) link.setAttribute('aria-current', 'true');
-      else link.removeAttribute('aria-current');
+      if (link.hash === `#${id}`) {
+        link.setAttribute('aria-current', 'true');
+        currentLink = link;
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    }
+
+    if (currentLink && matchMedia('(max-width: 900px)').matches) {
+      const container = currentLink.parentElement;
+      const left = currentLink.offsetLeft - (container.clientWidth - currentLink.offsetWidth) / 2;
+      container.scrollTo({
+        left,
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+      });
     }
   };
 
@@ -28,7 +46,19 @@ if (links.length && sections.length) {
   };
 
   let scheduled = false;
+  let navigationTarget = null;
+  let navigationTimer;
+
   const scheduleUpdate = () => {
+    if (navigationTarget) {
+      clearTimeout(navigationTimer);
+      navigationTimer = setTimeout(() => {
+        navigationTarget = null;
+        updateCurrent();
+      }, 120);
+      return;
+    }
+
     if (scheduled) return;
     scheduled = true;
     requestAnimationFrame(() => {
@@ -37,7 +67,11 @@ if (links.length && sections.length) {
     });
   };
 
-  links.forEach((link) => link.addEventListener('click', () => setCurrent(link.hash.slice(1))));
+  links.forEach((link) => link.addEventListener('click', () => {
+    navigationTarget = link.hash.slice(1);
+    clearTimeout(navigationTimer);
+    setCurrent(navigationTarget);
+  }));
   window.addEventListener('scroll', scheduleUpdate, { passive: true });
   window.addEventListener('resize', scheduleUpdate);
   updateCurrent();

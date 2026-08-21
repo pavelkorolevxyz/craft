@@ -74,7 +74,10 @@
   </div>
   <div class="help-nav" aria-label="Навигация по слайдам">
     <button type="button" data-deck-go="-1" aria-label="Предыдущий слайд"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5 7.5 12l7 7"/></svg></button>
-    <span class="help-page"></span>
+    <label class="help-page">
+      <input class="help-page-input" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="Перейти к странице">
+      <span class="help-page-total" aria-hidden="true"></span>
+    </label>
     <button type="button" data-deck-go="1" aria-label="Следующий слайд"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg></button>
   </div>
   <button class="help-close" type="button" data-deck-action="hide-help" aria-label="Скрыть управление"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg><span class="shortcut-key" aria-hidden="true">H</span></button>

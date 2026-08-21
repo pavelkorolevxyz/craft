@@ -75,7 +75,12 @@ def test_slides(key: str, output: Path, work: Path) -> None:
         output,
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}));"
         "const afterArrow=document.querySelector('.slide[data-active]')?.dataset.index;"
-        "document.dispatchEvent(new KeyboardEvent('keydown',{key:'End'}));"
+        "const pageInput=document.querySelector('.help-page-input');"
+        "pageInput.value='0';"
+        "pageInput.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));"
+        "const afterClamp=document.querySelector('.slide[data-active]')?.dataset.index;"
+        "document.dispatchEvent(new KeyboardEvent('keydown',{key:String(document.querySelectorAll('.slide').length),bubbles:true}));"
+        "pageInput.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));"
         "const deck=document.querySelector('.deck');"
         "const centerError=()=>{const a=document.querySelector('.slide[data-active]').getBoundingClientRect();const d=deck.getBoundingClientRect();return Math.round(Math.max(Math.abs(a.left+a.width/2-(d.left+deck.clientWidth/2)),Math.abs(a.top+a.height/2-(d.top+deck.clientHeight/2))))};"
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
@@ -84,18 +89,19 @@ def test_slides(key: str, output: Path, work: Path) -> None:
         "const stripHorizontalError=centerError();"
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
         "const stripReturnError=centerError();"
-        "document.title=`probe:${document.querySelectorAll('.slide').length}:${document.querySelectorAll('.slide[data-active]').length}:`+"
-        "`${afterArrow}:${document.querySelector('.slide[data-active]')?.dataset.index}:${stripVerticalError}:${stripHorizontalError}:${stripReturnError}:${deck.dataset.stripDirection}`",
+        "document.title=`probe:${document.querySelectorAll('.slide').length}:${document.querySelectorAll('.slide[data-active]').length}:${afterArrow}:${afterClamp}:`+"
+        "`${document.querySelector('.slide[data-active]')?.dataset.index}:${document.querySelector('.help-panel').hidden}:${stripVerticalError}:${stripHorizontalError}:${stripReturnError}:${deck.dataset.stripDirection}`",
         1280,
         720,
     )
-    match = re.search(r"<title>probe:(\d+):(\d+):(\d+):(\d+):(\d+):(\d+):(\d+):(\w+)</title>", dumped)
+    match = re.search(r"<title>probe:(\d+):(\d+):(\d+):(\d+):(\d+):(true|false):(\d+):(\d+):(\d+):(\w+)</title>", dumped)
     assert match, f"{key}: проверка механики колоды не выполнена"
-    pages, active, after_arrow, current, vertical_error, horizontal_error = map(int, match.groups()[:6])
-    return_error = int(match.group(7))
-    strip_direction = match.group(8)
-    assert pages >= 6 and active == 1 and after_arrow == 2 and current == pages, f"{key}: недопустимое состояние колоды {match.groups()}"
-    assert strip_direction == "vertical" and max(vertical_error, horizontal_error, return_error) <= 1, f"{key}: активный слайд ленты не по центру {match.groups()}"
+    pages, active, after_arrow, after_clamp, current = map(int, match.groups()[:5])
+    panel_hidden = match.group(6) == "true"
+    strip_vertical_error, strip_horizontal_error, strip_return_error = map(int, match.groups()[6:9])
+    strip_direction = match.group(10)
+    assert pages >= 6 and active == 1 and after_arrow == 2 and after_clamp == 1 and current == pages and panel_hidden, f"{key}: недопустимое состояние колоды {match.groups()}"
+    assert strip_direction == "vertical" and max(strip_vertical_error, strip_horizontal_error, strip_return_error) <= 1, f"{key}: активный слайд ленты не по центру {match.groups()}"
 
     pdf = work / f"{key}.pdf"
     run(*chromium_args(1280, 720), f"--print-to-pdf={pdf}", output.joinpath("index.html").as_uri())
@@ -105,6 +111,16 @@ def test_slides(key: str, output: Path, work: Path) -> None:
         info = run(pdfinfo, pdf).stdout
         count = re.search(r"^Pages:\s+(\d+)", info, re.M)
         assert count and int(count.group(1)) == pages, f"{key}: количество страниц PDF отличается от механики колоды"
+
+    for view in ("grid", "strip"):
+        overview_pdf = work / f"{key}-{view}.pdf"
+        source = output.joinpath("index.html").as_uri() + f"?view={view}"
+        run(*chromium_args(1280, 720), f"--print-to-pdf={overview_pdf}", source)
+        assert overview_pdf.is_file() and overview_pdf.stat().st_size > 30_000, f"{key}: печать из режима {view} не выполнена"
+        if pdfinfo:
+            info = run(pdfinfo, overview_pdf).stdout
+            count = re.search(r"^Pages:\s+(\d+)", info, re.M)
+            assert count and int(count.group(1)) == pages, f"{key}: режим {view} изменил количество страниц PDF"
 
 
 def main() -> None:

@@ -111,6 +111,7 @@ def check_tokens() -> None:
 
 def check_borders() -> None:
     adjacent = ({"top", "right"}, {"right", "bottom"}, {"bottom", "left"}, {"left", "top"})
+    opposite = ({"top", "bottom"}, {"left", "right"})
     for path in CSS_FILES:
         text = path.read_text(encoding="utf-8")
         for match in re.finditer(r"([^{}]+)\{([^{}]*)\}", text):
@@ -118,6 +119,7 @@ def check_borders() -> None:
             selector = match.group(1).strip()
             assert len(directions) < 3, f"трёхсторонняя рамка в {path.relative_to(ROOT)}: {selector}"
             assert not any(pair <= directions for pair in adjacent), f"угловая рамка в {path.relative_to(ROOT)}: {selector}"
+            assert not any(pair <= directions for pair in opposite), f"две направленные границы могут слипнуться в {path.relative_to(ROOT)}: {selector}"
 
 
 def check_accessibility_contract() -> None:

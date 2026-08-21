@@ -8,6 +8,8 @@
    ← → Space PgUp PgDn  переход
    Кликер назад/вперёд  переход
    Home / End           первый / последний
+   ← ↑ → ↓ в обзоре     переход по плиткам
+   Enter в обзоре       открыть выделенный слайд
    G                    обзор сеткой
    L                    обзор лентой
    F                    полный экран
@@ -41,6 +43,7 @@
       page.dataset.source = sourceIndex + 1;
       page.dataset.step = step;
       page.dataset.steps = fragmentCount;
+
       pages.append(page);
     }
 
@@ -51,7 +54,8 @@
   const helpPanel = document.querySelector('.help-panel');
   const helpReveal = document.querySelector('.help-reveal');
   const helpRevealZone = document.querySelector('.help-reveal-zone');
-  const helpPage = helpPanel?.querySelector('.help-page');
+  const helpPageInput = helpPanel?.querySelector('.help-page-input');
+  const helpPageTotal = helpPanel?.querySelector('.help-page-total');
   const previousButton = helpPanel?.querySelector('[data-deck-go="-1"]');
   const nextButton = helpPanel?.querySelector('[data-deck-go="1"]');
   const stripButton = helpPanel?.querySelector('[data-deck-action="strip"]');
@@ -71,13 +75,15 @@
     return Number.isFinite(page) ? clamp(page - 1) : 0;
   };
   let current = pageFromHash();
+  let hideHelpAfterPageInput = false;
 
   function render(scroll = false) {
     slides.forEach((slide, index) => {
       slide.toggleAttribute('data-active', index === current);
     });
 
-    if (helpPage) helpPage.textContent = `${pad(current + 1)} / ${total}`;
+    if (helpPageInput) helpPageInput.value = pad(current + 1);
+    if (helpPageTotal) helpPageTotal.textContent = `/ ${total}`;
     if (previousButton) previousButton.disabled = current === 0;
     if (nextButton) nextButton.disabled = current === total - 1;
     history.replaceState(null, '', `#${current + 1}`);
@@ -85,6 +91,7 @@
     if (scroll && deck.dataset.mode === 'strip') {
       centerStripOnCurrent();
     } else if (scroll && deck.dataset.mode === 'grid') {
+      // Сетка листается по рядам, там доводить до края достаточно.
       slides[current].scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
 
@@ -98,20 +105,109 @@
     render(true);
   }
 
+  if (helpPageInput) {
+    const resetPageInput = () => { helpPageInput.value = pad(current + 1); };
+    const commitPageInput = () => {
+      const page = Number.parseInt(helpPageInput.value, 10);
+      if (!Number.isInteger(page)) {
+        resetPageInput();
+        return;
+      }
+      current = clamp(page - 1);
+      render(true);
+      helpPageInput.blur();
+    };
+
+    helpPageInput.maxLength = String(total).length;
+    helpPageInput.addEventListener('focus', () => helpPageInput.select());
+    helpPageInput.addEventListener('input', () => {
+      helpPageInput.value = helpPageInput.value.replace(/\D/g, '');
+    });
+    helpPageInput.addEventListener('keydown', (event) => {
+      event.stopPropagation();
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        commitPageInput();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        resetPageInput();
+        helpPageInput.blur();
+      }
+    });
+    helpPageInput.addEventListener('blur', () => {
+      resetPageInput();
+      if (hideHelpAfterPageInput) {
+        hideHelpAfterPageInput = false;
+        toggleHelp(false);
+      }
+    });
+  }
+
   function toggleOverview(mode, force) {
     const on = force ?? deck.dataset.mode !== mode;
+    // Лента без направления не разложится: раскладка целиком построена
+    // на data-strip-direction. Открытая по ?view=strip или по кнопке,
+    // она начинает с вертикали.
+    if (on && mode === 'strip') deck.dataset.stripDirection ||= 'vertical';
     if (on) deck.dataset.mode = mode;
     else delete deck.dataset.mode;
     document.body.style.overflow = on ? 'auto' : 'hidden';
     if (on && mode === 'strip') {
       centerStripOnCurrent();
     } else if (on) {
-      slides[current].scrollIntoView({ block: 'center', inline: 'center' });
+      // Плитки сетки получают размер только после раскладки нового режима.
+      requestAnimationFrame(() => {
+        slides[current].scrollIntoView({ block: 'center', inline: 'center' });
+      });
     }
     syncStripButton();
   }
 
   const toggleGrid = (force) => toggleOverview('grid', force);
+
+  // Сколько плиток помещается в ряд: сетка собрана на auto-fill, поэтому
+  // число колонок известно только после раскладки. Первый ряд — это все
+  // плитки с той же вертикальной позицией, что и у первой.
+  function overviewColumns() {
+    if (deck.dataset.mode !== 'grid') return 1;
+    const top = slides[0].offsetTop;
+    let columns = 0;
+    while (columns < total && slides[columns].offsetTop === top) columns += 1;
+    return Math.max(1, columns);
+  }
+
+  // В обзоре стрелки ходят по плиткам, а не по порядку показа: вбок —
+  // на соседнюю, вверх и вниз — на ряд. Выход за край ряда никуда не
+  // ведёт, иначе курсор молча переезжает в чужую колонку.
+  function overviewKey(event) {
+    const sideways = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+    if (sideways !== undefined) {
+      event.preventDefault();
+      go(sideways);
+      return true;
+    }
+
+    const columns = overviewColumns();
+    const rowwise = {
+      ArrowDown: columns, PageDown: columns,
+      ArrowUp: -columns, PageUp: -columns,
+    }[event.key];
+    if (rowwise !== undefined) {
+      event.preventDefault();
+      const next = current + rowwise;
+      if (next >= 0 && next < total) go(rowwise);
+      return true;
+    }
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      toggleOverview(deck.dataset.mode, false);
+      render();
+      return true;
+    }
+
+    return false;
+  }
 
   function syncStripButton() {
     if (!stripButton) return;
@@ -126,9 +222,9 @@
   }
 
   function centerStripOnCurrent() {
-    // Старая ось после смены направления больше не имеет смысла.
-    // Сначала сбрасываем её, затем измеряем новую раскладку и ставим
-    // активный слайд точно в центр области просмотра.
+    // Сбрасываем старую ось до измерения: после смены направления её
+    // scroll-offset больше не имеет смысла. Чтение rect синхронно
+    // применяет новую раскладку, а второй scrollTo попадает точно в центр.
     deck.scrollTo({ left: 0, top: 0 });
     const slideRect = slides[current].getBoundingClientRect();
     const deckRect = deck.getBoundingClientRect();
@@ -179,6 +275,23 @@
 
   document.addEventListener('keydown', (event) => {
     if (event.metaKey || event.ctrlKey) return;
+    // Обзор листается с клавиш — гасим наведение до первого движения мыши.
+    deck.dataset.input = 'keyboard';
+
+    const target = event.target;
+    const isEditing = target instanceof HTMLInputElement
+      || target instanceof HTMLTextAreaElement
+      || target instanceof HTMLSelectElement
+      || target?.isContentEditable;
+    if (/^\d$/.test(event.key) && helpPageInput && !isEditing) {
+      event.preventDefault();
+      hideHelpAfterPageInput = Boolean(helpPanel?.hidden);
+      toggleHelp(true);
+      helpPageInput.focus();
+      helpPageInput.value = event.key;
+      helpPageInput.setSelectionRange(helpPageInput.value.length, helpPageInput.value.length);
+      return;
+    }
 
     // Некоторые кликеры представляются браузеру как Alt + ←/→,
     // другие — как отдельные кнопки BrowserBack/BrowserForward.
@@ -190,6 +303,9 @@
       }
       return;
     }
+
+    const inOverview = deck.dataset.mode === 'grid' || deck.dataset.mode === 'strip';
+    if (inOverview && overviewKey(event)) return;
 
     switch (event.key) {
       case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Enter':
@@ -226,6 +342,7 @@
 
   document.addEventListener('pointermove', (event) => {
     if (event.pointerType !== 'mouse') return;
+    if (deck.dataset.input) delete deck.dataset.input;
     lastMousePosition = { x: event.clientX, y: event.clientY };
     updateHelpReveal(event.clientX, event.clientY);
   });

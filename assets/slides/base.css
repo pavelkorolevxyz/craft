@@ -20,6 +20,11 @@ body {
   overflow: hidden;
 }
 
+/* var() внутри ::selection читается с элемента, которому принадлежит
+   выделение, поэтому акцентным плоскостям достаточно переопределить
+   --selection у себя — см. тему. */
+::selection { background: var(--selection); }
+
 /* ---------- сцена ---------- */
 
 .deck {
@@ -56,7 +61,11 @@ body {
   flex-direction: column;
 }
 
-/* ---------- обзор сеткой (G) и лентой (L) ---------- */
+/* ---------- обзор сеткой (G) и лентой (L) ----------
+   Плитка пересобирает слайд в своём размере, а не уменьшает картинку:
+   так текст остаётся чётким. Размеры внутри слайда заданы в cqw/cqh и
+   потому масштабируются сами; отдельного внимания требует только
+   разлиновка — см. --rule в теме. */
 
 .deck[data-mode="grid"] {
   display: block;
@@ -74,10 +83,11 @@ body {
 }
 
 .deck[data-mode="strip"] {
-  --strip-slide-width: min(
+  --strip-slide-width: round(down, min(
     calc((100dvh - 7.5vw) * 8 / 9),
     calc((100dvw - 7.5vw) / 2)
-  );
+  ), 16px);
+  --strip-gap: round(down, 2.5vw, 1px);
   display: block;
   height: 100dvh;
   overflow: auto;
@@ -87,7 +97,8 @@ body {
 .deck[data-mode="strip"] .slides {
   display: flex;
   align-items: center;
-  gap: 2.5vw;
+  /* Целый зазор — половина условия для целого шага ленты, см. .slide ниже. */
+  gap: var(--strip-gap);
 }
 
 .deck[data-mode="strip"][data-strip-direction="vertical"] .slides {
@@ -101,10 +112,14 @@ body {
 .deck[data-mode="strip"][data-strip-direction="vertical"] .slides::before,
 .deck[data-mode="strip"][data-strip-direction="vertical"] .slides::after {
   content: "";
-  flex: 0 0 max(0px, calc(50dvh - 5vw - var(--strip-slide-width) * 9 / 32));
+  flex: 0 0 max(0px, calc(50dvh - 2.5vw - var(--strip-slide-width) * 9 / 32 - var(--strip-gap)));
 }
 
 .deck[data-mode="strip"] .slide {
+  /* Ширина кратна 16, поэтому высота при 16:9 выходит целым числом
+     пикселей. Вместе с целым зазором это даёт целый шаг прокрутки:
+     иначе плитка на каждом слайде садится на долю пикселя, текст
+     пересэмплируется заново, и переключение стрелками рябит. */
   width: var(--strip-slide-width);
 }
 
@@ -121,7 +136,7 @@ body {
 .deck[data-mode="strip"][data-strip-direction="horizontal"] .slides::before,
 .deck[data-mode="strip"][data-strip-direction="horizontal"] .slides::after {
   content: "";
-  flex: 0 0 max(0px, calc(50dvw - 5vw - var(--strip-slide-width) / 2));
+  flex: 0 0 max(0px, calc(50dvw - 2.5vw - var(--strip-slide-width) / 2 - var(--strip-gap)));
 }
 
 .deck[data-mode="strip"][data-strip-direction="horizontal"] .slide {
@@ -136,8 +151,12 @@ body {
   outline-offset: 3px;
 }
 .deck[data-mode="grid"] .slide { width: 100%; }
-.deck[data-mode="grid"] .slide:hover,
-.deck[data-mode="strip"] .slide:hover {
+/* Наведение отключено, пока идёт навигация с клавиатуры: обзор
+   прокручивается под неподвижным курсором, и наведение иначе вспыхивает
+   на попавших под него плитках — со стороны похоже, что выделение
+   перескакивает на чужой слайд и только потом встаёт на нужный. */
+.deck:not([data-input="keyboard"])[data-mode="grid"] .slide:hover,
+.deck:not([data-input="keyboard"])[data-mode="strip"] .slide:hover {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
@@ -146,10 +165,13 @@ body {
   outline: 3px solid var(--accent);
   outline-offset: 4px;
 }
-.deck[data-mode="grid"] .slide[data-active]:hover,
-.deck[data-mode="strip"] .slide[data-active]:hover {
-  outline-width: 2px;
-  outline-offset: 3px;
+/* Наведение всегда добавляет вес, а не убавляет: иначе на текущем
+   слайде — самом толстом — оно читалось бы как ослабление или не
+   читалось вовсе. */
+.deck:not([data-input="keyboard"])[data-mode="grid"] .slide[data-active]:hover,
+.deck:not([data-input="keyboard"])[data-mode="strip"] .slide[data-active]:hover {
+  outline-width: 5px;
+  outline-offset: 4px;
 }
 
 /* ---------- справка по управлению ---------- */
@@ -211,14 +233,29 @@ body {
 }
 .help-page {
   width: 5.5rem; height: var(--control-size);
-  display: grid; place-items: center;
-  padding: 0;
-  text-align: center;
+  display: flex; align-items: center; justify-content: center; gap: .3rem;
+  padding: 0 .45rem;
+  color: var(--ink);
   background: var(--paper);
   border: 1px solid var(--hairline);
   font: 700 .9rem/1 var(--font-display);
   font-variant-numeric: tabular-nums;
+  cursor: text;
 }
+.help-page:focus-within { border-color: var(--accent); }
+.help-page-input {
+  width: 2ch;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  text-align: right;
+  font-variant-numeric: inherit;
+}
+.help-page-total { color: var(--muted); }
 .help-close { justify-self: end; }
 .shortcut-key {
   position: absolute;
@@ -300,7 +337,10 @@ body {
 
 /* ---------- печать в PDF ---------- */
 
-@page { size: 297mm 167mm; margin: 0; }
+/* Точный формат 16:9. Пара 297 × 167 мм чуть ниже нужной высоты:
+   слайд с aspect-ratio занимал 167.0625 мм и в окне печати Chromium
+   переносил остаток на отдельную белую страницу. */
+@page { size: 320mm 180mm; margin: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -318,16 +358,33 @@ body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  body { overflow: visible; background: oklch(99% .004 85); }
+  body { overflow: visible !important; background: oklch(99% .004 85); }
   .help-panel, .help-reveal-zone { display: none; }
-  .deck { display: block; height: auto; padding: 0; }
-  .slides { display: block; }
+  /* Режимы обзора имеют более специфичные селекторы вне media print.
+     Сбрасываем их принудительно, чтобы печать из сетки или ленты
+     оставалась обычной последовательностью страниц. */
+  .deck {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  .slides {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+  }
   .slides::before, .slides::after { display: none !important; }
   .slide {
     display: block !important;
-    width: 100%;
+    width: 320mm !important;
+    height: 180mm !important;
     max-width: none;
+    aspect-ratio: auto;
+    flex: none !important;
     break-after: page;
+    break-inside: avoid;
     outline: none !important;
     transform: none !important;
   }
