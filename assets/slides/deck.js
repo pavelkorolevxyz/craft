@@ -75,11 +75,22 @@
     return Number.isFinite(page) ? clamp(page - 1) : 0;
   };
   let current = pageFromHash();
+  let previous = null;
   let hideHelpAfterPageInput = false;
 
   function render(scroll = false) {
+    // Анимация — свойство перехода вперёд, а не состояния слайда.
+    // Первый кадр колоды — прямая ссылка, снимок экрана, печать в PDF —
+    // показывает конечное положение. Возврат назад его тоже показывает
+    // сразу: докладчик вернулся к уже сказанному, и заново проигранное
+    // раскрытие обещало бы новость там, где её нет.
+    const forward = previous !== null && current > previous;
+    previous = current;
+
     slides.forEach((slide, index) => {
-      slide.toggleAttribute('data-active', index === current);
+      const active = index === current;
+      slide.toggleAttribute('data-active', active);
+      slide.toggleAttribute('data-entered', active && forward);
     });
 
     if (helpPageInput) helpPageInput.value = pad(current + 1);
