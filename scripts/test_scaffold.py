@@ -10,7 +10,7 @@ import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
 
-from lib import MANIFEST, chromium_args, run, scaffold_matrix
+from lib import MANIFEST, ROOT, chromium_args, run, scaffold_matrix
 
 
 class LocalAssetParser(HTMLParser):
@@ -68,6 +68,33 @@ def test_interfaces(key: str, output: Path) -> None:
         scroll_width, viewport, mains = map(int, match.groups())
         assert scroll_width <= viewport, f"{key}: горизонтальное переполнение при {width}px ({scroll_width}>{viewport})"
         assert mains == 1, f"{key}: ожидалась одна основная область main"
+
+
+def test_observability() -> None:
+    example = ROOT / "examples/observability"
+    try:
+        dumped = dump_probe(
+            example,
+            "const bars=[...document.querySelectorAll('.cell-bar__fill')];"
+            "const visibleBars=bars.filter((bar)=>bar.getBoundingClientRect().width>0).length;"
+            "const errors=[...document.querySelectorAll('.log-list li[data-level=error]')];"
+            "const tinted=errors.filter((row)=>!['transparent','rgba(0, 0, 0, 0)'].includes(getComputedStyle(row).backgroundColor));"
+            "const snapshot=(element)=>{const rect=element.getBoundingClientRect();return [rect.left,rect.top,rect.width,rect.height].map(Math.round).join(',')};"
+            "const pause=document.querySelector('#pause');const live=document.querySelector('#live');"
+            "const before=snapshot(pause)+';'+snapshot(live);pause.click();const stable=before===snapshot(pause)+';'+snapshot(live);"
+            "document.title=`probe:${bars.length}:${visibleBars}:${errors.length}:${tinted.length}:${stable}`",
+            1440,
+            1000,
+        )
+    finally:
+        example.joinpath("__probe.html").unlink(missing_ok=True)
+    match = re.search(r"<title>probe:(\d+):(\d+):(\d+):(\d+):(true|false)</title>", dumped)
+    assert match, "observability: браузерная проверка данных не выполнена"
+    total, visible, errors, tinted = map(int, match.groups()[:4])
+    stable = match.group(5) == "true"
+    assert total > 0 and visible == total, f"observability: видимых полос {visible} из {total}"
+    assert errors > 0 and tinted == errors, f"observability: фоном выделены ошибки {tinted} из {errors}"
+    assert stable, "observability: пауза сдвигает кнопку или статус обновления"
 
 
 def test_slides(key: str, output: Path, work: Path) -> None:
@@ -140,6 +167,8 @@ def main() -> None:
             else:
                 test_slides(key, output, root)
             print(f"✓ {key}")
+        test_observability()
+        print("✓ observability")
         print("Готово: создание проектов, поведение браузера, переполнение и экспорт PDF проверены")
     finally:
         if context:

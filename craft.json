@@ -4,14 +4,19 @@
   "language": "ru",
   "surfaces": {
     "interface": {
-      "templates": ["report", "design-system"],
+      "templates": [
+        "report",
+        "design-system"
+      ],
       "entrypoints": [
         "assets/interfaces/starter-index.html",
         "assets/interfaces/specimen.html"
       ]
     },
     "slides": {
-      "templates": ["deck"],
+      "templates": [
+        "deck"
+      ],
       "entrypoints": [
         "assets/slides/starter/index.html",
         "assets/slides/specimen.html"
@@ -19,6 +24,7 @@
     }
   },
   "dynamicCssProperties": [
+    "--at",
     "--column-ratio",
     "--columns",
     "--metrics",

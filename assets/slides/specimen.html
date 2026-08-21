@@ -244,7 +244,51 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 16 · Таймлайн -->
+  <!-- 16 · Вертикальный график: та же величина, но по периодам -->
+  <section class="slide s-chart">
+    <div class="pad">
+      <p class="slide-title">Пик приходится на середину периода</p>
+      <div class="column-chart place-fill" role="img" aria-label="Пример вертикального столбчатого графика: семь месяцев, наибольшее значение в июне">
+        <div class="column"><strong>00</strong><div class="column-track"><i style="--value:38%"></i></div><span>Янв</span></div>
+        <div class="column"><strong>00</strong><div class="column-track"><i style="--value:52%"></i></div><span>Фев</span></div>
+        <div class="column"><strong>00</strong><div class="column-track"><i style="--value:47%"></i></div><span>Мар</span></div>
+        <div class="column"><strong>00</strong><div class="column-track"><i style="--value:64%"></i></div><span>Апр</span></div>
+        <div class="column"><strong>00</strong><div class="column-track"><i style="--value:81%"></i></div><span>Май</span></div>
+        <div class="column is-focus"><strong>00</strong><div class="column-track"><i style="--value:100%"></i></div><span>Июн</span></div>
+        <div class="column"><strong>00</strong><div class="column-track"><i style="--value:73%"></i></div><span>Июл</span></div>
+      </div>
+      <p class="type-note">Укажите источник, период и единицу измерения.</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 17 · Линейный график: перелом на непрерывной величине -->
+  <section class="slide s-chart">
+    <div class="pad">
+      <p class="slide-title">Рост начинается после июня</p>
+      <div class="line-chart place-fill" role="img" aria-label="Пример линейного графика: новый поток держится вровень с прежним до июня, затем растёт, прежний остаётся на месте">
+        <div class="line-plot">
+          <svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
+            <line class="line-base" x1="0" y1="40" x2="100" y2="40"/>
+            <line class="line-mark" x1="71.4" y1="40" x2="71.4" y2="29"/>
+            <polyline class="line-series" points="0,28 14.3,29 28.6,27 42.9,28 57.1,26 71.4,27 85.7,25 100,24"/>
+            <polyline class="line-series is-focus" points="0,30 14.3,29 28.6,31 42.9,30 57.1,31 71.4,29 85.7,17 100,6"/>
+          </svg>
+        </div>
+        <div class="line-keys">
+          <p class="line-key is-focus" style="--at:15%">Новый поток</p>
+          <p class="line-key" style="--at:60%">Прежний поток</p>
+        </div>
+        <div class="line-scale">
+          <span>Янв</span><span>Фев</span><span>Мар</span><span>Апр</span><span>Май</span><span class="is-focus">Июн</span><span>Июл</span><span>Авг</span>
+        </div>
+      </div>
+      <p class="type-note">Укажите источник, период и единицу измерения.</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 18 · Таймлайн -->
   <section class="slide s-timeline">
     <div class="pad">
       <p class="slide-title">Таймлайн</p>
@@ -259,7 +303,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 17 · Схема процесса -->
+  <!-- 19 · Схема процесса -->
   <section class="slide s-flow">
     <div class="pad">
       <p class="slide-title">Схема процесса</p>
@@ -283,7 +327,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 18 · Сравнение изображений: та же композиция, что и текстовое сравнение -->
+  <!-- 20 · Сравнение изображений: та же композиция, что и текстовое сравнение -->
   <section class="slide s-comparison s-visual-compare">
     <div class="comparison-split">
       <div class="comparison-side is-before">
@@ -302,7 +346,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 19 · Заголовочный слайд внутри доклада -->
+  <!-- 21 · Заголовочный слайд внутри доклада -->
   <section class="slide s-title-card">
     <div class="pad">
       <h2 class="type-hero">Заголовок в одну-две строки</h2>
@@ -310,7 +354,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 20 · Итоги -->
+  <!-- 22 · Итоги -->
   <section class="slide">
     <div class="pad">
       <p class="slide-title">Выводы</p>
@@ -323,7 +367,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 21 · Ресурс: обычный заголовок, медиа и связанный QR -->
+  <!-- 23 · Ресурс: обычный заголовок, медиа и связанный QR -->
   <section class="slide s-figure">
     <div class="pad">
       <p class="slide-title">Ресурс и QR-код</p>
@@ -343,7 +387,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 22 · Финал -->
+  <!-- 24 · Финал -->
   <section class="slide s-end">
     <div class="pad">
       <h2 class="type-hero">Спасибо<br>за внимание</h2>

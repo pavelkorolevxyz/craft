@@ -56,16 +56,31 @@
       <section class="system-section" id="color">
         <div class="system-section__head">
           <h2>Цвет</h2>
-          <p>Красный отмечает действие, активное состояние или важный сигнал. Остальная палитра нейтральная.</p>
+          <p>У красного четыре роли: акцентный текст, насыщенная метка, плоскость под белым текстом и прозрачный фон сигнала. Остальная палитра нейтральная.</p>
         </div>
         <div class="token-table" role="list" aria-label="Цветовые токены">
-          <div class="token-row" role="listitem"><i style="--swatch:#111"></i><strong>Фон</strong><code>--bg</code><span>#111111</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#1a1a1a"></i><strong>Поверхность</strong><code>--surface</code><span>#1a1a1a</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#2a2a2a"></i><strong>Линия</strong><code>--line</code><span>#2a2a2a</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#eee"></i><strong>Текст</strong><code>--text</code><span>#eeeeee</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#a8a8a8"></i><strong>Вторичный</strong><code>--muted</code><span>#a8a8a8</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#ff5a67"></i><strong>Акцент</strong><code>--accent</code><span>#ff5a67</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#c5303d"></i><strong>Заливка</strong><code>--accent-fill</code><span>#c5303d</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#111"></i><strong>Фон</strong><code>--bg</code><em>фон страницы</em><span>#111111</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#1a1a1a"></i><strong>Поверхность</strong><code>--surface</code><em>выделенная смысловая группа</em><span>#1a1a1a</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#2a2a2a"></i><strong>Линия</strong><code>--line</code><em>разделитель секций и таблиц</em><span>#2a2a2a</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#eee"></i><strong>Текст</strong><code>--text</code><em>заголовки и значения</em><span>#eeeeee</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#a8a8a8"></i><strong>Вторичный</strong><code>--muted</code><em>подписи, единицы, пояснения</em><span>#a8a8a8</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#ff5a67"></i><strong>Акцент</strong><code>--accent</code><em>акцентный текст и ссылка</em><span>#ff5a67</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#ff3f4d"></i><strong>Метка</strong><code>--accent-mark</code><em>точка, полоса, линия графика, фокус</em><span>#ff3f4d</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#c5303d"></i><strong>Заливка</strong><code>--accent-fill</code><em>плоскость под белым текстом</em><span>#c5303d</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-tint)"></i><strong>Фон сигнала</strong><code>--accent-tint</code><em>тихое выделение под обычным текстом</em><span>9%</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#23cc70"></i><strong>Норма</strong><code>--ok</code><em>состояние в норме</em><span>#23cc70</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#ffae1a"></i><strong>Предупреждение</strong><code>--warn</code><em>требует внимания</em><span>#ffae1a</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:#ff3f4d"></i><strong>Ошибка</strong><code>--error</code><em>сбой, тот же красный, что и метка</em><span>#ff3f4d</span></div>
+        </div>
+        <div class="series-palette">
+          <p class="control-label">Ряды данных: приоритетный ряд красный, остальные различаются тоном и подписью</p>
+          <div class="control-line">
+            <span class="series-key" style="--swatch: var(--data-red)">Приоритет</span>
+            <span class="series-key" style="--swatch: var(--data-neutral)">Нейтральный</span>
+            <span class="series-key" style="--swatch: var(--data-blue)">Синий</span>
+            <span class="series-key" style="--swatch: var(--data-amber)">Янтарный</span>
+            <span class="series-key" style="--swatch: var(--data-green)">Зелёный</span>
+          </div>
         </div>
       </section>
 
@@ -86,13 +101,13 @@
           <p>Базовый шаг — 4 px. Шкала содержит семь значений.</p>
         </div>
         <div class="space-scale">
-          <div><span>04</span><i style="--space:4px"></i></div>
-          <div><span>08</span><i style="--space:8px"></i></div>
-          <div><span>12</span><i style="--space:12px"></i></div>
-          <div><span>16</span><i style="--space:16px"></i></div>
-          <div><span>24</span><i style="--space:24px"></i></div>
-          <div><span>32</span><i style="--space:32px"></i></div>
-          <div><span>48</span><i style="--space:48px"></i></div>
+          <div><span>04</span><i style="--space:var(--space-1)"></i></div>
+          <div><span>08</span><i style="--space:var(--space-2)"></i></div>
+          <div><span>12</span><i style="--space:var(--space-3)"></i></div>
+          <div><span>16</span><i style="--space:var(--space-4)"></i></div>
+          <div><span>24</span><i style="--space:var(--space-5)"></i></div>
+          <div><span>32</span><i style="--space:var(--space-6)"></i></div>
+          <div><span>48</span><i style="--space:var(--space-7)"></i></div>
         </div>
       </section>
 
@@ -116,7 +131,15 @@
           </div>
           <div class="control-group">
             <span class="control-label">Состояния</span>
-            <div class="control-line"><span class="status status--good">стабильно</span><span class="status status--warn">проверить</span><span class="status status--bad">блокер</span></div>
+            <div class="control-line"><span class="status status--ok">стабильно</span><span class="status status--warn">проверить</span><span class="status status--error">блокер</span></div>
+          </div>
+          <div class="control-group">
+            <span class="control-label" id="mode-label">Переключатель режима: один выбор из нескольких</span>
+            <div class="segmented" role="radiogroup" aria-labelledby="mode-label">
+              <label><input type="radio" name="specimen-mode" value="all" checked><span>Все</span></label>
+              <label><input type="radio" name="specimen-mode" value="warn"><span>Предупреждения</span></label>
+              <label><input type="radio" name="specimen-mode" value="error"><span>Ошибки</span></label>
+            </div>
           </div>
         </div>
       </section>

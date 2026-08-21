@@ -34,35 +34,90 @@
 
 :root {
   color-scheme: dark;
+
+  /* Поверхности. Страница лежит на --craft-bg. --craft-surface выделяет
+     смысловую группу, --craft-surface-muted — её тихий вариант,
+     --craft-sunken — врезанную область: код, поле ввода, дно графика. */
   --craft-bg: #111;
   --craft-surface: #1a1a1a;
   --craft-surface-muted: #161616;
   --craft-sunken: #0d0d0d;
+
+  /* Линии. --craft-line — обычный разделитель и рамка. --craft-line-strong
+     нужен там, где линия сама несёт данные: ось, курсор, шкала. */
   --craft-line: #2a2a2a;
   --craft-line-strong: #eee;
+
+  /* Текст. --craft-text — заголовки и значения, --craft-text-body — абзацы
+     для чтения, --craft-muted — подписи, единицы, служебные пояснения. */
   --craft-text: #eee;
   --craft-text-body: rgb(238 238 238 / .82);
   --craft-muted: #a8a8a8;
+
+  /* Красный работает в четырёх разных ролях, и подменять их друг другом нельзя.
+     --craft-accent — акцентный ТЕКСТ: ссылка, приоритетное число, подпись
+     порога. Он приглушён намеренно, потому что его читают.
+     --craft-accent-mark — насыщенная МЕТКА: точка статуса, полоса, линия
+     графика, рамка фокуса. Она ярче текста, потому что её не читают.
+     --craft-accent-fill — ПЛОСКОСТЬ под белым текстом: кнопка, врезка,
+     итоговая строка. Она темнее текста, иначе белый теряет контраст:
+     на метке он даёт 3,5, на плоскости — 5,4 при пороге 4,5.
+     --craft-accent-tint — едва заметный ФОН сигнала без белого текста.
+     Он сохраняет обычный цвет текста и не заменяет подпись состояния.
+     --craft-accent-base — исходный красный идентичности, крупные надписи
+     на светлом фоне. --craft-accent-fill-hover — наведение на плоскость. */
   --craft-accent: #ff5a67;
-  --craft-accent-base: #e63946;
+  --craft-accent-mark: #ff3f4d;
   --craft-accent-fill: #c5303d;
   --craft-accent-fill-hover: #a92633;
+  --craft-accent-tint: rgb(255 63 77 / .09);
+  --craft-accent-base: #e63946;
+
+  /* Поверх акцентной плоскости. Белый текст, его тихий вариант и линия,
+     которая делит содержимое внутри красной области. */
   --craft-on-accent: #fff;
+  --craft-on-accent-muted: rgb(255 255 255 / .78);
+  --craft-on-accent-line: rgb(255 255 255 / .28);
+
   /* Выделение текста тонирует строку, а не закрашивает её: сквозь заливку
      виден исходный цвет букв, поэтому кегль и начертание не «прыгают».
      На акцентной плоскости красным тонировать нечего — там белый. */
   --craft-selection: rgb(230 57 70 / .32);
   --craft-selection-on-accent: rgb(255 255 255 / .3);
-  --craft-on-accent-muted: rgb(255 255 255 / .78);
-  --craft-on-accent-line: rgb(255 255 255 / .28);
+
+  /* Служебное. --craft-overlay-line обводит образец цвета поверх любого
+     фона, --craft-disabled — недоступный элемент управления. */
   --craft-overlay-line: rgb(255 255 255 / .16);
   --craft-disabled: #666;
+
+  /* Код и только код. Подсветка синтаксиса живёт отдельно от палитры
+     интерфейса, чтобы яркие статусы не попадали в листинг. */
   --craft-code-text: #d4d0cc;
   --craft-code-gold: #c9a96e;
   --craft-code-blue: #7a9ab5;
-  --craft-good: #7fb38a;
-  --craft-warn: #d4b87a;
-  --craft-bad: #ff5a67;
+
+  /* Статусы. Три состояния и больше никаких: норма, предупреждение, ошибка.
+     Ошибка — тот же красный, что и любая метка, отдельного оттенка нет.
+     Цвет всегда сопровождается словом: он ускоряет чтение, а не заменяет
+     подпись. Для рамок и обычного текста эти значения не используются;
+     тихий фон ошибки берёт отдельный --craft-error-tint. */
+  --craft-ok: #23cc70;
+  --craft-warn: #ffae1a;
+  --craft-error: var(--craft-accent-mark);
+  --craft-error-tint: var(--craft-accent-tint);
+
+  /* Ряды данных. Назначаются по порядку: приоритетный ряд красный, дальше
+     нейтральный, синий, янтарный, зелёный. Пятью рядами набор исчерпан;
+     если рядов больше, их объединяют или показывают по одному. */
+  --craft-data-red: var(--craft-accent-mark);
+  --craft-data-neutral: var(--craft-text);
+  --craft-data-blue: #4ea6ff;
+  --craft-data-amber: var(--craft-warn);
+  --craft-data-green: var(--craft-ok);
+
+  /* Печать. Роли те же, значения перевёрнуты под светлую бумагу: экранная
+     яркость на белом не читается, поэтому метки и ряды становятся тёмными.
+     Формат подставляет эти значения сам, вручную их не применяют. */
   --craft-print-bg: #f8f8f8;
   --craft-print-surface: #eaeaea;
   --craft-print-line: #ccc;
@@ -70,6 +125,15 @@
   --craft-print-text-body: rgb(17 17 17 / .82);
   --craft-print-muted: #555;
   --craft-print-accent: #a92633;
+  --craft-print-accent-tint: rgb(169 38 51 / .09);
+  --craft-print-data-red: #a92633;
+  --craft-print-data-neutral: #111;
+  --craft-print-data-blue: #1f5c99;
+  --craft-print-data-amber: #8a5a00;
+  --craft-print-data-green: #1f7a45;
+
+  /* Шрифты. Geologica — короткие заголовки и значимые числа, Onest — текст
+     и элементы управления, моноширинный — только настоящий код. */
   --craft-font-display: "Geologica", "Liberation Sans", system-ui, sans-serif;
   --craft-font-text: "Onest", "Liberation Sans", system-ui, sans-serif;
   --craft-font-mono: "JetBrains Mono", "JetBrainsMono NF", ui-monospace, monospace;

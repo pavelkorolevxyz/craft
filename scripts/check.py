@@ -14,6 +14,7 @@ from lib import ASSETS, MANIFEST, ROOT, node, run
 TEXT_SUFFIXES = {".css", ".html", ".js", ".json", ".md", ".py"}
 CSS_FILES = list(ASSETS.rglob("*.css"))
 HTML_FILES = [ROOT / path for surface in MANIFEST["surfaces"].values() for path in surface["entrypoints"]]
+EXAMPLE_HTML_FILES = [ROOT / "examples/observability/index.html"]
 RAW_COLOR = re.compile(r"(?<![\w-])(?:#[0-9a-fA-F]{3,8}\b|(?:rgb|hsl)a?\([^)]*\))")
 
 
@@ -53,6 +54,16 @@ class AssetParser(HTMLParser):
             self.assets.append(values["src"] or "")
 
 
+class HeadingParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.levels: list[int] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if re.fullmatch(r"h[1-6]", tag):
+            self.levels.append(int(tag[1]))
+
+
 def check_required() -> None:
     required = [
         ROOT / "SKILL.md",
@@ -73,7 +84,11 @@ def check_required() -> None:
         ASSETS / "slides/base.css",
         ASSETS / "slides/theme.css",
         ASSETS / "slides/deck.js",
+        ROOT / "examples/observability/dashboard.css",
+        ROOT / "examples/observability/dashboard.js",
+        ROOT / "examples/observability/telemetry.js",
         *HTML_FILES,
+        *EXAMPLE_HTML_FILES,
     ]
     for path in required:
         assert path.is_file(), f"отсутствует {path.relative_to(ROOT)}"
@@ -83,7 +98,7 @@ def check_required() -> None:
 
 
 def check_assets() -> None:
-    for path in HTML_FILES:
+    for path in [*HTML_FILES, *EXAMPLE_HTML_FILES]:
         parser = AssetParser()
         parser.feed(path.read_text(encoding="utf-8"))
         for value in parser.assets:
@@ -123,6 +138,16 @@ def check_borders() -> None:
 
 
 def check_accessibility_contract() -> None:
+    heading_files = [*HTML_FILES, *EXAMPLE_HTML_FILES]
+    for path in heading_files:
+        if not path.is_file():
+            continue
+        parser = HeadingParser()
+        parser.feed(path.read_text(encoding="utf-8"))
+        assert parser.levels.count(1) == 1, f"в {path.relative_to(ROOT)} нужен ровно один h1"
+        for previous, current in zip(parser.levels, parser.levels[1:]):
+            assert current <= previous + 1, f"в {path.relative_to(ROOT)} пропущен уровень h{previous} → h{current}"
+
     for surface in ("interfaces", "slides"):
         css = "\n".join(path.read_text(encoding="utf-8") for path in (ASSETS / surface).glob("*.css"))
         assert ":focus-visible" in css, f"у формата {surface} нет правила видимого фокуса"
@@ -132,6 +157,17 @@ def check_accessibility_contract() -> None:
     slide_theme = (ASSETS / "slides/theme.css").read_text(encoding="utf-8")
     sizes = [float(value) for value in re.findall(r"font(?:-size)?\s*:[^;{}]*?([0-9.]+)cqw", slide_theme)]
     assert sizes and min(sizes) >= 1.4, f"текст содержимого слайдов мельче 1.4cqw: {min(sizes)}"
+
+
+def check_spacing_scale() -> None:
+    theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
+    expected = {1: 4, 2: 8, 3: 12, 4: 16, 5: 24, 6: 32, 7: 48}
+    for index, value in expected.items():
+        assert re.search(rf"--space-{index}:\s*{value}px\s*;", theme), f"нет --space-{index}: {value}px"
+
+    specimen = (ASSETS / "interfaces/specimen.html").read_text(encoding="utf-8")
+    for index in expected:
+        assert f"var(--space-{index})" in specimen, f"каталог не показывает --space-{index}"
 
 
 def check_content() -> None:
@@ -159,9 +195,9 @@ def check_content() -> None:
 def check_language() -> None:
     assert MANIFEST.get("language") == "ru", "в craft.json должен быть указан русский язык"
     allowed_latin = {
-        "aa", "api", "cdn", "chromium", "ci", "cli", "craft", "css", "example.com", "geologica", "highlight.js",
-        "html", "imagemagick", "javascript", "json", "markdown", "node.js", "onest", "pdf",
-        "px", "python", "qr", "saas", "svg", "url", "wcag",
+        "aa", "api", "cdn", "chromium", "ci", "cli", "craft", "css", "edge-01", "esc", "example.com",
+        "geologica", "highlight.js", "html", "imagemagick", "javascript", "json", "markdown", "node.js", "onest",
+        "p95", "p99", "pdf", "px", "python", "qr", "saas", "svg", "url", "wcag",
     }
 
     for path in [ROOT / "README.md", ROOT / "SKILL.md", *sorted((ROOT / "references").rglob("*.md"))]:
@@ -174,7 +210,7 @@ def check_language() -> None:
         unknown = words - allowed_latin
         assert not unknown, f"английские слова в {path.relative_to(ROOT)}: {', '.join(sorted(unknown))}"
 
-    for path in HTML_FILES:
+    for path in [*HTML_FILES, *EXAMPLE_HTML_FILES]:
         parser = LanguageParser()
         parser.feed(path.read_text(encoding="utf-8"))
         assert parser.lang == "ru", f"в {path.relative_to(ROOT)} должен быть lang=ru"
@@ -215,7 +251,14 @@ def check_markdown_links() -> None:
 
 
 def check_javascript() -> None:
-    for path in (ASSETS / "interfaces/specimen.js", ASSETS / "slides/deck.js", ASSETS / "slides/code-highlight.js"):
+    paths = (
+        ASSETS / "interfaces/specimen.js",
+        ASSETS / "slides/deck.js",
+        ASSETS / "slides/code-highlight.js",
+        ROOT / "examples/observability/dashboard.js",
+        ROOT / "examples/observability/telemetry.js",
+    )
+    for path in paths:
         run(node(), "--check", path)
 
 
@@ -226,6 +269,7 @@ def main() -> None:
         check_tokens,
         check_borders,
         check_accessibility_contract,
+        check_spacing_scale,
         check_content,
         check_language,
         check_markdown_links,
@@ -237,6 +281,7 @@ def main() -> None:
         check_tokens: "токены",
         check_borders: "рамки",
         check_accessibility_contract: "контракт доступности",
+        check_spacing_scale: "шкала отступов",
         check_content: "содержимое",
         check_language: "русский язык",
         check_markdown_links: "ссылки Markdown",

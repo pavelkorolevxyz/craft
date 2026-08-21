@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Кластер edge-01 — наблюдаемость</title>
+  <link rel="stylesheet" href="../../assets/shared/tokens.css">
+  <link rel="stylesheet" href="../../assets/interfaces/theme.css">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="ops-bar">
+      <div class="ops-bar__title">
+        <h1>Кластер edge-01</h1>
+        <p class="ops-bar__source">4 сервиса · 3 узла · источник: встроенная модель телеметрии</p>
+      </div>
+      <div class="ops-bar__controls">
+        <label class="field" for="range">
+          <span>Диапазон</span>
+          <select id="range">
+            <option value="900000">15 минут</option>
+            <option value="3600000">1 час</option>
+            <option value="21600000" selected>6 часов</option>
+            <option value="86400000">24 часа</option>
+            <option value="604800000">7 дней</option>
+          </select>
+        </label>
+        <label class="field" for="refresh">
+          <span>Обновление</span>
+          <select id="refresh">
+            <option value="0">выключено</option>
+            <option value="5000" selected>5 с</option>
+            <option value="15000">15 с</option>
+            <option value="60000">60 с</option>
+          </select>
+        </label>
+        <span class="zoom-chip" id="zoom-chip" data-active="false">
+          <span id="zoom-label">выделенный интервал</span>
+          <button type="button" id="zoom-reset">сбросить</button>
+        </span>
+        <button type="button" class="button button--compact button--stable" id="pause" aria-pressed="false">
+          <span class="button__label button__label--rest">Пауза</span>
+          <span class="button__label button__label--pressed">Продолжить</span>
+        </button>
+        <span class="live" id="live" data-state="live">
+          <span class="live__label live__label--running">обновлено <time id="live-time-running">—</time></span>
+          <span class="live__label live__label--paused">пауза · <time id="live-time-paused">—</time></span>
+        </span>
+      </div>
+    </header>
+
+    <section class="scoreboard" aria-label="Ключевые показатели за выбранный диапазон" style="--metrics: 4">
+      <div class="metric" id="stat-rps">
+        <div>
+          <strong class="metric__value">—</strong>
+          <span class="metric__label">Запросов в секунду</span>
+          <span class="metric__delta" data-trend="flat">—</span>
+        </div>
+        <svg class="metric__spark" aria-hidden="true"></svg>
+      </div>
+      <div class="metric metric--accent" id="stat-errors">
+        <div>
+          <strong class="metric__value">—</strong>
+          <span class="metric__label">Доля 5xx и таймаутов</span>
+          <span class="metric__delta" data-trend="flat">—</span>
+        </div>
+        <svg class="metric__spark" aria-hidden="true"></svg>
+      </div>
+      <div class="metric" id="stat-latency">
+        <div>
+          <strong class="metric__value">—</strong>
+          <span class="metric__label">Задержка p99</span>
+          <span class="metric__delta" data-trend="flat">—</span>
+        </div>
+        <svg class="metric__spark" aria-hidden="true"></svg>
+      </div>
+      <div class="metric" id="stat-cpu">
+        <div>
+          <strong class="metric__value">—</strong>
+          <span class="metric__label">Загрузка узлов, максимум</span>
+          <span class="metric__delta" data-trend="flat">—</span>
+        </div>
+        <svg class="metric__spark" aria-hidden="true"></svg>
+      </div>
+    </section>
+
+    <div class="board">
+      <section class="panel" style="--span: 8" data-span-md="12">
+        <header class="panel__head">
+          <div>
+            <h2>Запросы по сервисам</h2>
+            <p class="panel__meta">запросов в секунду, среднее по корзине</p>
+          </div>
+          <div class="legend" id="legend-rps" role="group" aria-label="Показ сервисов"></div>
+        </header>
+        <figure class="panel__body">
+          <svg class="chart" id="chart-rps" tabindex="0" role="img" aria-labelledby="desc-rps"></svg>
+          <figcaption class="chart-note" id="desc-rps">Данные загружаются.</figcaption>
+        </figure>
+      </section>
+
+      <section class="panel" style="--span: 4" data-span-md="12">
+        <header class="panel__head">
+          <div>
+            <h2>Ошибки по классам</h2>
+            <p class="panel__meta">ответов в секунду, накопительно</p>
+          </div>
+          <div class="legend" id="legend-err" role="group" aria-label="Показ классов ошибок"></div>
+        </header>
+        <figure class="panel__body">
+          <svg class="chart" id="chart-err" tabindex="0" role="img" aria-labelledby="desc-err"></svg>
+          <figcaption class="chart-note" id="desc-err">Данные загружаются.</figcaption>
+        </figure>
+      </section>
+
+      <section class="panel" style="--span: 6" data-span-md="6">
+        <header class="panel__head">
+          <div>
+            <h2>Задержка ответа</h2>
+            <p class="panel__meta">миллисекунды, порог обслуживания 500 мс</p>
+          </div>
+          <div class="legend" id="legend-lat" role="group" aria-label="Показ квантилей"></div>
+        </header>
+        <figure class="panel__body">
+          <svg class="chart" id="chart-lat" tabindex="0" role="img" aria-labelledby="desc-lat"></svg>
+          <figcaption class="chart-note" id="desc-lat">Данные загружаются.</figcaption>
+        </figure>
+      </section>
+
+      <section class="panel" style="--span: 6" data-span-md="6">
+        <header class="panel__head">
+          <div>
+            <h2>Распределение задержки</h2>
+            <p class="panel__meta">доля запросов, нижняя граница корзины в мс</p>
+          </div>
+          <p class="scale-legend" aria-hidden="true">
+            <span>реже</span>
+            <i style="opacity: .12"></i><i style="opacity: .3"></i><i style="opacity: .5"></i><i style="opacity: .72"></i><i style="opacity: .95"></i>
+            <span>чаще</span>
+          </p>
+        </header>
+        <figure class="panel__body">
+          <svg class="chart" id="chart-heat" tabindex="0" role="img" aria-labelledby="desc-heat"></svg>
+          <figcaption class="chart-note" id="desc-heat">Данные загружаются.</figcaption>
+        </figure>
+      </section>
+
+      <section class="panel" style="--span: 4" data-span-md="6">
+        <header class="panel__head">
+          <div>
+            <h2>Загрузка процессора</h2>
+            <p class="panel__meta">проценты по узлам</p>
+          </div>
+          <div class="legend" id="legend-cpu" role="group" aria-label="Показ узлов"></div>
+        </header>
+        <figure class="panel__body">
+          <svg class="chart" id="chart-cpu" tabindex="0" role="img" aria-labelledby="desc-cpu"></svg>
+          <figcaption class="chart-note" id="desc-cpu">Данные загружаются.</figcaption>
+        </figure>
+      </section>
+
+      <section class="panel" style="--span: 8" data-span-md="6">
+        <header class="panel__head">
+          <div>
+            <h2>Эндпоинты</h2>
+            <p class="panel__meta">агрегат за выбранный диапазон, сортировка по столбцам</p>
+          </div>
+        </header>
+        <div class="panel__body panel__body--table">
+          <table class="data-table" id="endpoints">
+            <caption class="visually-hidden">Нагрузка, задержка и доля ошибок по эндпоинтам</caption>
+            <thead>
+              <tr>
+                <th scope="col" data-key="path" aria-sort="none"><button type="button">Маршрут</button></th>
+                <th scope="col" data-key="service" aria-sort="none"><button type="button">Сервис</button></th>
+                <th scope="col" class="num" data-key="rps" aria-sort="descending"><button type="button">Запросов/с</button></th>
+                <th scope="col" class="num" data-key="p95" aria-sort="none"><button type="button">p95, мс</button></th>
+                <th scope="col" class="num" data-key="errors" aria-sort="none"><button type="button">Ошибки, %</button></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" style="--span: 4" data-span-md="6">
+        <header class="panel__head">
+          <div>
+            <h2>События</h2>
+            <p class="panel__meta">выкладки и срабатывания правил</p>
+          </div>
+        </header>
+        <div class="panel__body panel__body--flush">
+          <ul class="events" id="events"></ul>
+        </div>
+      </section>
+
+      <section class="panel" style="--span: 8" data-span-md="12">
+        <header class="panel__head">
+          <div>
+            <h2>Журнал</h2>
+            <p class="panel__meta" id="log-meta">записи за выбранный диапазон</p>
+            <p class="panel__meta print-only">На печати показаны 20 последних записей.</p>
+          </div>
+          <div class="segmented" id="log-level" role="radiogroup" aria-label="Уровень записей">
+            <label><input type="radio" name="log-level" value="all" checked><span>Все</span></label>
+            <label><input type="radio" name="log-level" value="warn"><span>Предупреждения</span></label>
+            <label><input type="radio" name="log-level" value="error"><span>Ошибки</span></label>
+          </div>
+        </header>
+        <div class="panel__body panel__body--flush">
+          <ul class="log-list" id="log" aria-live="polite"></ul>
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer">
+      <span class="hint">
+        <span><kbd>Пробел</kbd> пауза</span>
+        <span><kbd>R</kbd> обновить</span>
+        <span><kbd>[</kbd> <kbd>]</kbd> диапазон</span>
+        <span><kbd>Esc</kbd> сбросить выделение</span>
+      </span>
+      <span>Локальный HTML · без внешних зависимостей · выделите интервал на графике для увеличения</span>
+    </footer>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="status" aria-live="off"></div>
+
+  <script src="telemetry.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
