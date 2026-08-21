@@ -69,10 +69,14 @@
     return state.paused && state.frozenNow !== null ? state.frozenNow : Date.now();
   }
 
-  function windowRange() {
-    if (state.zoom) return { from: state.zoom.from, to: state.zoom.to };
+  function currentRange() {
     const to = now();
     return { from: to - state.range, to };
+  }
+
+  function windowRange() {
+    if (state.zoom) return { from: state.zoom.from, to: state.zoom.to };
+    return currentRange();
   }
 
   function niceTicks(max, count) {
@@ -103,6 +107,12 @@
     for (const key in attrs) element.setAttribute(key, attrs[key]);
     if (text !== undefined) element.textContent = text;
     return element;
+  }
+
+  function svgIcon(name, className = "icon") {
+    const svg = node("svg", { class: className, "aria-hidden": "true", viewBox: "0 0 24 24" });
+    svg.append(node("use", { href: `#icon-${name}` }));
+    return svg;
   }
 
   /* Общий график по оси времени: линии, накопительные области, порог,
@@ -339,17 +349,23 @@
 
     describe(rendered, win) {
       const target = this.options.note && document.getElementById(this.options.note);
-      if (!target) return;
-      const parts = rendered.map((item) => {
-        let peak = 0;
-        let peakAt = win.from;
-        for (let i = 0; i < item.v.length; i += 1) {
-          if (item.v[i] > peak) { peak = item.v[i]; peakAt = item.t[i]; }
-        }
-        const current = item.v[item.v.length - 1];
-        return `${item.series.label}: сейчас ${formatValue(current, this.options.unit)}, пик ${formatValue(peak, this.options.unit)} в ${formatTime(peakAt, win.to - win.from)}`;
-      });
-      target.textContent = parts.join(". ") + ".";
+      if (!target || !rendered.length) return;
+      const points = rendered[0].v.length;
+      const aggregate = (index) => {
+        const values = rendered.map((item) => item.v[index]);
+        if (this.options.summary === "sum") return values.reduce((sum, value) => sum + value, 0);
+        if (this.options.summary === "max") return Math.max(...values);
+        return values[0];
+      };
+      let peak = -Infinity;
+      let peakAt = win.from;
+      for (let i = 0; i < points; i += 1) {
+        const value = aggregate(i);
+        if (value > peak) { peak = value; peakAt = rendered[0].t[i]; }
+      }
+      const suffix = this.options.summaryUnit ? ` ${this.options.summaryUnit}` : "";
+      const currentLabel = state.zoom ? "В конце интервала" : "Сейчас";
+      target.textContent = `${currentLabel} ${formatValue(aggregate(points - 1), this.options.unit)}${suffix} · пик ${formatValue(peak, this.options.unit)}${suffix} в ${formatTime(peakAt, win.to - win.from)}`;
     }
 
     drawCursor(t) {
@@ -414,6 +430,18 @@
         setCursor(win.from + Math.min(1, Math.max(0, ratio)) * (win.to - win.from), this, event);
       });
       this.svg.addEventListener("pointerleave", () => setCursor(null));
+      this.svg.addEventListener("keydown", (event) => this.onKeyDown(event));
+      this.svg.addEventListener("blur", () => setCursor(null));
+    }
+
+    onKeyDown(event) {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      const win = this.geometry ? this.geometry.win : windowRange();
+      const step = (win.to - win.from) / 60;
+      const base = state.cursor === null ? win.to : state.cursor;
+      const next = Math.min(win.to, Math.max(win.from, base + (event.key === "ArrowRight" ? step : -step)));
+      event.preventDefault();
+      setCursor(next, this, null);
     }
 
     render() {
@@ -476,7 +504,7 @@
       this.last = { span: win.to - win.from };
 
       const note = document.getElementById(this.noteId);
-      if (note) note.textContent = `Основная масса запросов в корзине ${peakLabel}. Верхняя граница шкалы — 2048 мс и выше.`;
+      if (note) note.textContent = `Основная корзина ${peakLabel} · шкала до 2048 мс и выше`;
       if (state.cursor !== null) this.drawCursor(state.cursor);
     }
 
@@ -502,16 +530,23 @@
 
   const charts = [];
   const tooltip = document.getElementById("tooltip");
+  const chartReadout = document.getElementById("chart-readout");
 
   function setCursor(t, source, event) {
     state.cursor = t;
     charts.forEach((chart) => (t === null ? chart.clearCursor() : chart.drawCursor(t)));
-    if (t === null || !source || !event) {
+    if (t === null || !source) {
       tooltip.dataset.open = "false";
+      chartReadout.textContent = "";
       return;
     }
     const rows = source.readAt(t);
     const span = (source.last ? source.last.span : state.range);
+    chartReadout.textContent = `${formatTime(t, span)}. ${rows.map((row) => `${row.label}: ${row.value}`).join(". ")}`;
+    if (!event) {
+      tooltip.dataset.open = "false";
+      return;
+    }
     tooltip.replaceChildren();
     const time = document.createElement("span");
     time.className = "tooltip__time";
@@ -555,29 +590,47 @@
 
   /* Панели данных */
   function renderStats() {
-    const win = windowRange();
+    const win = currentRange();
     const span = win.to - win.from;
-    const previous = { from: win.from - span, to: win.from };
+    const recentSpan = Math.min(5 * 60_000, span / 3);
+    const recent = { from: win.to - recentSpan, to: win.to };
+    const previous = { from: recent.from - recentSpan, to: recent.from };
+    const windowSeconds = Math.round(recentSpan / 1000);
+    const windowText = windowSeconds >= 60 ? `${Math.round(windowSeconds / 60)} мин` : `${windowSeconds} с`;
+    document.querySelector(".scoreboard").setAttribute("aria-label", `Текущее состояние, среднее за ${windowText}`);
     /* Знак окрашивается только там, где у направления есть однозначный смысл:
        рост трафика сам по себе не хорош и не плох. */
     const cards = [
       { id: "stat-rps", metric: "rps.total", unit: "", signal: false, tone: "neutral" },
-      { id: "stat-errors", metric: "err.share", unit: "%", signal: true, tone: "primary" },
-      { id: "stat-latency", metric: "lat.p99", unit: "мс", signal: true, tone: "warm" },
-      { id: "stat-cpu", metric: "cpu.max", unit: "%", signal: true, tone: "cool" },
+      { id: "stat-errors", metric: "err.share", unit: "%", signal: true, threshold: 1, tone: "primary" },
+      { id: "stat-latency", metric: "lat.p99", unit: "мс", signal: true, threshold: 500, tone: "warm" },
+      { id: "stat-cpu", metric: "cpu.max", unit: "%", signal: true, threshold: 90, tone: "cool" },
     ];
     cards.forEach((card) => {
       const host = document.getElementById(card.id);
-      const current = Telemetry.average(card.metric, win.from, win.to, 90);
-      const before = Telemetry.average(card.metric, previous.from, previous.to, 90);
+      const current = Telemetry.average(card.metric, recent.from, recent.to, 24);
+      const before = Telemetry.average(card.metric, previous.from, previous.to, 24);
       const delta = before === 0 ? 0 : ((current - before) / before) * 100;
       host.querySelector(".metric__value").textContent = formatValue(current, card.unit);
       const deltaEl = host.querySelector(".metric__delta");
       const sign = delta > 0 ? "+" : delta < 0 ? "−" : "";
-      deltaEl.textContent = `${sign}${short.format(Math.abs(delta))} % к предыдущему интервалу`;
-      deltaEl.dataset.trend = !card.signal || Math.abs(delta) < 1 ? "flat" : delta > 0 ? "up" : "down";
+      const compactDelta = `${sign}${short.format(Math.abs(delta))} %`;
+      const trend = !card.signal || Math.abs(delta) < 1 ? "flat" : delta > 0 ? "up" : "down";
+      deltaEl.replaceChildren();
+      if (trend !== "flat") deltaEl.append(svgIcon(trend === "up" ? "arrow-up" : "arrow-down"));
+      deltaEl.append(document.createTextNode(compactDelta));
+      deltaEl.title = `К предыдущему окну ${windowText}: ${compactDelta}`;
+      deltaEl.setAttribute("aria-label", deltaEl.title);
+      deltaEl.dataset.trend = trend;
       drawSpark(host.querySelector(".metric__spark"), card.metric, win, TONES[card.tone]);
     });
+
+    const active = cards.filter((card) => card.signal && Telemetry.average(card.metric, recent.from, recent.to, 12) >= card.threshold).length;
+    const status = document.getElementById("cluster-status");
+    status.dataset.state = active ? "alert" : "ok";
+    status.textContent = active
+      ? `${active} ${active === 1 ? "сигнал" : "сигнала"} выше порога сейчас`
+      : "Пороги не нарушены сейчас";
   }
 
   function drawSpark(svg, metric, win, stroke) {
@@ -686,10 +739,20 @@
     });
   }
 
+  function compactEventLabel(item) {
+    if (item.label.startsWith("Выкладка")) return item.label.toLowerCase();
+    if (item.label.startsWith("Откат")) return item.label.toLowerCase();
+    if (item.kind === "resolve") return "восстановлено";
+    return "правило 5xx";
+  }
+
   function renderEvents() {
     const win = windowRange();
     const items = Telemetry.annotations(win.from, win.to);
     const host = document.getElementById("events");
+    const summary = document.getElementById("event-summary");
+    summary.dataset.empty = String(!items.length);
+    summary.textContent = items.map((item) => `${formatTime(item.at, win.to - win.from)} ${compactEventLabel(item)}`).join(" · ");
     host.replaceChildren();
     if (!items.length) {
       const empty = document.createElement("li");
@@ -738,6 +801,8 @@
     unit: "",
     legend: "legend-rps",
     note: "desc-rps",
+    summary: "sum",
+    summaryUnit: "запросов/с",
     annotations: true,
     height: 232,
   }));
@@ -752,6 +817,8 @@
     stacked: true,
     legend: "legend-err",
     note: "desc-err",
+    summary: "sum",
+    summaryUnit: "ответов/с",
     height: 232,
   }));
 
@@ -776,11 +843,12 @@
       key: node_.key,
       metric: "cpu." + node_.key,
       label: node_.label,
-      tone: ["neutral", "primary", "cool"][index],
+      tone: ["neutral", "cool", "warm"][index],
     })),
     unit: "%",
     legend: "legend-cpu",
     note: "desc-cpu",
+    summary: "max",
     height: 296,
     threshold: 90,
     thresholdLabel: "порог 90 %",
@@ -800,11 +868,36 @@
 
   document.getElementById("zoom-reset").addEventListener("click", resetZoom);
 
+  const themeButton = document.getElementById("theme");
+  function applyTheme(theme) {
+    const light = theme === "light";
+    document.documentElement.dataset.theme = light ? "light" : "dark";
+    themeButton.setAttribute("aria-pressed", String(light));
+    const themeAction = light ? "Включить тёмную тему" : "Включить светлую тему";
+    themeButton.setAttribute("aria-label", themeAction);
+    themeButton.title = themeAction;
+    try { localStorage.setItem("craft-theme", light ? "light" : "dark"); } catch (error) { /* хранилище необязательно */ }
+    refreshTones();
+    charts.forEach((chart) => {
+      if (chart.refreshLegend) chart.refreshLegend();
+      chart.render();
+    });
+    renderStats();
+  }
+  themeButton.addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "light" ? "dark" : "light"));
+  const initialLightTheme = document.documentElement.dataset.theme === "light";
+  themeButton.setAttribute("aria-pressed", String(initialLightTheme));
+  themeButton.setAttribute("aria-label", initialLightTheme ? "Включить тёмную тему" : "Включить светлую тему");
+  themeButton.title = themeButton.getAttribute("aria-label");
+
   const pauseButton = document.getElementById("pause");
   function togglePause() {
     state.paused = !state.paused;
     state.frozenNow = state.paused ? Date.now() : null;
     pauseButton.setAttribute("aria-pressed", String(state.paused));
+    const pauseAction = state.paused ? "Продолжить обновление" : "Приостановить обновление";
+    pauseButton.setAttribute("aria-label", pauseAction);
+    pauseButton.title = pauseAction;
     schedule();
     renderAll();
   }
@@ -817,6 +910,14 @@
     });
   });
 
+  function syncSortIcons() {
+    document.querySelectorAll("#endpoints th").forEach((th) => {
+      th.querySelector(".sort-icon")?.remove();
+      if (th.getAttribute("aria-sort") === "ascending") th.querySelector("button").append(svgIcon("arrow-up", "icon sort-icon"));
+      if (th.getAttribute("aria-sort") === "descending") th.querySelector("button").append(svgIcon("arrow-down", "icon sort-icon"));
+    });
+  }
+
   document.querySelectorAll("#endpoints th").forEach((th) => {
     th.querySelector("button").addEventListener("click", () => {
       const key = th.dataset.key;
@@ -824,9 +925,11 @@
       document.querySelectorAll("#endpoints th").forEach((other) => {
         other.setAttribute("aria-sort", other === th ? (state.sort.dir === 1 ? "ascending" : "descending") : "none");
       });
+      syncSortIcons();
       renderEndpoints();
     });
   });
+  syncSortIcons();
 
   document.addEventListener("keydown", (event) => {
     const target = event.target instanceof Element ? event.target : null;

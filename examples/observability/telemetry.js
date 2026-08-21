@@ -64,10 +64,10 @@ const Telemetry = (() => {
   }
 
   const SERVICES = [
-    { key: "gate", label: "Шлюз", base: 1180, tone: "primary" },
-    { key: "store", label: "Витрина", base: 760, tone: "neutral" },
-    { key: "jobs", label: "Обработчик", base: 235, tone: "cool" },
-    { key: "search", label: "Поиск", base: 305, tone: "warm" },
+    { key: "gate", label: "Шлюз", base: 1180, tone: "neutral" },
+    { key: "store", label: "Витрина", base: 760, tone: "cool" },
+    { key: "jobs", label: "Обработчик", base: 235, tone: "warm" },
+    { key: "search", label: "Поиск", base: 305, tone: "good" },
   ];
 
   const NODES = [

@@ -70,6 +70,94 @@
   });
 
   const clamp = (n) => Math.max(0, Math.min(total - 1, n));
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const runningCounters = new Map();
+
+  // data-count оставляет в HTML конечное значение для печати, снимков и
+  // прямых ссылок. При раскрытии вперёд меняется только первая цифра в
+  // строке, поэтому единица измерения и формат числа остаются авторскими.
+  function animateCounter(element) {
+    if (reducedMotion.matches) return;
+
+    const finalText = element.textContent;
+    const match = finalText.match(/-?\d(?:[\d\u00a0\u202f ]*\d)?(?:[.,]\d+)?/);
+    if (!match) return;
+
+    const token = match[0];
+    const target = Number(token.replace(/[\u00a0\u202f ]/g, '').replace(',', '.'));
+    if (!Number.isFinite(target) || target === 0) return;
+
+    const decimalMark = token.includes(',') ? ',' : token.includes('.') ? '.' : '';
+    const decimals = decimalMark ? token.split(decimalMark)[1].length : 0;
+    const groupMark = token.match(/[\u00a0\u202f ]/)?.[0] ?? '';
+    const durationValue = Number(element.dataset.countDuration);
+    const duration = Number.isFinite(durationValue) && durationValue >= 0
+      ? Math.min(durationValue, 10_000)
+      : 900;
+    const prefix = finalText.slice(0, match.index);
+    const suffix = finalText.slice(match.index + token.length);
+
+    if (!element.hasAttribute('aria-label')) {
+      element.setAttribute('aria-label', finalText.trim());
+    }
+
+    // Резервируем ширину конечного текста, не подменяя отсутствующие
+    // разряды видимыми нулями. Правый край числа остаётся на месте.
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    const finalWidth = Math.ceil(range.getBoundingClientRect().width);
+    range.detach();
+    if (finalWidth) {
+      element.style.display = 'inline-block';
+      element.style.inlineSize = `${finalWidth}px`;
+      element.style.textAlign = 'end';
+      element.style.justifySelf = 'start';
+    }
+
+    const format = (value) => {
+      const fixed = Math.abs(value).toFixed(decimals).split('.');
+      if (groupMark) fixed[0] = fixed[0].replace(/\B(?=(\d{3})+(?!\d))/g, groupMark);
+      return `${value < 0 ? '-' : ''}${fixed[0]}${decimals ? decimalMark + fixed[1] : ''}`;
+    };
+
+    const startedAt = performance.now();
+    const state = { frameId: 0, finalText };
+    runningCounters.set(element, state);
+    element.textContent = `${prefix}${format(0)}${suffix}`;
+
+    const frame = (now) => {
+      const progress = duration === 0 ? 1 : Math.max(0, Math.min(1, (now - startedAt) / duration));
+      const eased = 1 - (1 - progress) ** 2;
+      const value = decimals
+        ? target * eased
+        : Math.round(target * eased);
+      element.textContent = progress < 1
+        ? `${prefix}${format(value)}${suffix}`
+        : finalText;
+      if (progress < 1) {
+        state.frameId = requestAnimationFrame(frame);
+      } else {
+        runningCounters.delete(element);
+      }
+    };
+
+    state.frameId = requestAnimationFrame(frame);
+  }
+
+  function finishCounters() {
+    runningCounters.forEach((state, element) => {
+      cancelAnimationFrame(state.frameId);
+      element.textContent = state.finalText;
+    });
+    runningCounters.clear();
+  }
+
+  function animateCounters(root) {
+    if (!root || deck.dataset.mode) return;
+    if (root.matches('[data-count]')) animateCounter(root);
+    root.querySelectorAll('[data-count]').forEach(animateCounter);
+  }
+
   const pageFromHash = () => {
     const page = parseInt(location.hash.slice(1), 10);
     return Number.isFinite(page) ? clamp(page - 1) : 0;
@@ -80,6 +168,7 @@
   let hideHelpAfterPageInput = false;
 
   function render(scroll = false) {
+    finishCounters();
     // Движение принадлежит переходу вперёд, а не состоянию слайда, и
     // достаётся только тому, что раскрылось именно на этом шаге, — его
     // тема помечает атрибутом data-reveal. Всё остальное сразу стоит в
@@ -98,6 +187,7 @@
     const steps = slides[current].querySelectorAll('.frag[data-shown]');
     revealed = forward ? steps[steps.length - 1] ?? slides[current] : null;
     revealed?.setAttribute('data-reveal', '');
+    animateCounters(revealed);
 
     if (helpPageInput) helpPageInput.value = pad(current + 1);
     if (helpPageTotal) helpPageTotal.textContent = `/ ${total}`;

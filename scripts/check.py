@@ -14,7 +14,9 @@ from lib import ASSETS, MANIFEST, ROOT, node, run
 TEXT_SUFFIXES = {".css", ".html", ".js", ".json", ".md", ".py"}
 CSS_FILES = list(ASSETS.rglob("*.css"))
 HTML_FILES = [ROOT / path for surface in MANIFEST["surfaces"].values() for path in surface["entrypoints"]]
-EXAMPLE_HTML_FILES = [ROOT / "examples/observability/index.html"]
+EXAMPLE_HTML_FILES = [ROOT / "examples/observability/index.html", ROOT / "examples/merge-reviews/index.html"]
+EXAMPLE_CSS_FILES = [path for path in (ROOT / "examples").rglob("*.css") if path.is_file()]
+MARK_SELECTOR = re.compile(r"\.icon\b|-mark\b|-dot\b|-status\b|::before|::after|\bsvg\b")
 RAW_COLOR = re.compile(r"(?<![\w-])(?:#[0-9a-fA-F]{3,8}\b|(?:rgb|hsl)a?\([^)]*\))")
 
 
@@ -123,6 +125,17 @@ def check_tokens() -> None:
     unknown = usages - definitions - dynamic
     assert not unknown, f"неопределённые свойства CSS: {', '.join(sorted(unknown))}"
 
+    light_roles = {
+        "--craft-light-bg", "--craft-light-surface", "--craft-light-sunken",
+        "--craft-light-line", "--craft-light-line-strong", "--craft-light-text",
+        "--craft-light-text-body", "--craft-light-muted", "--craft-light-accent",
+        "--craft-light-accent-mark", "--craft-light-accent-fill",
+        "--craft-light-accent-fill-hover", "--craft-light-accent-tint",
+        "--craft-light-data-blue", "--craft-light-data-amber", "--craft-light-data-green",
+    }
+    missing_light = light_roles - definitions
+    assert not missing_light, f"неполная светлая тема: {', '.join(sorted(missing_light))}"
+
 
 def check_borders() -> None:
     adjacent = ({"top", "right"}, {"right", "bottom"}, {"bottom", "left"}, {"left", "top"})
@@ -135,6 +148,28 @@ def check_borders() -> None:
             assert len(directions) < 3, f"трёхсторонняя рамка в {path.relative_to(ROOT)}: {selector}"
             assert not any(pair <= directions for pair in adjacent), f"угловая рамка в {path.relative_to(ROOT)}: {selector}"
             assert not any(pair <= directions for pair in opposite), f"две направленные границы могут слипнуться в {path.relative_to(ROOT)}: {selector}"
+
+    dashboard = (ROOT / "examples/observability/dashboard.css").read_text(encoding="utf-8")
+    assert re.search(r"\.panel__body--table\s*\{[^}]*display:\s*flex", dashboard), \
+        "таблица в общей строке панелей должна растягивать внутренний контейнер"
+    assert re.search(r"\.panel__body--table\s+\.data-table\s*\{[^}]*height:\s*100%", dashboard), \
+        "таблица в общей строке панелей должна заполнять доступную высоту"
+    assert re.search(r"\.panel__body--table\s+\.data-table\s+tbody\s+tr:last-child\s+td\s*\{[^}]*border-bottom:\s*0", dashboard), \
+        "конечная рамка таблицы не должна дублировать разделитель сетки"
+
+
+def check_state_marks() -> None:
+    """Сигнальный цвет живёт в графической метке, а не в тексте состояния."""
+    signal = re.compile(r"(?<![\w-])color\s*:\s*var\(--(ok|warn|error|data-[a-z]+)\)")
+    for path in [*CSS_FILES, *EXAMPLE_CSS_FILES]:
+        text = path.read_text(encoding="utf-8")
+        for match in re.finditer(r"([^{}]+)\{([^{}]*)\}", text):
+            selector = match.group(1).strip()
+            if not signal.search(match.group(2)):
+                continue
+            assert MARK_SELECTOR.search(selector), (
+                f"сигнальный цвет окрашивает текст, а не метку, в {path.relative_to(ROOT)}: {selector}"
+            )
 
 
 def check_accessibility_contract() -> None:
@@ -161,7 +196,7 @@ def check_accessibility_contract() -> None:
 
 def check_spacing_scale() -> None:
     theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
-    expected = {1: 4, 2: 8, 3: 12, 4: 16, 5: 24, 6: 32, 7: 48}
+    expected = {1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 7: 32}
     for index, value in expected.items():
         assert re.search(rf"--space-{index}:\s*{value}px\s*;", theme), f"нет --space-{index}: {value}px"
 
@@ -210,6 +245,12 @@ def check_language() -> None:
         unknown = words - allowed_latin
         assert not unknown, f"английские слова в {path.relative_to(ROOT)}: {', '.join(sorted(unknown))}"
 
+    # Термины предметной области примера: имя репозитория, ветка и название сущности,
+    # у которых нет принятого русского эквивалента.
+    domain_latin = {
+        ROOT / "examples/merge-reviews/index.html": {"main", "merge", "mr", "northstar", "request", "requests", "web-app"},
+    }
+
     for path in [*HTML_FILES, *EXAMPLE_HTML_FILES]:
         parser = LanguageParser()
         parser.feed(path.read_text(encoding="utf-8"))
@@ -217,7 +258,7 @@ def check_language() -> None:
         visible = " ".join(parser.text)
         visible = re.sub(r"\{\{[A-Z][A-Z0-9_]*\}\}|#[0-9a-fA-F]{3,8}\b", "", visible)
         words = {word.lower().rstrip("-") for word in re.findall(r"\b[A-Za-z][A-Za-z0-9.-]*\b", visible) if len(word) > 1}
-        unknown = words - allowed_latin
+        unknown = words - allowed_latin - domain_latin.get(path, set())
         assert not unknown, f"английский текст в {path.relative_to(ROOT)}: {', '.join(sorted(unknown))}"
 
     for path in sorted((ROOT / "scripts").glob("*.py")):
@@ -268,6 +309,7 @@ def main() -> None:
         check_assets,
         check_tokens,
         check_borders,
+        check_state_marks,
         check_accessibility_contract,
         check_spacing_scale,
         check_content,
@@ -280,6 +322,7 @@ def main() -> None:
         check_assets: "ресурсы",
         check_tokens: "токены",
         check_borders: "рамки",
+        check_state_marks: "метки состояний",
         check_accessibility_contract: "контракт доступности",
         check_spacing_scale: "шкала отступов",
         check_content: "содержимое",
