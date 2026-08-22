@@ -64,15 +64,30 @@ def main() -> None:
         assert archive.stat().st_size == metadata["bytes"]
         assert digest(archive) == metadata["sha256"]
         assert len(names) == metadata["entries"]
+        expected_catalogs = {
+            "craft-interface": {"catalog/interfaces/index.html"},
+            "craft-slides": {"catalog/slides/index.html"},
+            "craft-complete": {"catalog/interfaces/index.html", "catalog/slides/index.html"},
+        }[package]
+        relative_names = {"/".join(PurePosixPath(name).parts[1:]) for name in names}
+        assert expected_catalogs <= relative_names, f"{package}: не включён публичный каталог"
 
     with tempfile.TemporaryDirectory(prefix="craft-release-") as directory:
         temporary = Path(directory)
+        for package, surface in (("craft-interface", "interfaces"), ("craft-slides", "slides")):
+            archive = dist / expected[package]["file"]
+            with zipfile.ZipFile(archive) as bundle:
+                bundle.extractall(temporary)
+            execute(ROOT, sys.executable, ROOT / "scripts/check_project.py", temporary / package / f"catalog/{surface}", "--static-only")
+
         complete = dist / expected["craft-complete"]["file"]
         with zipfile.ZipFile(complete) as package:
             package.extractall(temporary)
         root = temporary / "craft-complete"
         scripts = root / "scripts"
         assert {path.name for path in scripts.glob("*.py")} == RUNTIME_SCRIPTS
+        execute(root, sys.executable, scripts / "check_project.py", root / "catalog/interfaces")
+        execute(root, sys.executable, scripts / "check_project.py", root / "catalog/slides")
 
         interface = temporary / "interface-project"
         execute(root, sys.executable, scripts / "scaffold.py", interface, "--surface", "interface", "--title", "Проверка релиза")

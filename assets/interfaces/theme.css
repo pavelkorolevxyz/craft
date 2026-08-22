@@ -288,17 +288,17 @@ textarea { min-height: 6rem; resize: vertical; }
    геометрии между браузерами, а Craft держит прямые углы и одну толщину
    линии. Круг остаётся только у радиокнопки, где форма несёт смысл выбора
    одного значения. */
-input[type="checkbox"], input[type="radio"] {
+input[type="checkbox"]:not([role="switch"]), input[type="radio"] {
   flex: none; appearance: none; display: inline-grid; place-content: center;
   width: 1.05rem; height: 1.05rem; min-height: 0; padding: 0; margin: 0;
   border: 1px solid var(--line-strong); background: var(--surface-sunken); cursor: pointer;
 }
 input[type="radio"] { border-radius: 50%; }
-input[type="checkbox"]::after, input[type="radio"]::after { content: ""; }
-input[type="checkbox"]::after { width: .3rem; height: .58rem; border: solid transparent; border-width: 0 2px 2px 0; transform: translateY(-.08rem) rotate(45deg); }
+input[type="checkbox"]:not([role="switch"])::after, input[type="radio"]::after { content: ""; }
+input[type="checkbox"]:not([role="switch"])::after { width: .3rem; height: .58rem; border: solid transparent; border-width: 0 2px 2px 0; transform: translateY(-.08rem) rotate(45deg); }
 input[type="radio"]::after { width: .45rem; height: .45rem; border-radius: 50%; background: transparent; }
-input[type="checkbox"]:checked, input[type="radio"]:checked { border-color: var(--accent-fill); background: var(--accent-fill); }
-input[type="checkbox"]:checked::after { border-color: var(--on-accent); }
+input[type="checkbox"]:not([role="switch"]):checked, input[type="radio"]:checked { border-color: var(--accent-fill); background: var(--accent-fill); }
+input[type="checkbox"]:not([role="switch"]):checked::after { border-color: var(--on-accent); }
 input[type="radio"]:checked::after { background: var(--on-accent); }
 input[type="checkbox"]:indeterminate { border-color: var(--accent-fill); background: var(--accent-fill); }
 input[type="checkbox"]:indeterminate::after { width: .5rem; height: 2px; border: 0; background: var(--on-accent); transform: none; }
@@ -312,11 +312,12 @@ input[type="checkbox"]:disabled, input[type="radio"]:disabled { border-color: va
    форма отличает его от флажка, а не скруглением. */
 .switch { display: inline-flex; align-items: center; gap: var(--space-3); min-height: 2.5rem; color: var(--text); cursor: pointer; }
 .switch input {
-  flex: none; appearance: none; width: 2.6rem; height: 1.4rem; min-height: 0;
-  padding: 2px; margin: 0; border: 1px solid var(--line-strong);
-  background: var(--surface-sunken); cursor: pointer;
+  flex: none; appearance: none; display: inline-flex; align-items: center;
+  width: 2.6rem; height: 1.4rem; min-height: 0; padding: 2px; margin: 0;
+  border: 1px solid var(--line-strong); background: var(--surface-sunken); cursor: pointer;
 }
-.switch input::after { content: ""; display: block; width: 1rem; height: 100%; background: var(--muted); transition: transform 160ms var(--ease-out); }
+/* Процент высоты внутри поля не разрешается, поэтому ползунок задан явно. */
+.switch input::after { content: ""; display: block; width: 1rem; height: 1rem; background: var(--muted); transition: transform 160ms var(--ease-out); }
 .switch input:checked { border-color: var(--accent-fill); background: var(--accent-fill); }
 .switch input:checked::after { background: var(--on-accent); transform: translateX(calc(1.6rem - 6px)); }
 .switch input:not(:disabled):hover { border-color: var(--accent-mark); }

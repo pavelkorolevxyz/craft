@@ -15,12 +15,12 @@ from lib import ASSETS, MANIFEST, ROOT, node, run
 TEXT_SUFFIXES = {".css", ".html", ".js", ".json", ".md", ".py"}
 # output/ — черновая песочница вне репозитория, её содержимое не проверяется.
 IGNORED_DIRS = {".git", ".ralph", "output", "dist", "artifacts", "__pycache__"}
-CSS_FILES = [*ASSETS.rglob("*.css"), ROOT / "tests/fixtures/interfaces/specimen.css"]
+CATALOG_HTML = [ROOT / surface["catalog"] for surface in MANIFEST["surfaces"].values()]
+CSS_FILES = [*ASSETS.rglob("*.css"), ROOT / "catalog/interfaces/catalog.css"]
 HTML_FILES = [ROOT / path for surface in MANIFEST["surfaces"].values() for path in surface["entrypoints"]]
 FRAGMENT_DEFINITIONS = [fragment for surface in MANIFEST["surfaces"].values() for fragment in surface.get("fragments", [])]
 FRAGMENT_FILES = [ROOT / fragment["path"] for fragment in FRAGMENT_DEFINITIONS]
-FIXTURE_HTML = [ROOT / "tests/fixtures/interfaces/index.html", ROOT / "tests/fixtures/slides/index.html"]
-CHECKED_HTML = [*HTML_FILES, *FIXTURE_HTML]
+CHECKED_HTML = [*HTML_FILES, *CATALOG_HTML]
 MARK_SELECTOR = re.compile(r"\.icon\b|-mark\b|-dot\b|-status\b|::before|::after|\bsvg\b")
 RAW_COLOR = re.compile(r"(?<![\w-])(?:#[0-9a-fA-F]{3,8}\b|(?:rgb|hsl)a?\([^)]*\))")
 
@@ -91,13 +91,13 @@ def check_required() -> None:
         ASSETS / "interfaces/copy.js",
         ASSETS / "interfaces/dialog.js",
         ASSETS / "interfaces/tabs.js",
-        ROOT / "tests/fixtures/interfaces/specimen.css",
-        ROOT / "tests/fixtures/interfaces/specimen.js",
+        ROOT / "catalog/interfaces/catalog.css",
+        ROOT / "catalog/interfaces/catalog.js",
         ASSETS / "slides/base.css",
         ASSETS / "slides/theme.css",
         ASSETS / "slides/deck.js",
         *HTML_FILES,
-        *FIXTURE_HTML,
+        *CATALOG_HTML,
         *FRAGMENT_FILES,
     ]
     for path in required:
@@ -151,7 +151,7 @@ def check_tokens() -> None:
 def check_css_api() -> None:
     report = audit_css()
     groups = report["groups"]
-    assert not groups["fixtureOnly"], f"классы используются только фикстурами: {', '.join(groups['fixtureOnly'])}"
+    assert not groups["catalogOnly"], f"классы используются только каталогом: {', '.join(groups['catalogOnly'])}"
     assert not groups["unused"], f"неиспользуемые классы: {', '.join(groups['unused'])}"
 
 
@@ -251,9 +251,9 @@ def check_spacing_scale() -> None:
     for index, value in expected.items():
         assert re.search(rf"--space-{index}:\s*{value}px\s*;", theme), f"нет --space-{index}: {value}px"
 
-    specimen = (ROOT / "tests/fixtures/interfaces/index.html").read_text(encoding="utf-8")
+    catalog = (ROOT / "catalog/interfaces/index.html").read_text(encoding="utf-8")
     for index in expected:
-        assert f"var(--space-{index})" in specimen, f"каталог не показывает --space-{index}"
+        assert f"var(--space-{index})" in catalog, f"каталог не показывает --space-{index}"
 
 
 def check_fragment_manifest() -> None:
@@ -313,6 +313,13 @@ def check_slide_layouts() -> None:
         assert len(re.findall(r'data-slide-layout="[a-z-]+"', html)) == 1, f"{path.relative_to(ROOT)} не объявляет раскладку"
     starter = (ASSETS / "slides/starter/index.html").read_text(encoding="utf-8")
     assert re.findall(r'data-slide-layout="([a-z-]+)"', starter) == ["title"], "стартовая колода должна содержать только титульный слайд"
+
+    catalog_definition = MANIFEST["surfaces"]["slides"]
+    catalog = (ROOT / catalog_definition["catalog"]).read_text(encoding="utf-8")
+    catalog_layouts = set(re.findall(r'data-slide-layout="([a-z-]+)"', catalog))
+    assert catalog_layouts == set(catalog_definition["catalogLayouts"]), "реестр раскладок каталога расходится с HTML"
+    source_pages = len(re.findall(r'<section class="slide\b', catalog))
+    assert catalog_definition["catalogPages"] > source_pages, "каталог не проверяет пошаговое раскрытие"
 
 
 def check_content() -> None:
@@ -398,8 +405,7 @@ def check_markdown_links() -> None:
 
 
 def check_javascript() -> None:
-    paths = [path for path in ASSETS.rglob("*.js") if "vendor" not in path.parts]
-    paths.append(ROOT / "tests/fixtures/interfaces/specimen.js")
+    paths = [path for path in [*ASSETS.rglob("*.js"), *(ROOT / "catalog").rglob("*.js")] if "vendor" not in path.parts]
     for path in paths:
         run(node(), "--check", path)
 

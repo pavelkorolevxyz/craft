@@ -1,6 +1,6 @@
 {
   "name": "Craft",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "language": "ru",
   "surfaces": {
     "interface": {
@@ -243,7 +243,8 @@
           "dependencies": []
         }
       ],
-      "fragmentTarget": "#craft-content"
+      "fragmentTarget": "#craft-content",
+      "catalog": "catalog/interfaces/index.html"
     },
     "slides": {
       "templates": [
@@ -389,7 +390,52 @@
           "dependencies": []
         }
       ],
-      "fragmentTarget": ".slides"
+      "fragmentTarget": ".slides",
+      "catalog": "catalog/slides/index.html",
+      "catalogPages": 58,
+      "catalogLayouts": [
+        "title",
+        "cover",
+        "context",
+        "section",
+        "list",
+        "statement",
+        "comparison",
+        "quote",
+        "metrics",
+        "code",
+        "figure",
+        "screenshot",
+        "table",
+        "steps",
+        "chart",
+        "timeline",
+        "flow",
+        "visual-comparison",
+        "resource",
+        "end"
+      ],
+      "catalogCssClasses": [
+        "about",
+        "byline",
+        "column-track",
+        "jersey",
+        "lanes",
+        "line-base",
+        "line-key",
+        "line-keys",
+        "line-mark",
+        "line-plot",
+        "line-scale",
+        "line-series",
+        "s-cover",
+        "s-quote",
+        "s-shot",
+        "svg-defs",
+        "takeaways",
+        "timeline-key",
+        "is-current"
+      ]
     }
   },
   "dynamicCssProperties": [

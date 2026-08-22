@@ -171,6 +171,23 @@
 }
 
 
+/* Векторная диагональ дорожек: линии выходят за границы viewBox,
+   поэтому узор без разрывов закрывает слайд от края до края. */
+.lanes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.lanes path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 48;
+  opacity: .09;
+}
+
 /* --- служебка: заголовок слайда сверху слева, номер снизу справа.
    Оба всегда в одном месте; заголовок необязателен. --- */
 .slide-title, .slide-number {
@@ -217,18 +234,35 @@
 .surface-accent .slide-title, .surface-accent .slide-number { color: var(--on-accent); }
 /* Короткая подпись внутри блока: отметка времени, сторона сравнения,
    категория графика, пояснение к показателю. Одна роль — один кегль. */
-.comparison-label, .chart-row > span {
+.timeline-key, .comparison-label, .chart-row > span, .scoreboard .k {
   color: var(--muted);
   font: 500 1.5cqw/1.4 var(--font-text);
   margin: 0;
 }
 
-.s-title-card .type-hero {
+/* --- 01 обложка --- */
+.s-cover .type-hero, .s-title-card .type-hero {
   font-size: 8.2cqw; line-height: 1.02; max-width: 13ch; text-wrap: balance;
 }
+/* автор стоит в паре к номеру: тот же край, та же линия, тот же кегль */
+.byline {
+  position: absolute; left: var(--pad-x); bottom: var(--pad-y);
+  font: 700 2.9cqw/1 var(--font-display);
+  letter-spacing: -.03em; margin: 0;
+}
+/* на обложке номер не нужен: считать не от чего */
+.s-cover .slide-number { display: none; }
 
-/* --- раздел --- */
+/* --- 02 раздел --- */
+.s-section .lanes path {
+  stroke: var(--surface-muted);
+  opacity: 1;
+}
 .s-section .pad { justify-content: center; gap: 1.5cqh; }
+.s-section .jersey {
+  position: absolute; right: 3cqw; top: 50%; transform: translateY(-50%);
+  font: 700 30cqw/.78 var(--font-display); letter-spacing: -.04em; color: var(--text);
+}
 .s-section .type-hero { position: relative; font-size: 6.4cqw; }
 
 /* --- 04 план: список разделов, больше ничего --- */
@@ -289,6 +323,28 @@
   font: 400 1.8cqw/1.4 var(--font-text);
 }
 .is-after .comparison-label { color: var(--muted); opacity: 1; }
+
+/* --- 07 цитата --- */
+.s-quote .pad { justify-content: center; }
+.s-quote figure { margin: 0; display: grid; gap: 3.4cqh; }
+.s-quote blockquote {
+  margin: 0; font: 600 4.6cqw/1.18 var(--font-display); letter-spacing: -.025em; max-width: 22ch;
+}
+.s-quote figcaption { font: 400 1.7cqw/1.46 var(--font-text); opacity: .85; }
+.s-quote figcaption b { display: block; font-weight: 600; opacity: 1; }
+
+/* --- 08 табло: те же колонки, что и у шагов, разделённые тонкой линией --- */
+.scoreboard {
+  display: grid; grid-template-columns: repeat(3, 1fr); flex: 1;
+  align-content: center;
+}
+.scoreboard > div { padding-right: 2.4cqw; display: grid; align-content: start; }
+.scoreboard > div:not(:first-child) {
+  padding-left: 2.4cqw;
+  border-left: var(--rule) solid var(--line);
+}
+.scoreboard > div > .frag { display: grid; gap: 1.4cqh; }
+.scoreboard .v { color: var(--accent); }
 
 /* --- 09 код --- */
 /* Синтаксис красит локальный Highlight.js; моноширинный шрифт используется только здесь. */
@@ -375,6 +431,20 @@
 }
 .data-table tr[data-total] { background: var(--accent-fill); color: var(--on-accent); }
 
+/* --- 12 дистанция --- */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); flex: 1; align-content: center; }
+.steps > div { padding: 0 1.8cqw; display: grid; gap: 1.1cqh; align-content: start; border-top: var(--rule-strong) solid var(--line); padding-top: 2cqh; }
+/* Последний раскрытый элемент и есть текущий шаг. */
+.steps > .frag[data-shown]:not(:has(~ .frag[data-shown])) {
+  border-top-color: var(--accent-mark);
+}
+.steps .n {
+  font: 700 2.5cqw/1 var(--font-display); letter-spacing: -.03em; color: var(--accent);
+}
+/* Заголовок и пояснение колонки одинаковы у шагов и у событий таймлайна. */
+.steps h3, .timeline h3 { font: 600 1.8cqw/1.25 var(--font-display); letter-spacing: -.02em; margin: 0; }
+.steps p, .timeline p { font: 400 1.55cqw/1.5 var(--font-text); color: var(--muted); margin: 0; }
+
 /* --- график: подпись и значение стоят над дорожкой, вывод — по центру графика --- */
 .chart-layout {
   min-height: 0;
@@ -405,6 +475,178 @@
 .chart-track i { display: block; width: var(--value); height: 100%; background: var(--text); }
 .chart-row.is-focus > span, .chart-row.is-focus > strong { color: var(--accent); }
 .chart-row.is-focus .chart-track i { background: var(--accent-mark); }
+
+/* --- вертикальный график: та же величина, но по периодам --- */
+/* Периоды идут слева направо, поэтому столбцы стоят, а не лежат:
+   порядок времени читается сам. Подписи снизу оттого короткие — под
+   столбец такой толщины длинное название не встаёт; если названия
+   длинные, берут горизонтальный .bar-chart.
+
+   Колонка равна толщине столбца, а промежуток между колонками — тот же
+   --chart-gap, что между дорожками лежащего графика: два графика на
+   соседних слайдах должны держать один ритм, иначе стоящий выглядит
+   разреженным. Из-за этого график занимает не всю ширину поля, а
+   ровно свою, и стоит по центру. Подпись и значение шире колонки и
+   центрируются относительно неё, выходя за края.
+
+   Все три ряда — значение, дорожка, период — общие для всех столбцов
+   через subgrid, поэтому опора у графика одна на всех. */
+.column-chart {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--chart-bar);
+  justify-content: center;
+  column-gap: var(--chart-gap);
+}
+.column {
+  min-width: 0;
+  grid-row: span 3;
+  display: grid;
+  grid-template-rows: subgrid;
+  row-gap: 1.2cqh;
+}
+.column > strong {
+  grid-row: 1;
+  justify-self: center;
+  width: max-content;
+  color: var(--text);
+  font: 650 1.9cqw/1 var(--font-display);
+}
+.column > span {
+  grid-row: 3;
+  justify-self: center;
+  width: max-content;
+  color: var(--muted);
+  font: 500 1.5cqw/1.2 var(--font-text);
+}
+/* Столбец растёт снизу, поэтому флекс с прижимом к концу: доля высоты
+   считается от дорожки, а её высоту задаёт ряд сетки. Ширина дорожки
+   ограничена: во всю ячейку столбец превращается в плакатную плашку и
+   спорит с текстом, а сравниваются столбцы всё равно высотой. */
+.column-track {
+  grid-row: 2;
+  background: var(--surface);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.column-track i { display: block; height: var(--value); background: var(--text); }
+.column.is-focus > span, .column.is-focus > strong { color: var(--accent); }
+.column.is-focus .column-track i { background: var(--accent-mark); }
+
+/* --- линейный график: величина, меняющаяся непрерывно --- */
+/* Линия читается формой, а не отдельными точками, поэтому маркеров на
+   ней нет: точки предлагают считывать каждое значение, а на слайде
+   значение важно одно. Момент, о котором идёт речь, отмечен стойкой от
+   опоры до линии, и его же период выделен в шкале.
+
+   Второй ряд задаёт фон сравнения и потому приглушён — акцент носит
+   тот ряд, о котором доклад. Названия рядов стоят у концов линий, а не
+   в отдельной легенде: легенда заставляет глаз ходить от линии к
+   образцу цвета и обратно, подпись у конца читается на месте. */
+.line-chart {
+  /* Колонка подписей: ширина по самому длинному названию ряда. */
+  --line-keys: 15cqw;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--line-keys);
+  grid-template-rows: minmax(0, 1fr) auto;
+  column-gap: 1.4cqw;
+  row-gap: 1.6cqh;
+}
+.line-plot { grid-area: 1 / 1; min-height: 0; }
+.line-keys { grid-area: 1 / 2; position: relative; }
+/* Подпись стоит на высоте конца своей линии: доля берётся от поля
+   графика, поэтому колонка подписей делит с ним ряд сетки. */
+.line-key {
+  position: absolute;
+  left: 0;
+  top: var(--at);
+  translate: 0 -50%;
+  margin: 0;
+  color: var(--muted);
+  font: 500 1.5cqw/1.3 var(--font-text);
+}
+.line-key.is-focus { color: var(--accent); }
+.line-plot svg { display: block; width: 100%; height: 100%; overflow: visible; }
+/* Линия тянется по обеим осям вместе с полем графика, а толщина линий
+   остаётся экранной: иначе растяжение сплющивало бы штрих. */
+.line-base {
+  stroke: var(--line);
+  stroke-width: var(--rule);
+  vector-effect: non-scaling-stroke;
+}
+/* Стойка отмечает момент, а не значение: пунктир отличает её от линий
+   самого графика — сплошная здесь читалась бы как ещё один ряд. */
+.line-mark {
+  stroke: var(--accent-mark);
+  stroke-width: var(--rule);
+  stroke-dasharray: 4px 5px;
+  vector-effect: non-scaling-stroke;
+}
+.line-series {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: var(--rule-strong);
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.line-scale { grid-area: 2 / 1; display: flex; justify-content: space-between; gap: 1cqw; }
+.line-scale > span { color: var(--muted); font: 500 1.5cqw/1.2 var(--font-text); }
+.line-series.is-focus { stroke: var(--accent-mark); }
+.line-scale > .is-focus { color: var(--accent); }
+
+/* --- таймлайн: непрерывная ось времени, событие отмечено точкой на ней --- */
+.timeline {
+  --timeline-gap: 2cqw;
+  min-height: 0;
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 5), minmax(0, 1fr));
+  align-content: center;
+}
+.timeline li { min-width: 0; padding-right: var(--timeline-gap); }
+.timeline li > i { position: relative; display: block; height: 1.25cqw; margin: 2.4cqh 0 2.6cqh; }
+/* Отрезки соседних событий смыкаются в одну линию. */
+.timeline li > i::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: calc(-1 * var(--timeline-gap));
+  top: 50%;
+  border-top: var(--rule) solid var(--line);
+}
+/* Ось доходит только до последнего раскрытого события. */
+.timeline li:last-child > i::before,
+.timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) > i::before { display: none; }
+/* Акцент держит событие, о котором идёт речь: последнее раскрытое
+   или явно отмеченное на нераскрывающемся таймлайне. */
+.timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) > i::after,
+.timeline .is-current > i::after { background: var(--accent-mark); }
+.timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) .timeline-key,
+.timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) h3,
+.timeline .is-current .timeline-key,
+.timeline .is-current h3 { color: var(--accent); }
+.timeline li > i::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.25cqw;
+  height: 1.25cqw;
+  border-radius: 50%;
+  background: var(--muted);
+  outline: .3cqw solid var(--bg);
+}
+.timeline-key { display: block; }
+.timeline p { margin-top: .8cqh; max-width: 18ch; }
 
 /* --- схема процесса: равные прямоугольники, стрелка на весь промежуток ---
    Связи рисуются полосками фона, а не рамками: одна деталь — один отрезок,
@@ -534,13 +776,23 @@
 
 /* --- заголовочная перебивка: обложка без мотива и служебки --- */
 .s-title-card .pad { justify-content: center; }
-/* Медиа с фиксированным портретным отношением сторон. */
+/* --- обо мне: слева кто, справа фото --- */
+.about {
+  display: grid; grid-template-columns: 1fr auto; gap: 5cqw; align-items: center;
+}
+.about .name { font: 600 4.4cqw/1.1 var(--font-display); letter-spacing: -.03em; margin: 0 0 2cqh; }
+.about p { font: 400 2.1cqw/1.45 var(--font-text); margin: 0 0 1cqh; max-width: 34ch; }
+.about .handle { font: 500 2.1cqw/1.45 var(--font-text); color: var(--accent); margin-top: 2cqh; }
 .photo {
   position: relative;
   margin: 0; width: 26cqw; aspect-ratio: 3/4;
   background: var(--surface); overflow: hidden;
 }
 .photo .placeholder { --placeholder-inset: 0; }
+
+/* --- итоги: выводы одной строкой каждый --- */
+/* Разметка и плотность приходят из .plain-list; рецепт задаёт только кегль. */
+.takeaways { font: 500 2.9cqw/1.25 var(--font-display); letter-spacing: -.025em; }
 
 /* --- QR: один блок для ресурса внутри доклада и для финала ---
    Квадрат с акцентным контуром и адрес рядом — один элемент. --- */
@@ -565,21 +817,60 @@
   white-space: nowrap;
 }
 
-/* Полноразмерное медиа без отдельного рецепта раскладки. */
+/* --- скриншот во весь слайд: поля не нужны, картинка и есть содержание --- */
+.s-shot .pad { padding: 0; }
 .shot {
-  position: relative; margin: 0;
+  position: absolute; inset: 0; margin: 0;
   display: grid; place-items: center;
-  min-height: 0; background: var(--surface);
+  background: var(--surface);
 }
 .shot .placeholder { --placeholder-inset: 3cqh 2cqw; }
-.shot figcaption { font: 400 1.6cqw/1.4 var(--font-text); color: var(--muted); }
+/* Подложка уходит за край только по горизонтали. Она вынесена в
+   псевдоэлемент, поэтому padding не сдвигает базовую линию текста. */
+.s-shot .slide-title, .s-shot .slide-number, .shot figcaption {
+  z-index: 2;
+  isolation: isolate;
+}
+.s-shot .slide-title::before,
+.s-shot .slide-number::before,
+.shot figcaption::before {
+  content: "";
+  position: absolute;
+  inset-block: -.8cqh;
+  z-index: -1;
+  background: var(--bg);
+}
+.s-shot .slide-title::before,
+.shot figcaption::before {
+  left: calc(-1 * var(--pad-x));
+  right: -1.4cqw;
+}
+.s-shot .slide-number::before {
+  left: -1.4cqw;
+  right: calc(-1 * var(--pad-x));
+}
+.shot figcaption {
+  position: absolute; left: var(--pad-x); bottom: var(--pad-y);
+  font: 400 1.6cqw/1.4 var(--font-text); color: var(--muted); max-width: 55cqw;
+}
 
-/* --- финал --- */
+/* --- 14 финал --- */
 .s-end .pad { justify-content: center; gap: 4cqh; }
 .s-end .handle {
   font: 600 3.2cqw/1.1 var(--font-display); letter-spacing: -.03em;
   color: var(--accent); margin: 0;
 }
+.s-end .qr-link {
+  position: absolute;
+  right: var(--pad-x);
+  top: 50%;
+  transform: translateY(-50%);
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 2cqw;
+}
+.s-end .qr { order: 2; }
+.s-end .where { font-size: 1.5cqw; text-align: right; }
 
 /* ============================================================
    Движение раскрытия
@@ -609,8 +900,39 @@
 .chart-row:nth-child(4) { --chart-delay: 270ms; }
 .chart-row:nth-child(n+5) { --chart-delay: 360ms; }
 
+/* Столбец растёт от опоры вверх — то же движение, повёрнутое вместе с
+   графиком. Задержки между столбцами нет: периоды сравниваются целиком,
+   и очередь по одному растянула бы это на лишние полсекунды. */
+@keyframes column-track-grow { from { height: 0; } }
+
+[data-reveal] .column-track i {
+  animation: column-track-grow 900ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* Линия появляется слева направо, как её и читают, — вместе с опорой и
+   отметкой момента: они попадают под ту же обрезку и открываются
+   каждый на своей доле пути. Кривая ровная, с торможением к концу:
+   выброс, которым выезжает столбец, для хода по расстоянию не годится —
+   он съедает почти весь путь за первые сто миллисекунд.
+
+   Оба конца обрезки заданы явно: базовое значение свойства — none,
+   а inset() с none не интерполируется и дал бы скачок на середине. */
+@keyframes line-plot-draw {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0); }
+}
+/* Названия рядов ждут свои линии: подпись у конца пути, которого ещё
+   нет, — обещание вместо факта. */
+@keyframes line-key-in { from { opacity: 0; } to { opacity: 1; } }
+
+[data-reveal] .line-plot svg {
+  animation: line-plot-draw 900ms cubic-bezier(.35, .35, .65, 1) both;
+}
+[data-reveal] .line-key { animation: line-key-in 200ms linear 900ms both; }
+
 /* Цифры выравниваются по табличной ширине везде, где их сравнивают. */
 .slide-number, .type-metric, .comparison-value, .bullets > li::before,
-.chart-row > strong, .data-table .num {
+.steps .n, .timeline-key, .chart-row > strong, .data-table .num,
+.s-section .jersey {
   font-variant-numeric: tabular-nums;
 }

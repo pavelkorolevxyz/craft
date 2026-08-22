@@ -48,24 +48,26 @@ def audit() -> dict[str, object]:
         public_html.extend(ROOT / fragment["path"] for fragment in surface["fragments"])
     public_js = list(ASSETS.rglob("*.js"))
     references = sorted((ROOT / "references").rglob("*.md")) + [ROOT / "README.md", ROOT / "SKILL.md"]
-    fixtures = sorted((ROOT / "tests/fixtures").rglob("*"))
-    fixtures = [path for path in fixtures if path.is_file() and path.suffix in {".html", ".css", ".js"}]
+    catalogs = [ROOT / surface["catalog"] for surface in MANIFEST["surfaces"].values()]
 
     definitions = class_definitions(css_paths)
     public_text = read_all([*public_html, *public_js])
     reference_text = read_all(references)
-    fixture_text = read_all(fixtures)
+    catalog_text = read_all(catalogs)
     dynamic = set(MANIFEST.get("dynamicCssClasses", []))
-    unknown_dynamic = dynamic - set(definitions)
-    assert not unknown_dynamic, f"не определены динамические классы: {', '.join(sorted(unknown_dynamic))}"
-    groups: dict[str, list[str]] = {"runtime": [], "documented": [], "fixtureOnly": [], "unused": []}
+    catalog_classes = {name for surface in MANIFEST["surfaces"].values() for name in surface.get("catalogCssClasses", [])}
+    unknown_dynamic = (dynamic | catalog_classes) - set(definitions)
+    assert not unknown_dynamic, f"не определены зарегистрированные классы: {', '.join(sorted(unknown_dynamic))}"
+    missing_catalog_classes = {name for name in catalog_classes if not contains(catalog_text, name)}
+    assert not missing_catalog_classes, f"каталог не показывает классы: {', '.join(sorted(missing_catalog_classes))}"
+    groups: dict[str, list[str]] = {"runtime": [], "documented": [], "catalogOnly": [], "unused": []}
     for name in sorted(definitions):
-        if name in dynamic or contains(public_text, name):
+        if name in dynamic or name in catalog_classes or contains(public_text, name):
             groups["runtime"].append(name)
         elif contains(reference_text, name):
             groups["documented"].append(name)
-        elif contains(fixture_text, name):
-            groups["fixtureOnly"].append(name)
+        elif contains(catalog_text, name):
+            groups["catalogOnly"].append(name)
         else:
             groups["unused"].append(name)
     return {
@@ -89,14 +91,14 @@ def main() -> None:
         print(
             "CSS API: "
             f"определено {summary['defined']}, в публичной механике {summary['runtime']}, "
-            f"только в документации {summary['documented']}, только в фикстурах {summary['fixtureOnly']}, "
+            f"только в документации {summary['documented']}, только в каталоге {summary['catalogOnly']}, "
             f"не используется {summary['unused']}"
         )
-        for key, title in (("documented", "Только документация"), ("fixtureOnly", "Только фикстуры"), ("unused", "Не используется")):
+        for key, title in (("documented", "Только документация"), ("catalogOnly", "Только каталог"), ("unused", "Не используется")):
             values = groups[key]
             if values:
                 print(f"{title}: {', '.join(values)}")
-    if args.fail_on_unused and (groups["fixtureOnly"] or groups["unused"]):
+    if args.fail_on_unused and (groups["catalogOnly"] or groups["unused"]):
         raise SystemExit("Найдены классы вне публичной механики")
 
 

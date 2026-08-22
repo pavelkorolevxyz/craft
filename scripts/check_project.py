@@ -82,7 +82,7 @@ def probe(index: Path, surface: str, width: int, height: int) -> tuple[int, ...]
     script = (
         action
         + "const controls=[...document.querySelectorAll('button,input,select,textarea,a[href]')];"
-        + "const unnamed=controls.filter(el=>{const id=el.id;const label=id&&document.querySelector(`label[for=\"${CSS.escape(id)}\"]`);return !(el.getAttribute('aria-label')||el.getAttribute('title')||el.textContent.trim()||label)}).length;"
+        + "const unnamed=controls.filter(el=>{const id=el.id;const label=el.closest('label')||(id&&document.querySelector(`label[for=\"${CSS.escape(id)}\"]`));return !(el.getAttribute('aria-label')||el.getAttribute('title')||el.textContent.trim()||label)}).length;"
         + "const ranks=[...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(el=>Number(el.tagName[1]));const jumps=ranks.slice(1).filter((rank,i)=>rank>ranks[i]+1).length;"
         + "const slides=[...document.querySelectorAll('.slide')];const undeclared=slides.filter(el=>!el.dataset.slideLayout).length;const active=document.querySelectorAll('.slide[data-active]').length;"
         + "document.title=`craft-check:${document.documentElement.scrollWidth}:${innerWidth}:${unnamed}:${jumps}:${changed?1:0}:${slides.length}:${undeclared}:${active}`;"

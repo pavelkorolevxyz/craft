@@ -34,3 +34,7 @@ const selectQueueRow = (selected) => {
 };
 
 queueRows.forEach((row) => row.addEventListener('click', () => selectQueueRow(row)));
+
+/* Частично выбранную группу нельзя выразить разметкой: состояние ставится
+   механикой каталога. */
+for (const box of document.querySelectorAll("[data-catalog-mixed]")) box.indeterminate = true;

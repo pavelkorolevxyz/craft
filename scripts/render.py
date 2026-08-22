@@ -24,26 +24,26 @@ class Shot:
 
 SHOT_LABELS = {
     "interface-starter": "Минимальный интерфейсный стартер",
-    "interface-fixture-dark": "Интерфейсная фикстура · тёмная тема",
-    "interface-fixture-mobile": "Интерфейсная фикстура · мобильный экран",
-    "interface-fixture-light": "Интерфейсная фикстура · светлая тема",
+    "interface-catalog-dark": "Каталог интерфейсов · тёмная тема",
+    "interface-catalog-mobile": "Каталог интерфейсов · мобильный экран",
+    "interface-catalog-light": "Каталог интерфейсов · светлая тема",
     "slides-starter": "Минимальная колода",
-    "slides-fixture-cover": "Слайдовая фикстура · титульная раскладка",
-    "slides-fixture-content": "Слайдовая фикстура · содержимое",
-    "slides-fixture-recording": "Слайдовая фикстура · мобильная запись",
-    "slides-fixture-grid": "Слайдовая фикстура · обзор сеткой",
+    "slides-catalog-cover": "Каталог слайдов · титульная раскладка",
+    "slides-catalog-content": "Каталог слайдов · содержимое",
+    "slides-catalog-recording": "Каталог слайдов · мобильная запись",
+    "slides-catalog-grid": "Каталог слайдов · обзор сеткой",
 }
 
 SHOTS = (
     Shot("interface-blank", "interface-starter", 1440, 900, "?theme=dark"),
-    Shot("interface-fixture", "interface-fixture-dark", 1440, 900, "?theme=dark"),
-    Shot("interface-fixture", "interface-fixture-mobile", 390, 844, "?theme=dark"),
-    Shot("interface-fixture", "interface-fixture-light", 1440, 900, "?theme=light"),
+    Shot("interface-catalog", "interface-catalog-dark", 1440, 900, "?theme=dark"),
+    Shot("interface-catalog", "interface-catalog-mobile", 390, 844, "?theme=dark"),
+    Shot("interface-catalog", "interface-catalog-light", 1440, 900, "?theme=light"),
     Shot("slides-deck", "slides-starter", 1280, 720, "#1"),
-    Shot("slides-fixture", "slides-fixture-cover", 1280, 720, "#1"),
-    Shot("slides-fixture", "slides-fixture-content", 1280, 720, "#5"),
-    Shot("slides-fixture", "slides-fixture-recording", 390, 844, "#1"),
-    Shot("slides-fixture", "slides-fixture-grid", 1440, 900, "?view=grid#1"),
+    Shot("slides-catalog", "slides-catalog-cover", 1280, 720, "#1"),
+    Shot("slides-catalog", "slides-catalog-content", 1280, 720, "#5"),
+    Shot("slides-catalog", "slides-catalog-recording", 390, 844, "#1"),
+    Shot("slides-catalog", "slides-catalog-grid", 1440, 900, "?view=grid#1"),
 )
 
 
@@ -92,8 +92,8 @@ def main() -> None:
         projects = scaffold_matrix(Path(directory))
         sources = {
             **{key: path / "index.html" for key, path in projects.items()},
-            "interface-fixture": ROOT / "tests/fixtures/interfaces/index.html",
-            "slides-fixture": ROOT / "tests/fixtures/slides/index.html",
+            "interface-catalog": ROOT / "catalog/interfaces/index.html",
+            "slides-catalog": ROOT / "catalog/slides/index.html",
         }
         rendered: list[tuple[Shot, Path]] = []
         for shot in SHOTS:
@@ -103,7 +103,7 @@ def main() -> None:
             print(f"✓ {target.relative_to(output.parent)}")
 
         pdf = output / "slides.pdf"
-        run(*chromium_args(1280, 720), f"--print-to-pdf={pdf}", sources["slides-fixture"].as_uri())
+        run(*chromium_args(1280, 720), f"--print-to-pdf={pdf}", sources["slides-catalog"].as_uri())
         assert pdf.stat().st_size > 30_000
         write_gallery(output, rendered)
 

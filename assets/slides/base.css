@@ -6,6 +6,7 @@
    ============================================================ */
 
 *, *::before, *::after { box-sizing: border-box; }
+.svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 html, body {
   height: 100%;

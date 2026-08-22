@@ -4,13 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
-  <title>Craft · Интерфейсы</title>
-  <script src="../../../assets/interfaces/theme.js"></script>
-  <link rel="stylesheet" href="../../../assets/shared/tokens.css">
-  <link rel="stylesheet" href="../../../assets/interfaces/theme.css">
-  <link rel="stylesheet" href="specimen.css">
-  <script src="../../../assets/interfaces/section-nav.js" defer></script>
-  <script src="specimen.js" defer></script>
+  <title>Craft · Каталог интерфейсов</title>
+  <script src="../../assets/interfaces/theme.js"></script>
+  <link rel="stylesheet" href="../../assets/shared/tokens.css">
+  <link rel="stylesheet" href="../../assets/interfaces/theme.css">
+  <link rel="stylesheet" href="catalog.css">
+  <script src="../../assets/interfaces/section-nav.js" defer></script>
+  <script src="../../assets/interfaces/tabs.js" defer></script>
+  <script src="../../assets/interfaces/dialog.js" defer></script>
+  <script src="../../assets/interfaces/copy.js" defer></script>
+  <script src="catalog.js" defer></script>
 </head>
 <body>
   <svg class="icon-sprite" aria-hidden="true">
@@ -21,15 +24,20 @@
     <nav class="system-nav" aria-label="Разделы дизайн-системы">
       <div class="system-brand">
         <a class="system-name" href="#top">Craft</a>
-        <span class="system-version">0.1</span>
+        <span class="system-version">0.4</span>
       </div>
       <div class="system-links" data-section-nav>
         <a href="#foundation">Правила</a>
         <a href="#layouts">Режимы</a>
+        <a href="#fragments">Фрагменты</a>
         <a href="#color">Цвет</a>
         <a href="#type">Типографика</a>
         <a href="#spacing">Ритм</a>
         <a href="#controls">Управление</a>
+        <a href="#forms">Формы</a>
+        <a href="#records">Записи</a>
+        <a href="#messages">Сообщения</a>
+        <a href="#navigation">Навигация</a>
         <a href="#charts">Графики</a>
         <a href="#composition">Композиция</a>
         <a href="#data">Данные</a>
@@ -40,7 +48,7 @@
       </button>
     </nav>
 
-    <main class="system-main" id="top">
+    <main class="system-main" id="top" data-craft-layout="interface">
       <header class="system-intro">
         <div>
           <h1>Локальные интерфейсы</h1>
@@ -83,6 +91,95 @@
           <article class="layout-row" role="listitem">
             <div><h3>Рабочая поверхность</h3><p>Компактное управление и связанные области с независимой прокруткой.</p><code>связанные области</code></div>
             <div class="layout-diagram layout-diagram--workspace" aria-label="Схема рабочей поверхности"><i></i><i></i><i></i></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="system-section" id="fragments">
+        <div class="system-section__head">
+          <h2>Базовые фрагменты</h2>
+          <p>Каталог показывает геометрию всех основных конструкций. Специализированные фрагменты форм, данных, сообщений и навигации раскрыты в следующих разделах.</p>
+        </div>
+        <div class="fragment-showcase">
+          <article class="fragment-stage">
+            <p class="fragment-stage__label">Заголовок страницы · <code>page-head</code></p>
+            <header class="page-head catalog-page-head">
+              <div class="page-head__main">
+                <p class="eyebrow">Контекст материала</p>
+                <h3>Название страницы</h3>
+                <p class="page-head__lede">Краткое пояснение стоит сразу под заголовком и не пересказывает значения справа.</p>
+              </div>
+              <div class="page-head__aside" aria-label="Параметры материала">
+                <p>Параметр: значение</p>
+                <p>Состояние: доступно</p>
+              </div>
+            </header>
+          </article>
+
+          <article class="fragment-stage">
+            <p class="fragment-stage__label">Рабочая шапка · <code>workspace-head</code></p>
+            <header class="workspace-head catalog-workspace-head">
+              <div class="workspace-head__main">
+                <p class="eyebrow">Рабочая область</p>
+                <h3>Название инструмента</h3>
+                <p class="workspace-head__lede">Управление относится ко всей области и остаётся рядом с названием.</p>
+              </div>
+              <div class="workspace-head__tools" aria-label="Действия рабочей области">
+                <button class="button" type="button">Обновить</button>
+                <button class="button button--primary" type="button">Сохранить</button>
+              </div>
+            </header>
+          </article>
+
+          <article class="fragment-stage">
+            <p class="fragment-stage__label">Полоса значений · <code>metric-strip</code></p>
+            <section class="scoreboard" aria-label="Ключевые значения" style="--metrics:3">
+              <div class="metric metric--accent"><strong class="metric__value">24</strong><span class="metric__label">Приоритетное значение</span></div>
+              <div class="metric"><strong class="metric__value">68%</strong><span class="metric__label">Доля от общего числа</span></div>
+              <div class="metric"><strong class="metric__value">1,4 с</strong><span class="metric__label">Продолжительность операции</span></div>
+            </section>
+          </article>
+
+          <article class="fragment-stage">
+            <p class="fragment-stage__label">Связанные области · <code>split-workspace</code></p>
+            <div class="workbench catalog-workbench" aria-label="Основная область и связанные детали">
+              <section class="workbench__primary" aria-labelledby="catalog-primary-title">
+                <header class="panel-head"><div><h3 id="catalog-primary-title">Основная область</h3><p>Содержимое с независимой прокруткой на широком экране</p></div><button class="button" type="button">Действие</button></header>
+                <div class="scroll-region" tabindex="0"><div class="catalog-workbench__content"><strong>Выбранная запись</strong><p>Здесь размещается список, редактор, график или другая основная работа.</p></div></div>
+              </section>
+              <aside class="workbench__aside" aria-labelledby="catalog-aside-title">
+                <header class="panel-head"><div><h3 id="catalog-aside-title">Связанные детали</h3><p>Самостоятельные значения выбранного объекта</p></div></header>
+                <div class="scroll-region" tabindex="0"><dl class="kv-list kv-list--lined"><dt>Поле</dt><dd>Значение</dd><dt>Состояние</dt><dd>Доступно</dd><dt>Версия</dt><dd>2.4.1</dd></dl></div>
+              </aside>
+            </div>
+          </article>
+
+          <div class="fragment-pair">
+            <article class="fragment-stage">
+              <p class="fragment-stage__label">Таблица · <code>data-table</code></p>
+              <div class="table-scroll" tabindex="0" role="region" aria-label="Таблица значений">
+                <table class="data-table">
+                  <caption>Сравнение значений</caption>
+                  <thead><tr><th>Название</th><th>Состояние</th><th>Значение</th></tr></thead>
+                  <tbody><tr><td>Первая строка</td><td><span class="status status--ok">доступно</span></td><td>42</td></tr><tr><td>Вторая строка</td><td><span class="status status--warn">проверить</span></td><td>18</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="fragment-stage">
+              <p class="fragment-stage__label">Пустое состояние · <code>empty-state</code></p>
+              <div class="catalog-empty-state">
+                <div class="empty-state"><strong>Ничего не выбрано</strong><span>Выберите строку, чтобы увидеть связанные детали.</span><button class="button" type="button">Выбрать первую</button></div>
+              </div>
+            </article>
+          </div>
+
+          <article class="fragment-stage">
+            <p class="fragment-stage__label">Навигация документа · <code>section-nav</code></p>
+            <nav class="section-nav catalog-section-nav" aria-label="Разделы каталога">
+              <div class="section-nav__links" data-section-nav>
+                <a href="#foundation">Правила</a><a href="#fragments">Фрагменты</a><a href="#forms">Формы</a><a href="#data">Данные</a>
+              </div>
+            </nav>
           </article>
         </div>
       </section>
@@ -173,12 +270,279 @@
           <div class="control-group">
             <span class="control-label" id="mode-label">Переключатель режима: один выбор из нескольких</span>
             <div class="segmented" role="radiogroup" aria-labelledby="mode-label">
-              <label><input type="radio" name="specimen-mode" value="all" checked><span>Все</span></label>
-              <label><input type="radio" name="specimen-mode" value="warn"><span>Предупреждения</span></label>
-              <label><input type="radio" name="specimen-mode" value="error"><span>Ошибки</span></label>
+              <label><input type="radio" name="catalog-mode" value="all" checked><span>Все</span></label>
+              <label><input type="radio" name="catalog-mode" value="warn"><span>Предупреждения</span></label>
+              <label><input type="radio" name="catalog-mode" value="error"><span>Ошибки</span></label>
             </div>
           </div>
         </div>
+      </section>
+
+      <section class="system-section" id="forms">
+        <div class="system-section__head">
+          <h2>Формы</h2>
+          <p>Поле собирает подпись, управление, подсказку и ошибку в одну колонку. Разметка не меняется от появления ошибки.</p>
+        </div>
+        <div class="demo-grid">
+          <div class="demo-cell">
+            <span class="demo-label">Поле с подсказкой</span>
+            <div class="field">
+              <label class="field__label" for="threshold">Порог оповещения</label>
+              <input id="threshold" type="number" value="120" aria-describedby="threshold-hint">
+              <p class="field__hint" id="threshold-hint">Значение в миллисекундах.</p>
+              <p class="field__error"></p>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Поле с ошибкой</span>
+            <div class="field">
+              <label class="field__label" for="window">Окно усреднения</label>
+              <input id="window" type="number" value="-5" aria-invalid="true" aria-describedby="window-error">
+              <p class="field__hint"></p>
+              <p class="field__error" id="window-error">Окно не может быть меньше нуля.</p>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Флажок и радиокнопка</span>
+            <fieldset class="field-set">
+              <legend>Что показывать</legend>
+              <div class="check-group">
+                <label class="check"><input type="checkbox" checked><span>Ошибки</span></label>
+                <label class="check"><input type="checkbox" data-catalog-mixed><span>Предупреждения</span></label>
+                <label class="check"><input type="checkbox" disabled><span>Отладка недоступна</span></label>
+                <label class="check"><input type="radio" name="catalog-scope" checked><span>Все потоки</span></label>
+                <label class="check"><input type="radio" name="catalog-scope"><span>Только основной</span></label>
+              </div>
+            </fieldset>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Переключатель и ползунок</span>
+            <label class="switch"><input type="checkbox" role="switch" checked><span>Обновлять автоматически</span></label>
+            <label class="switch"><input type="checkbox" role="switch" disabled><span>Недоступно без прав</span></label>
+            <label class="field__label" for="interval">Интервал</label>
+            <input class="range" id="interval" type="range" min="1" max="60" value="15" aria-describedby="interval-value">
+            <output class="muted" id="interval-value">15 минут</output>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Состояния кнопок</span>
+            <div class="control-line">
+              <button class="button button--primary" type="button">Сохранить</button>
+              <button class="button" type="button">Отмена</button>
+              <button class="button button--quiet" type="button">Сбросить</button>
+            </div>
+            <div class="control-line">
+              <button class="button" type="button" aria-busy="true">Обновляю</button>
+              <button class="button" type="button" disabled>Недоступно</button>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Недоступные поля</span>
+            <input value="Только чтение" readonly aria-label="Поле только для чтения">
+            <input value="Недоступно" disabled aria-label="Недоступное поле">
+            <textarea rows="2" disabled aria-label="Недоступная область текста">Правка закрыта</textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="system-section" id="records">
+        <div class="system-section__head">
+          <h2>Записи</h2>
+          <p>Метка называет принадлежность, лейбл — состояние, лента — хронологию. Ход выполнения всегда дублируется числом.</p>
+        </div>
+        <div class="demo-grid">
+          <div class="demo-cell">
+            <span class="demo-label">Метки и состояния</span>
+            <div class="tag-list"><span class="tag">Интерфейс</span><span class="tag">Безопасность</span><span class="tag tag--accent">Приоритет</span></div>
+            <div class="control-line">
+              <span class="state-label state-label--ok">пройдено</span>
+              <span class="state-label state-label--warn">на проверке</span>
+              <span class="state-label state-label--error">отклонено</span>
+              <span class="state-label">черновик</span>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Пары «поле — значение»</span>
+            <div class="kv-block">
+              <h3 class="kv-block__title">Параметры запуска</h3>
+              <dl class="kv-list kv-list--lined">
+                <dt>Версия</dt><dd>2.4.1</dd>
+                <dt>Окружение</dt><dd>Предпродакшен</dd>
+                <dt>Запущено</dt><dd>14:02</dd>
+              </dl>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Ход выполнения</span>
+            <div class="progress">
+              <div class="progress__head"><span>Обработано</span><strong>420 из 900</strong></div>
+              <div class="progress__track"><span class="progress__fill" style="--value: 47%"></span></div>
+            </div>
+            <div class="progress progress--indeterminate">
+              <div class="progress__head"><span>Ожидание источника</span><strong>доля неизвестна</strong></div>
+              <div class="progress__track"><span class="progress__fill"></span></div>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Лента событий</span>
+            <ol class="timeline" aria-label="История задачи">
+              <li>
+                <span class="timeline__mark" style="--status: var(--ok)" aria-hidden="true"></span>
+                <span class="timeline__time">14:02</span>
+                <div><span class="timeline__title">Запуск проверки</span><p>Очередь приняла 42 записи.</p></div>
+              </li>
+              <li>
+                <span class="timeline__mark" style="--status: var(--warn)" aria-hidden="true"></span>
+                <span class="timeline__time">14:11</span>
+                <div><span class="timeline__title">Повтор источника</span><p>Один источник ответил со второй попытки.</p></div>
+              </li>
+              <li>
+                <span class="timeline__mark" aria-hidden="true"></span>
+                <span class="timeline__time">14:20</span>
+                <div><span class="timeline__title">Готово</span><p>Ошибок нет.</p></div>
+              </li>
+            </ol>
+          </div>
+          <div class="demo-cell demo-cell--wide">
+            <span class="demo-label">Блок кода</span>
+            <figure class="code-block">
+              <figcaption class="code-block__head">
+                <span>Команда проверки</span>
+                <button class="button button--stable code-block__copy" type="button" data-copy="#catalog-code" aria-pressed="false">
+                  <span class="button__label button__label--rest">Копировать</span>
+                  <span class="button__label button__label--pressed">Скопировано</span>
+                </button>
+              </figcaption>
+              <pre id="catalog-code"><code>python3 scripts/check.py</code></pre>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="system-section" id="messages">
+        <div class="system-section__head">
+          <h2>Сообщения</h2>
+          <p>Уведомление стоит рядом с тем содержимым, которого касается. Модальное окно прерывает работу только ради решения.</p>
+        </div>
+        <div class="demo-grid">
+          <div class="demo-cell">
+            <span class="demo-label">Уведомления</span>
+            <aside class="notice notice--ok" role="status">
+              <span class="notice__mark" aria-hidden="true"></span>
+              <div><strong class="notice__title">Выгрузка завершена</strong><p>Готовы данные за прошлую неделю.</p></div>
+            </aside>
+            <aside class="notice notice--warn" role="status">
+              <span class="notice__mark" aria-hidden="true"></span>
+              <div><strong class="notice__title">Данные за вчера неполные</strong><p>Три источника из двенадцати ещё не прислали выгрузку.</p></div>
+            </aside>
+            <aside class="notice notice--error" role="status">
+              <span class="notice__mark" aria-hidden="true"></span>
+              <div>
+                <strong class="notice__title">Отчёт не собран</strong>
+                <p>Источник ответил ошибкой доступа.</p>
+                <div class="notice__actions"><button class="button" type="button">Повторить</button></div>
+              </div>
+            </aside>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Ожидание данных</span>
+            <div aria-busy="true" aria-label="Загрузка сводки">
+              <span class="skeleton" style="width: 60%"></span>
+              <span class="skeleton" style="width: 90%; margin-top: var(--space-2)"></span>
+              <div class="skeleton skeleton--block" style="margin-top: var(--space-3)"></div>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Раскрываемое уточнение</span>
+            <details class="disclosure">
+              <summary>
+                <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>
+                Как считается задержка
+              </summary>
+              <div class="disclosure__body"><p>Медиана времени ответа за пятиминутное окно.</p></div>
+            </details>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Модальное окно</span>
+            <button class="button" type="button" data-dialog-open="#catalog-dialog">Отозвать доступ</button>
+            <dialog class="dialog" id="catalog-dialog" aria-labelledby="catalog-dialog-title">
+              <header class="dialog__head">
+                <h3 id="catalog-dialog-title">Отозвать доступ</h3>
+                <button class="button button--icon" type="button" data-dialog-close aria-label="Закрыть окно">
+                  <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+                </button>
+              </header>
+              <div class="dialog__body"><p>Права пропадут сразу, восстановить их сможет только владелец потока.</p></div>
+              <footer class="dialog__foot">
+                <button class="button" type="button" data-dialog-close>Отмена</button>
+                <button class="button button--primary" type="button" data-dialog-close>Отозвать</button>
+              </footer>
+            </dialog>
+          </div>
+        </div>
+      </section>
+
+      <section class="system-section" id="navigation">
+        <div class="system-section__head">
+          <h2>Навигация</h2>
+          <p>Вкладки делят равноправные представления, шаги показывают конечную последовательность, полоса параметров стоит над данными.</p>
+        </div>
+        <nav aria-label="Путь к материалу">
+          <ol class="breadcrumbs">
+            <li><a href="#top">Каталог</a></li>
+            <li><a href="#controls">Управление</a></li>
+            <li><span aria-current="page">Навигация</span></li>
+          </ol>
+        </nav>
+        <div class="tabs" data-tabs>
+          <div class="tablist" role="tablist" aria-label="Представления очереди">
+            <button role="tab" type="button" id="catalog-tab-open" aria-controls="catalog-panel-open" aria-selected="true">Открытые</button>
+            <button role="tab" type="button" id="catalog-tab-done" aria-controls="catalog-panel-done" aria-selected="false">Закрытые</button>
+            <button role="tab" type="button" id="catalog-tab-archive" aria-controls="catalog-panel-archive" aria-selected="false" disabled>Архив</button>
+          </div>
+          <div role="tabpanel" id="catalog-panel-open" aria-labelledby="catalog-tab-open" tabindex="0">
+            <div class="filter-bar" role="group" aria-label="Параметры очереди">
+              <label class="field__label" for="catalog-stream">Поток</label>
+              <span class="select-control">
+                <select id="catalog-stream"><option>Все потоки</option><option>Основной</option></select>
+                <svg class="select-control__icon" viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
+              </span>
+              <p class="filter-bar__count" role="status">Отобрано 18 из 84</p>
+            </div>
+            <table class="data-table data-table--sticky">
+              <caption>Открытые записи очереди</caption>
+              <thead><tr>
+                <th>Запись</th>
+                <th aria-sort="ascending"><button class="data-table__sort" type="button">Задержка<svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4"/></svg></button></th>
+                <th>Состояние</th>
+              </tr></thead>
+              <tbody>
+                <tr><td>Сохранение параметров поиска</td><td>18 мс</td><td><span class="state-label state-label--ok">пройдено</span></td></tr>
+                <tr><td>Управление доступом</td><td>64 мс</td><td><span class="state-label state-label--warn">на проверке</span></td></tr>
+                <tr class="data-table__detail"><td colspan="3">Проверка ждёт второго одобрения от владельца потока.</td></tr>
+              </tbody>
+            </table>
+            <nav class="pagination" aria-label="Страницы очереди">
+              <a class="button" href="#navigation">Назад</a>
+              <a class="pagination__page" href="#navigation">1</a>
+              <a class="pagination__page" href="#navigation" aria-current="page">2</a>
+              <a class="pagination__page" href="#navigation">3</a>
+              <a class="button" href="#navigation">Вперёд</a>
+              <p class="pagination__status" role="status">21–40 из 84</p>
+            </nav>
+          </div>
+          <div role="tabpanel" id="catalog-panel-done" aria-labelledby="catalog-tab-done" tabindex="0" hidden>
+            <p class="muted">За выбранный период закрытых записей нет.</p>
+          </div>
+          <div role="tabpanel" id="catalog-panel-archive" aria-labelledby="catalog-tab-archive" tabindex="0" hidden>
+            <p class="muted">Архив доступен только владельцу потока.</p>
+          </div>
+        </div>
+        <ol class="steps" aria-label="Ход публикации">
+          <li data-state="done"><span class="steps__index">01</span><span class="steps__title">Сборка</span></li>
+          <li data-state="done"><span class="steps__index">02</span><span class="steps__title">Проверка</span></li>
+          <li data-state="current"><span class="steps__index">03</span><span class="steps__title">Ревью</span></li>
+          <li><span class="steps__index">04</span><span class="steps__title">Публикация</span></li>
+        </ol>
       </section>
 
       <section class="system-section" id="charts">

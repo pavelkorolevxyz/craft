@@ -67,12 +67,13 @@ def main() -> None:
 
     common = ["assets/shared", "references/identity.md", "references/surfaces.md", "craft.json"]
     packages = {
-        "craft-interface": files_under(*common, "assets/interfaces", "references/interfaces"),
-        "craft-slides": files_under(*common, "assets/slides", "references/slides"),
+        "craft-interface": files_under(*common, "assets/interfaces", "references/interfaces", "catalog/interfaces"),
+        "craft-slides": files_under(*common, "assets/slides", "references/slides", "catalog/slides"),
         "craft-complete": files_under(
             "SKILL.md",
             "craft.json",
             "assets",
+            "catalog",
             "references",
             *RUNTIME_SCRIPTS,
         ),

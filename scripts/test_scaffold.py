@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Проверяет минимальные стартеры и внутренние фикстуры Craft в Chromium."""
+"""Проверяет минимальные стартеры и публичные каталоги Craft в Chromium."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from pathlib import Path
 
 from lib import MANIFEST, ROOT, chromium_args, run, scaffold_matrix
 
-FIXTURES = ROOT / "tests" / "fixtures"
+CATALOG = ROOT / "catalog"
 VIEWPORTS = ((1440, 900), (390, 844), (320, 720))
 
 
@@ -91,27 +91,32 @@ def test_interface_starter(output: Path, work: Path) -> None:
     print_pdf(source, work / "interface-blank.pdf", 1440, 900)
 
 
-def test_interface_fixture(work: Path) -> None:
-    source = FIXTURES / "interfaces" / "index.html"
+def test_interface_catalog(work: Path) -> None:
+    source = CATALOG / "interfaces" / "index.html"
     for width, height in VIEWPORTS:
         dumped = dump_probe(
             source,
-            "document.dispatchEvent(new Event('DOMContentLoaded'));"
+            "addEventListener('load',()=>{"
             "const button=document.querySelector('[data-theme-toggle]');const before=document.documentElement.dataset.theme;button.click();"
             "const rows=Object.values([...document.querySelectorAll('.equal-panel')].reduce((all,panel)=>{const top=Math.round(panel.getBoundingClientRect().top);(all[top]??=[]).push(panel);return all},{}));"
             "const aligned=rows.every(row=>row.length<2||row.every(panel=>Math.abs(panel.getBoundingClientRect().height-row[0].getBoundingClientRect().height)<1));"
-            "document.title=`fixture:${document.documentElement.scrollWidth}:${innerWidth}:${document.querySelectorAll('main').length}:${before}:${document.documentElement.dataset.theme}:${aligned}:${document.querySelectorAll('[data-section-nav]').length}:${button.getAttribute('aria-label')}`",
+            "const first=document.querySelector('[role=tab]');first.focus();first.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));"
+            "const tabsWork=document.querySelector('#catalog-tab-done').getAttribute('aria-selected')==='true'&&!document.querySelector('#catalog-panel-done').hidden;"
+            "const opener=document.querySelector('[data-dialog-open]');opener.click();const dialog=document.querySelector('dialog');const dialogOpened=dialog.open;dialog.querySelector('[data-dialog-close]').click();"
+            "const mechanics=tabsWork&&dialogOpened&&!dialog.open&&document.querySelector('[data-catalog-mixed]').indeterminate;"
+            "document.title=`catalog:${document.documentElement.scrollWidth}:${innerWidth}:${document.querySelectorAll('main').length}:${before}:${document.documentElement.dataset.theme}:${aligned}:${document.querySelectorAll('[data-section-nav]').length}:${mechanics}:${button.getAttribute('aria-label')}`});", 
             width,
             height,
         )
-        match = re.search(r"<title>fixture:(\d+):(\d+):(\d+):(light|dark):(light|dark):(true|false):(\d+):([^<]+)</title>", dumped)
-        assert match, f"interface-fixture: браузерная проверка не выполнена при {width}px"
+        match = re.search(r"<title>catalog:(\d+):(\d+):(\d+):(light|dark):(light|dark):(true|false):(\d+):(true|false):([^<]+)</title>", dumped)
+        assert match, f"interface-catalog: браузерная проверка не выполнена при {width}px"
         scroll_width, viewport, mains = map(int, match.groups()[:3])
-        before, after, aligned, navs, label = match.groups()[3:]
-        assert scroll_width <= viewport, f"interface-fixture: переполнение при {width}px"
-        assert mains == 1 and aligned == "true" and int(navs) > 0, "interface-fixture: сломан контракт компонентов"
-        assert before != after and "тему" in label, "interface-fixture: тема не работает"
-    print_pdf(source, work / "interface-fixture.pdf", 1440, 900, 20_000)
+        before, after, aligned, navs, mechanics, label = match.groups()[3:]
+        assert scroll_width <= viewport, f"interface-catalog: переполнение при {width}px"
+        assert mains == 1 and aligned == "true" and int(navs) > 0, "interface-catalog: сломан контракт компонентов"
+        assert mechanics == "true", "interface-catalog: вкладки, диалог или составной флажок не работают"
+        assert before != after and "тему" in label, "interface-catalog: тема не работает"
+    print_pdf(source, work / "interface-catalog.pdf", 1440, 900, 20_000)
 
 
 def test_slide_source(name: str, source: Path, work: Path, minimum_pages: int) -> None:
@@ -133,6 +138,8 @@ def test_slide_source(name: str, source: Path, work: Path, minimum_pages: int) -
     pages, active, after_arrow, after_clamp, strip_error = map(int, match.groups()[:5])
     direction, before, after, undeclared = match.groups()[5:]
     assert pages >= minimum_pages and active == 1 and after_clamp == 1, f"{name}: недопустимое состояние колоды"
+    if name == "slides-catalog":
+        assert pages == MANIFEST["surfaces"]["slides"]["catalogPages"], f"{name}: ожидалось 58 страниц, получено {pages}"
     assert after_arrow == min(2, pages), f"{name}: навигация стрелкой не работает"
     assert direction == "vertical" and strip_error <= 1, f"{name}: активный слайд ленты не по центру"
     assert before != after and undeclared == "0", f"{name}: тема или объявления раскладок не работают"
@@ -161,12 +168,12 @@ def main() -> None:
             validate_output(key, output)
             print(f"✓ {key}")
         test_interface_starter(outputs["interface-blank"], root)
-        test_interface_fixture(root)
+        test_interface_catalog(root)
         test_slide_source("slides-deck", outputs["slides-deck"] / "index.html", root, 1)
-        test_slide_source("slides-fixture", FIXTURES / "slides" / "index.html", root, 11)
+        test_slide_source("slides-catalog", CATALOG / "slides" / "index.html", root, MANIFEST["surfaces"]["slides"]["catalogPages"])
         for output in outputs.values():
             run(sys.executable, ROOT / "scripts/check_project.py", output)
-        print("Готово: стартеры, внутренние фикстуры и валидатор проектов проверены в Chromium и PDF")
+        print("Готово: стартеры, публичные каталоги и валидатор проектов проверены в Chromium и PDF")
     finally:
         if context:
             context.cleanup()
