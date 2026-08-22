@@ -3,14 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="dark light">
   <title>{{TITLE}}</title>
+  <script src="theme.js"></script>
   <link rel="stylesheet" href="../shared/tokens.css">
   <link rel="stylesheet" href="theme.css">
 </head>
 <body>
-  <main class="shell">
-    <header class="report-head">
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol>
+  </svg>
+  <main class="shell shell--report" data-craft-layout="report">
+    <header class="report-head document-band">
       <div class="report-head__main">
         <p class="eyebrow">Локальный отчёт</p>
         <h1>{{TITLE}}</h1>
@@ -20,10 +25,16 @@
         <p>Период: укажите период</p>
         <p>Обновлено: {{DATE}}</p>
         <p>Источник: укажите источник</p>
+        <div class="report-head__tools report-head__tools--theme">
+          <button class="button button--stable button--icon theme-switch" type="button" data-theme-toggle aria-pressed="false">
+            <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
+            <span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span>
+          </button>
+        </div>
       </div>
     </header>
 
-    <section class="scoreboard" aria-label="Ключевые показатели" style="--metrics: 3">
+    <section class="scoreboard scoreboard--compact document-block" aria-label="Ключевые показатели" style="--metrics: 3">
       <div class="metric">
         <strong class="metric__value">—</strong>
         <span class="metric__label">Первый показатель</span>
@@ -38,7 +49,7 @@
       </div>
     </section>
 
-    <section class="section">
+    <section class="section document-band">
       <div class="section-head">
         <h2>Сводка</h2>
         <p>Укажите период, источник и поясните данные, если без этого их можно понять неверно.</p>
@@ -55,7 +66,7 @@
       </div>
     </section>
 
-    <section class="section section--tight">
+    <section class="section section--tight document-band">
       <div class="section-head">
         <h2>Детали</h2>
         <p>Таблица нужна для точного сравнения значений.</p>
@@ -66,10 +77,6 @@
       </table>
     </section>
 
-    <footer class="footer">
-      <span>Локальный HTML · без внешних зависимостей</span>
-      <span>{{DATE}}</span>
-    </footer>
   </main>
 </body>
 </html>

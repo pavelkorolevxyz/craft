@@ -30,6 +30,9 @@ def validate_output(key: str, output: Path) -> None:
     index = output / "index.html"
     assert index.is_file(), f"{key}: отсутствует index.html"
     assert (output / "tokens.css").is_file(), f"{key}: отсутствует tokens.css"
+    if key.startswith("interface-"):
+        assert (output / "theme.js").is_file(), f"{key}: отсутствует theme.js"
+        assert (output / "section-nav.js").is_file(), f"{key}: отсутствует section-nav.js"
     expected_fonts = MANIFEST["requirements"]["fontFiles"]
     assert len(list((output / "fonts").glob("*.woff2"))) == expected_fonts
 
@@ -55,19 +58,47 @@ def dump_probe(output: Path, script: str, width: int, height: int) -> str:
     ).stdout
 
 
-def test_interfaces(key: str, output: Path) -> None:
+def test_interfaces(key: str, output: Path, work: Path) -> None:
     for width, height in ((1440, 900), (500, 844)):
         dumped = dump_probe(
             output,
-            "document.title=`probe:${document.documentElement.scrollWidth}:${innerWidth}:${document.querySelectorAll('main').length}`",
+            "document.dispatchEvent(new Event('DOMContentLoaded'));"
+            "const themeButton=document.querySelector('[data-theme-toggle]');"
+            "const before=document.documentElement.dataset.theme;"
+            "themeButton.click();"
+            "const after=document.documentElement.dataset.theme;"
+            "const panelRows=Object.values([...document.querySelectorAll('.equal-panel')].reduce((rows,panel)=>{const top=Math.round(panel.getBoundingClientRect().top);(rows[top]??=[]).push(panel);return rows},{}));"
+            "const panelsAligned=panelRows.every(row=>row.length<2||row.every((panel)=>{const first=row[0];return Math.abs(panel.getBoundingClientRect().height-first.getBoundingClientRect().height)<1&&Math.abs(panel.querySelector('.equal-panel__head').getBoundingClientRect().bottom-first.querySelector('.equal-panel__head').getBoundingClientRect().bottom)<1&&Math.abs(panel.querySelector('.equal-panel__foot').getBoundingClientRect().top-first.querySelector('.equal-panel__foot').getBoundingClientRect().top)<1}));"
+            "const compactMetrics=[...document.querySelectorAll('.scoreboard--compact .metric')];"
+            "const layout=document.querySelector('[data-craft-layout]')?.dataset.craftLayout||'catalog';"
+            "const target=document.querySelector(layout==='report'?'.section':layout==='dashboard'?'.dashboard-main':layout==='tool'?'.workbench':'.system-section');"
+            "const reportReady=layout!=='report'||(compactMetrics.length<=3&&compactMetrics.every(metric=>Math.abs(metric.getBoundingClientRect().top-compactMetrics[0].getBoundingClientRect().top)<1)&&target.getBoundingClientRect().top<innerHeight);"
+            "const dashboardReady=layout!=='dashboard'||(document.querySelectorAll('.scoreboard .metric').length<=4&&target.getBoundingClientRect().top<innerHeight);"
+            "const toolReady=layout!=='tool'||(target.getBoundingClientRect().top<innerHeight&&[...document.querySelectorAll('.scroll-region')].every(region=>region.tabIndex===0));"
+            "const firstScreenReady=reportReady&&dashboardReady&&toolReady;"
+            "document.title=`probe:${document.documentElement.scrollWidth}:${innerWidth}:${document.querySelectorAll('main').length}:${before}:${after}:${panelsAligned}:${firstScreenReady}:${layout}:${themeButton.getAttribute('aria-label')}`",
             width,
             height,
         )
-        match = re.search(r"<title>probe:(\d+):(\d+):(\d+)</title>", dumped)
+        match = re.search(r"<title>probe:(\d+):(\d+):(\d+):(light|dark):(light|dark):(true|false):(true|false):([a-z-]+):([^<]+)</title>", dumped)
         assert match, f"{key}: браузерная проверка не выполнена"
-        scroll_width, viewport, mains = map(int, match.groups())
+        scroll_width, viewport, mains = map(int, match.groups()[:3])
+        before, after, panels_aligned, first_screen_ready, layout, theme_label = match.groups()[3:]
+        expected_layout = key.removeprefix("interface-").replace("design-system", "catalog")
         assert scroll_width <= viewport, f"{key}: горизонтальное переполнение при {width}px ({scroll_width}>{viewport})"
         assert mains == 1, f"{key}: ожидалась одна основная область main"
+        assert layout == expected_layout, f"{key}: ожидался каркас {expected_layout}, объявлен {layout}"
+        assert before != after and "тему" in theme_label, f"{key}: переключатель темы не сработал"
+        assert panels_aligned == "true", f"{key}: зоны одинаковых панелей не выровнены"
+        assert first_screen_ready == "true", f"{key}: каркас вытеснил основную работу с первого экрана"
+
+    pdf = work / f"{key}.pdf"
+    run(*chromium_args(1440, 900), f"--print-to-pdf={pdf}", output.joinpath("index.html").as_uri())
+    assert pdf.is_file() and pdf.stat().st_size > 20_000, f"{key}: печать PDF не выполнена"
+    pdftotext = shutil.which("pdftotext")
+    if pdftotext:
+        text = run(pdftotext, pdf, "-").stdout
+        assert "file://" not in text, f"{key}: в PDF попал адрес браузера"
 
 
 def test_slides(key: str, output: Path, work: Path) -> None:
@@ -89,19 +120,24 @@ def test_slides(key: str, output: Path, work: Path) -> None:
         "const stripHorizontalError=centerError();"
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
         "const stripReturnError=centerError();"
+        "const themeButton=document.querySelector('[data-deck-action=theme]');"
+        "const beforeTheme=document.documentElement.dataset.theme;"
+        "document.dispatchEvent(new KeyboardEvent('keydown',{key:'T'}));"
+        "const afterTheme=document.documentElement.dataset.theme;"
         "document.title=`probe:${document.querySelectorAll('.slide').length}:${document.querySelectorAll('.slide[data-active]').length}:${afterArrow}:${afterClamp}:`+"
-        "`${document.querySelector('.slide[data-active]')?.dataset.index}:${document.querySelector('.help-panel').hidden}:${stripVerticalError}:${stripHorizontalError}:${stripReturnError}:${deck.dataset.stripDirection}`",
+        "`${document.querySelector('.slide[data-active]')?.dataset.index}:${document.querySelector('.help-panel').hidden}:${stripVerticalError}:${stripHorizontalError}:${stripReturnError}:${deck.dataset.stripDirection}:${beforeTheme}:${afterTheme}:${themeButton.getAttribute('aria-label')}`",
         1280,
         720,
     )
-    match = re.search(r"<title>probe:(\d+):(\d+):(\d+):(\d+):(\d+):(true|false):(\d+):(\d+):(\d+):(\w+)</title>", dumped)
+    match = re.search(r"<title>probe:(\d+):(\d+):(\d+):(\d+):(\d+):(true|false):(\d+):(\d+):(\d+):(\w+):(light|dark):(light|dark):([^<]+)</title>", dumped)
     assert match, f"{key}: проверка механики колоды не выполнена"
     pages, active, after_arrow, after_clamp, current = map(int, match.groups()[:5])
     panel_hidden = match.group(6) == "true"
     strip_vertical_error, strip_horizontal_error, strip_return_error = map(int, match.groups()[6:9])
-    strip_direction = match.group(10)
+    strip_direction, before_theme, after_theme, theme_label = match.groups()[9:13]
     assert pages >= 6 and active == 1 and after_arrow == 2 and after_clamp == 1 and current == pages and panel_hidden, f"{key}: недопустимое состояние колоды {match.groups()}"
     assert strip_direction == "vertical" and max(strip_vertical_error, strip_horizontal_error, strip_return_error) <= 1, f"{key}: активный слайд ленты не по центру {match.groups()}"
+    assert before_theme != after_theme and "тему" in theme_label, f"{key}: переключатель темы не работает {match.groups()}"
 
     pdf = work / f"{key}.pdf"
     run(*chromium_args(1280, 720), f"--print-to-pdf={pdf}", output.joinpath("index.html").as_uri())
@@ -136,7 +172,7 @@ def main() -> None:
         for key, output in outputs.items():
             validate_output(key, output)
             if key.startswith("interface-"):
-                test_interfaces(key, output)
+                test_interfaces(key, output, root)
             else:
                 test_slides(key, output, root)
             print(f"✓ {key}")

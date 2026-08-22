@@ -6,16 +6,42 @@
     "interface": {
       "templates": [
         "report",
+        "dashboard",
+        "tool",
         "design-system"
       ],
       "entrypoints": [
         "assets/interfaces/starter-index.html",
+        "assets/interfaces/dashboard-index.html",
+        "assets/interfaces/tool-index.html",
         "assets/interfaces/specimen.html"
       ]
     },
     "slides": {
       "templates": [
         "deck"
+      ],
+      "layouts": [
+        "cover",
+        "context",
+        "section",
+        "statement",
+        "list",
+        "comparison",
+        "quote",
+        "metrics",
+        "code",
+        "figure",
+        "screenshot",
+        "table",
+        "steps",
+        "chart",
+        "timeline",
+        "flow",
+        "visual-comparison",
+        "title",
+        "resource",
+        "end"
       ],
       "entrypoints": [
         "assets/slides/starter/index.html",

@@ -13,6 +13,7 @@
    G                    обзор сеткой
    L                    обзор лентой
    F                    полный экран
+   T                    светлая / тёмная тема
    H / ?                показать или скрыть справку
    ============================================================ */
 
@@ -59,6 +60,11 @@
   const previousButton = helpPanel?.querySelector('[data-deck-go="-1"]');
   const nextButton = helpPanel?.querySelector('[data-deck-go="1"]');
   const stripButton = helpPanel?.querySelector('[data-deck-action="strip"]');
+  const themeButton = helpPanel?.querySelector('[data-deck-action="theme"]');
+  const root = document.documentElement;
+  const systemTheme = matchMedia('(prefers-color-scheme: light)');
+  const themeStorageKey = 'craft-theme';
+  const isTheme = (value) => value === 'light' || value === 'dark';
   const total = slides.length;
   const pad = (n) => String(n).padStart(2, '0');
 
@@ -71,6 +77,46 @@
 
   const clamp = (n) => Math.max(0, Math.min(total - 1, n));
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function readSavedTheme() {
+    try {
+      const value = localStorage.getItem(themeStorageKey);
+      return isTheme(value) ? value : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function syncThemeButton() {
+    if (!themeButton) return;
+    const light = root.dataset.theme === 'light';
+    const action = light ? 'Включить тёмную тему' : 'Включить светлую тему';
+    themeButton.setAttribute('aria-label', action);
+    themeButton.setAttribute('title', action);
+    themeButton.setAttribute('aria-pressed', String(light));
+  }
+
+  function applyTheme(theme, source = 'saved', persist = false) {
+    if (!isTheme(theme)) return;
+    root.dataset.theme = theme;
+    root.dataset.themeSource = source;
+    if (persist) {
+      try {
+        localStorage.setItem(themeStorageKey, theme);
+      } catch (error) {
+        // Колода остаётся рабочей, даже если браузер запретил хранилище для file://.
+      }
+    }
+    syncThemeButton();
+    dispatchEvent(new CustomEvent('craft-themechange', { detail: { theme, source } }));
+  }
+
+  const requestedTheme = new URLSearchParams(location.search).get('theme');
+  const savedTheme = readSavedTheme();
+  applyTheme(
+    isTheme(requestedTheme) ? requestedTheme : savedTheme || (systemTheme.matches ? 'light' : 'dark'),
+    isTheme(requestedTheme) ? 'query' : savedTheme ? 'saved' : 'system',
+  );
   const runningCounters = new Map();
 
   // data-count оставляет в HTML конечное значение для печати, снимков и
@@ -435,6 +481,10 @@
           ? document.exitFullscreen()
           : document.documentElement.requestFullscreen();
         break;
+      case 't': case 'T': case 'е': case 'Е':
+        event.preventDefault();
+        applyTheme(root.dataset.theme === 'light' ? 'dark' : 'light', 'saved', true);
+        break;
       case 'h': case 'H': case 'р': case 'Р': case '?':
         event.preventDefault(); toggleHelp(); break;
       case 'Escape':
@@ -470,6 +520,9 @@
         document.fullscreenElement
           ? document.exitFullscreen()
           : document.documentElement.requestFullscreen();
+        break;
+      case 'theme':
+        applyTheme(root.dataset.theme === 'light' ? 'dark' : 'light', 'saved', true);
         break;
       case 'hide-help': toggleHelp(false); break;
     }
@@ -557,6 +610,11 @@
     if (Math.abs(dx) > 45) go(dx < 0 ? 1 : -1);
     touchX = null;
   }, { passive: true });
+
+  systemTheme.addEventListener('change', (event) => {
+    if (root.dataset.themeSource !== 'system') return;
+    applyTheme(event.matches ? 'light' : 'dark', 'system');
+  });
 
   window.addEventListener('hashchange', () => {
     const next = pageFromHash();

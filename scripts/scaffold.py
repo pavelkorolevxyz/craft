@@ -22,17 +22,24 @@ def copy_shared(target: Path) -> None:
 def scaffold_interface(target: Path, template: str, title: str, lang: str, report_date: str) -> None:
     copy_shared(target)
     shutil.copy2(INTERFACES / "theme.css", target / "theme.css")
+    shutil.copy2(INTERFACES / "theme.js", target / "theme.js")
+    shutil.copy2(INTERFACES / "section-nav.js", target / "section-nav.js")
 
     if template == "design-system":
         shutil.copy2(INTERFACES / "specimen.css", target / "specimen.css")
         shutil.copy2(INTERFACES / "specimen.js", target / "specimen.js")
         html = (INTERFACES / "specimen.html").read_text(encoding="utf-8")
-        html = html.replace('href="../shared/tokens.css"', 'href="tokens.css"', 1)
     else:
-        html = (INTERFACES / "starter-index.html").read_text(encoding="utf-8")
-        html = html.replace('href="../shared/tokens.css"', 'href="tokens.css"', 1)
+        source = {
+            "report": "starter-index.html",
+            "dashboard": "dashboard-index.html",
+            "tool": "tool-index.html",
+        }[template]
+        html = (INTERFACES / source).read_text(encoding="utf-8")
         html = html.replace("{{TITLE}}", title)
         html = html.replace("{{DATE}}", report_date)
+
+    html = html.replace('href="../shared/tokens.css"', 'href="tokens.css"', 1)
 
     html = html.replace('lang="ru"', f'lang="{lang}"', 1)
     (target / "index.html").write_text(html, encoding="utf-8")
@@ -65,7 +72,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("target", type=Path, help="Новая или пустая целевая папка")
     parser.add_argument("--surface", choices=("interface", "slides"), default="interface")
-    parser.add_argument("--template", choices=("report", "design-system", "deck", "slides"))
+    parser.add_argument("--template", choices=("report", "dashboard", "tool", "design-system", "deck", "slides"))
     parser.add_argument("--title", default=None)
     parser.add_argument("--lang", default="ru")
     parser.add_argument("--date", default=date.today().isoformat(), help="Дата отчёта в формате ГГГГ-ММ-ДД")
@@ -74,8 +81,8 @@ def main() -> None:
     template = args.template or ("deck" if args.surface == "slides" else "report")
     if template == "slides":
         template = "deck"
-    if args.surface == "interface" and template not in {"report", "design-system"}:
-        parser.error("формат interface поддерживает шаблоны report и design-system")
+    if args.surface == "interface" and template not in {"report", "dashboard", "tool", "design-system"}:
+        parser.error("формат interface поддерживает шаблоны report, dashboard, tool и design-system")
     if args.surface == "slides" and template != "deck":
         parser.error("формат slides поддерживает шаблон deck")
 

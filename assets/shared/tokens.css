@@ -131,9 +131,12 @@
   --craft-print-data-blue: #1f5c99;
   --craft-print-data-amber: #8a5a00;
   --craft-print-data-green: #1f7a45;
+  --craft-print-code-text: #2d2a27;
+  --craft-print-code-gold: #73521f;
+  --craft-print-code-blue: #365f7d;
 
-  /* Дневная тема интерфейсов: тёплые бумажные нейтрали снижают блики,
-     но сохраняют контраст плотных таблиц и графиков. */
+  /* Светлая тема Craft: тёплые бумажные нейтрали снижают блики,
+     но сохраняют контраст текста, таблиц и графиков. */
   --craft-light-bg: #f3f2ef;
   --craft-light-surface: #e8e6e1;
   --craft-light-surface-muted: #eeece8;

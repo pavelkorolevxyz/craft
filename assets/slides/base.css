@@ -6,6 +6,7 @@
    ============================================================ */
 
 *, *::before, *::after { box-sizing: border-box; }
+.svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 html, body {
   height: 100%;
@@ -193,6 +194,9 @@ body {
 }
 .help-actions { display: flex; justify-self: start; gap: .2rem; }
 .help-strip[data-direction="horizontal"] svg { transform: rotate(90deg); }
+.help-theme .theme-icon-moon { display: none; }
+:root[data-theme="light"] .help-theme .theme-icon-sun { display: none; }
+:root[data-theme="light"] .help-theme .theme-icon-moon { display: block; }
 .help-nav {
   display: grid;
   grid-template-columns: var(--control-size) auto var(--control-size);

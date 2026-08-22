@@ -678,7 +678,11 @@
   border: var(--rule) solid var(--edge);
 }
 .flow-node > strong { font: 600 2.1cqw/1.2 var(--font-display); letter-spacing: -.02em; }
-.flow-node--accent { background: var(--accent-fill); border-color: var(--accent-fill); }
+.flow-node--accent {
+  background: var(--accent-fill);
+  border-color: var(--accent-fill);
+  color: var(--text);
+}
 
 /* Связь занимает весь промежуток, наконечник упирается в следующий узел. */
 .flow-arrow {
@@ -806,7 +810,8 @@
   font: 500 1.4cqw/1.4 var(--font-text);
   color: var(--muted);
 }
-.qr img { width: 100%; height: 100%; object-fit: contain; }
+.qr img, .qr svg { width: 100%; height: 100%; object-fit: contain; }
+.qr svg { color: var(--accent-mark); }
 .qr-link { display: grid; gap: 1cqh; justify-items: start; }
 .qr-link a { color: inherit; text-decoration: none; }
 .where {

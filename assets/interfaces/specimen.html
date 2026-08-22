@@ -3,28 +3,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="dark light">
   <title>Craft · Интерфейсы</title>
+  <script src="theme.js"></script>
   <link rel="stylesheet" href="../shared/tokens.css">
   <link rel="stylesheet" href="theme.css">
   <link rel="stylesheet" href="specimen.css">
+  <script src="section-nav.js" defer></script>
   <script src="specimen.js" defer></script>
 </head>
 <body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol>
+  </svg>
   <div class="system-layout">
     <nav class="system-nav" aria-label="Разделы дизайн-системы">
       <div class="system-brand">
         <a class="system-name" href="#top">Craft</a>
         <span class="system-version">0.1</span>
       </div>
-      <div class="system-links">
+      <div class="system-links" data-section-nav>
         <a href="#foundation">Правила</a>
+        <a href="#layouts">Каркасы</a>
         <a href="#color">Цвет</a>
         <a href="#type">Типографика</a>
         <a href="#spacing">Ритм</a>
         <a href="#controls">Управление</a>
+        <a href="#charts">Графики</a>
+        <a href="#composition">Композиция</a>
         <a href="#data">Данные</a>
       </div>
+      <button class="button button--stable button--icon theme-switch system-theme" type="button" data-theme-toggle aria-pressed="false">
+        <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
+        <span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span>
+      </button>
     </nav>
 
     <main class="system-main" id="top">
@@ -34,7 +47,7 @@
           <p class="system-intro__lede">Токены и компоненты для отчётов, дашбордов и небольших рабочих инструментов.</p>
         </div>
         <dl class="system-meta">
-          <div><dt>Формат</dt><dd>HTML + CSS</dd></div>
+          <div><dt>Формат</dt><dd>HTML + CSS + JavaScript</dd></div>
           <div><dt>Зависимости</dt><dd>Нет</dd></div>
           <div><dt>Минимальная ширина</dt><dd>320 px</dd></div>
         </dl>
@@ -53,24 +66,45 @@
         </div>
       </section>
 
+      <section class="system-section" id="layouts">
+        <div class="system-section__head">
+          <h2>Каркасы страниц</h2>
+          <p>Выбор шаблона сразу задаёт ширину, первый экран, мобильное поведение и печать. Локальная композиция заполняет каркас, а не пересобирает его.</p>
+        </div>
+        <div class="layout-map" role="list">
+          <article class="layout-row" role="listitem">
+            <div><h3>Отчёт</h3><p>Читаемая колонка внутри полноширинных секций, компактные метрики и естественная прокрутка документа.</p><code>--template report</code></div>
+            <div class="layout-diagram layout-diagram--report" aria-label="Схема отчёта"><i></i><i></i><i></i></div>
+          </article>
+          <article class="layout-row" role="listitem">
+            <div><h3>Дашборд</h3><p>Полная ширина для данных, рабочие параметры в шапке, главный график и сигналы на первом экране.</p><code>--template dashboard</code></div>
+            <div class="layout-diagram layout-diagram--dashboard" aria-label="Схема дашборда"><i></i><i></i><i></i><i></i></div>
+          </article>
+          <article class="layout-row" role="listitem">
+            <div><h3>Инструмент</h3><p>Компактное управление, независимая рабочая область и детали выбранного объекта на общей плоскости.</p><code>--template tool</code></div>
+            <div class="layout-diagram layout-diagram--tool" aria-label="Схема инструмента"><i></i><i></i><i></i></div>
+          </article>
+        </div>
+      </section>
+
       <section class="system-section" id="color">
         <div class="system-section__head">
           <h2>Цвет</h2>
           <p>У красного четыре роли: акцентный текст, насыщенная метка, плоскость под белым текстом и прозрачный фон сигнала. Остальная палитра нейтральная.</p>
         </div>
         <div class="token-table" role="list" aria-label="Цветовые токены">
-          <div class="token-row" role="listitem"><i style="--swatch:#111"></i><strong>Фон</strong><code>--bg</code><em>фон страницы</em><span>#111111</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#1a1a1a"></i><strong>Поверхность</strong><code>--surface</code><em>выделенная смысловая группа</em><span>#1a1a1a</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#2a2a2a"></i><strong>Линия</strong><code>--line</code><em>разделитель секций и таблиц</em><span>#2a2a2a</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#eee"></i><strong>Текст</strong><code>--text</code><em>заголовки и значения</em><span>#eeeeee</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#a8a8a8"></i><strong>Вторичный</strong><code>--muted</code><em>подписи, единицы, пояснения</em><span>#a8a8a8</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#ff5a67"></i><strong>Акцент</strong><code>--accent</code><em>акцентный текст и ссылка</em><span>#ff5a67</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#ff3f4d"></i><strong>Метка</strong><code>--accent-mark</code><em>точка, полоса, линия графика, фокус</em><span>#ff3f4d</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#c5303d"></i><strong>Заливка</strong><code>--accent-fill</code><em>плоскость под белым текстом</em><span>#c5303d</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-tint)"></i><strong>Фон сигнала</strong><code>--accent-tint</code><em>тихое выделение под обычным текстом</em><span>9%</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#23cc70"></i><strong>Норма</strong><code>--ok</code><em>состояние в норме</em><span>#23cc70</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#ffae1a"></i><strong>Предупреждение</strong><code>--warn</code><em>требует внимания</em><span>#ffae1a</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:#ff3f4d"></i><strong>Ошибка</strong><code>--error</code><em>сбой, тот же красный, что и метка</em><span>#ff3f4d</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--bg)"></i><strong>Фон</strong><code>--bg</code><em>фон страницы</em><span data-token-value="--bg">#111111</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--surface)"></i><strong>Поверхность</strong><code>--surface</code><em>выделенная смысловая группа</em><span data-token-value="--surface">#1a1a1a</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--line)"></i><strong>Линия</strong><code>--line</code><em>разделитель секций и таблиц</em><span data-token-value="--line">#2a2a2a</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--text)"></i><strong>Текст</strong><code>--text</code><em>заголовки и значения</em><span data-token-value="--text">#eeeeee</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--muted)"></i><strong>Вторичный</strong><code>--muted</code><em>подписи, единицы, пояснения</em><span data-token-value="--muted">#a8a8a8</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--accent)"></i><strong>Акцент</strong><code>--accent</code><em>акцентный текст и ссылка</em><span data-token-value="--accent">#ff5a67</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-mark)"></i><strong>Метка</strong><code>--accent-mark</code><em>точка, полоса, линия графика, фокус</em><span data-token-value="--accent-mark">#ff3f4d</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-fill)"></i><strong>Заливка</strong><code>--accent-fill</code><em>плоскость под белым текстом</em><span data-token-value="--accent-fill">#c5303d</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-tint)"></i><strong>Фон сигнала</strong><code>--accent-tint</code><em>тихое выделение под обычным текстом</em><span data-token-value="--accent-tint">9%</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--ok)"></i><strong>Норма</strong><code>--ok</code><em>состояние в норме</em><span data-token-value="--ok">#23cc70</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--warn)"></i><strong>Предупреждение</strong><code>--warn</code><em>требует внимания</em><span data-token-value="--warn">#ffae1a</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--error)"></i><strong>Ошибка</strong><code>--error</code><em>сбой, тот же красный, что и метка</em><span data-token-value="--error">#ff3f4d</span></div>
         </div>
         <div class="series-palette">
           <p class="control-label">Ряды данных: приоритетный ряд красный, остальные различаются тоном и подписью</p>
@@ -123,7 +157,10 @@
           </div>
           <div class="control-group">
             <label class="control-label" for="period">Период</label>
-            <select id="period"><option>Последние 7 дней</option><option>Последние 30 дней</option></select>
+            <span class="select-control">
+              <select id="period"><option>Последние 7 дней</option><option>Последние 30 дней</option></select>
+              <svg class="select-control__icon" viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
+            </span>
           </div>
           <div class="control-group">
             <label class="control-label" for="search">Поиск</label>
@@ -144,20 +181,161 @@
         </div>
       </section>
 
+      <section class="system-section" id="charts">
+        <div class="system-section__head">
+          <h2>Графики</h2>
+          <p>Временной ряд проверяет палитру данных, порог, отметку события и подписи в обеих темах.</p>
+        </div>
+        <figure class="chart-sample">
+          <figcaption class="chart-sample__head">
+            <div>
+              <h3>Запросы по сервисам</h3>
+              <p>Демонстрационные данные · запросов в секунду</p>
+            </div>
+            <div class="control-line" aria-label="Ряды графика">
+              <span class="series-key" style="--swatch:var(--data-neutral)">Сервис A</span>
+              <span class="series-key" style="--swatch:var(--data-blue)">Сервис B</span>
+              <span class="series-key" style="--swatch:var(--data-green)">Сервис C</span>
+            </div>
+          </figcaption>
+          <div class="chart-canvas">
+            <div class="chart-y-axis" aria-hidden="true"><span>1&nbsp;000</span><span>750</span><span>500</span><span>250</span><span>0</span></div>
+            <div class="chart-plot">
+              <i style="--at:0%"></i><i style="--at:25%"></i><i style="--at:50%"></i><i style="--at:75%"></i><i style="--at:100%"></i>
+              <svg viewBox="0 0 100 40" preserveAspectRatio="none" role="img" aria-labelledby="chart-title chart-description">
+                <title id="chart-title">Запросы по сервисам с 09:00 до 12:00</title>
+                <desc id="chart-description">Нагрузка постепенно растёт. Около 11:00 у сервиса A краткий провал, после восстановления поток возвращается к прежнему тренду.</desc>
+                <path class="chart-line chart-line--neutral" d="M0 32 L5 31 L10 29 L15 28 L20 25 L25 24 L30 22 L35 21 L40 18 L45 19 L50 16 L55 15 L60 17 L64 16 L66 29 L68 27 L70 15 L75 14 L80 12 L85 13 L90 9 L95 7 L100 8"/>
+                <path class="chart-line chart-line--blue" d="M0 35 L5 34 L10 34 L15 32 L20 31 L25 30 L30 28 L35 29 L40 26 L45 25 L50 24 L55 22 L60 23 L65 24 L68 27 L70 24 L75 23 L80 21 L85 22 L90 19 L95 20 L100 18"/>
+                <path class="chart-line chart-line--green" d="M0 38 L10 37 L20 36 L30 36 L40 35 L50 33 L60 34 L66 33 L70 30 L80 31 L90 29 L100 28"/>
+              </svg>
+              <span class="chart-event" aria-hidden="true"><b></b></span>
+              <span class="chart-threshold" aria-hidden="true">порог 900</span>
+            </div>
+          </div>
+          <div class="chart-x-axis" aria-hidden="true"><span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span></div>
+          <p class="chart-summary"><strong>Сейчас 812 запросов/с.</strong> Провал в 11:00 совпал с выкладкой, поток восстановился за 6 минут.</p>
+        </figure>
+
+        <div class="chart-pair equal-panels">
+          <figure class="chart-panel equal-panel">
+            <figcaption class="equal-panel__head">
+              <div><h3>Задержка по регионам</h3><p>95-й процентиль · миллисекунды</p></div>
+            </figcaption>
+            <div class="equal-panel__body">
+              <div class="column-chart" role="img" aria-label="Задержка по пяти регионам. Порог 500 миллисекунд превышен только в регионе D.">
+              <span class="column-threshold" aria-hidden="true">порог 500</span>
+              <div><strong>318</strong><i style="--value:53%"></i><span>A</span></div>
+              <div><strong>276</strong><i style="--value:46%"></i><span>B</span></div>
+              <div><strong>421</strong><i style="--value:70%"></i><span>C</span></div>
+              <div class="column-chart__alert"><strong>548</strong><i style="--value:91%"></i><span>D</span></div>
+                <div><strong>352</strong><i style="--value:59%"></i><span>E</span></div>
+              </div>
+            </div>
+            <p class="chart-summary equal-panel__foot"><strong>Регион D: 548 мс.</strong> Единственный регион выше порога обслуживания.</p>
+          </figure>
+
+          <figure class="chart-panel equal-panel">
+            <figcaption class="heatmap-heading equal-panel__head">
+              <div><h3>Распределение задержки</h3><p>Доля запросов по корзинам</p></div>
+              <span class="heatmap-legend" aria-hidden="true">реже <i></i><i></i><i></i><i></i> чаще</span>
+            </figcaption>
+            <div class="equal-panel__body">
+              <div class="heatmap" role="img" aria-label="Основная доля запросов лежит в корзинах от 32 до 128 миллисекунд. В 11 часов выросла доля запросов от 256 миллисекунд.">
+              <span>512</span><i class="heat-1"></i><i class="heat-1"></i><i class="heat-1"></i><i class="heat-1"></i><i class="heat-1"></i><i class="heat-3"></i><i class="heat-2"></i><i class="heat-1"></i>
+              <span>256</span><i class="heat-1"></i><i class="heat-2"></i><i class="heat-1"></i><i class="heat-2"></i><i class="heat-2"></i><i class="heat-4"></i><i class="heat-3"></i><i class="heat-2"></i>
+              <span>128</span><i class="heat-3"></i><i class="heat-3"></i><i class="heat-4"></i><i class="heat-4"></i><i class="heat-3"></i><i class="heat-4"></i><i class="heat-4"></i><i class="heat-3"></i>
+              <span>64</span><i class="heat-4"></i><i class="heat-5"></i><i class="heat-5"></i><i class="heat-4"></i><i class="heat-5"></i><i class="heat-3"></i><i class="heat-4"></i><i class="heat-5"></i>
+              <span>32</span><i class="heat-3"></i><i class="heat-4"></i><i class="heat-4"></i><i class="heat-5"></i><i class="heat-4"></i><i class="heat-2"></i><i class="heat-3"></i><i class="heat-4"></i>
+              </div>
+              <div class="heatmap-axis" aria-hidden="true"><span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span></div>
+            </div>
+            <p class="chart-summary equal-panel__foot"><strong>Основная корзина: 32–64 мс.</strong> В 11:00 хвост распределения стал тяжелее.</p>
+          </figure>
+
+          <figure class="chart-panel equal-panel">
+            <figcaption class="equal-panel__head"><div><h3>Состав трафика</h3><p>Доля запросов за 6 часов</p></div></figcaption>
+            <div class="equal-panel__body">
+              <div class="donut-layout">
+              <svg class="donut-chart" viewBox="0 0 160 160" role="img" aria-label="Сервис A 42 процента, сервис B 27 процентов, сервис C 19 процентов, сервис D 12 процентов.">
+                <circle class="donut-chart__base" cx="80" cy="80" r="54" pathLength="100"/>
+                <circle class="donut-chart__segment donut-chart__segment--red" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="42 58" stroke-dashoffset="0"/>
+                <circle class="donut-chart__segment donut-chart__segment--blue" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="27 73" stroke-dashoffset="-42"/>
+                <circle class="donut-chart__segment donut-chart__segment--amber" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="19 81" stroke-dashoffset="-69"/>
+                <circle class="donut-chart__segment donut-chart__segment--green" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="12 88" stroke-dashoffset="-88"/>
+                <text class="donut-chart__value" x="80" y="77" text-anchor="middle">1,8 млн</text>
+                <text class="donut-chart__label" x="80" y="97" text-anchor="middle">запросов</text>
+              </svg>
+              <dl class="donut-legend">
+                <div><dt><span class="series-key" style="--swatch:var(--data-red)">Сервис A</span></dt><dd>42%</dd></div>
+                <div><dt><span class="series-key" style="--swatch:var(--data-blue)">Сервис B</span></dt><dd>27%</dd></div>
+                <div><dt><span class="series-key" style="--swatch:var(--data-amber)">Сервис C</span></dt><dd>19%</dd></div>
+                <div><dt><span class="series-key" style="--swatch:var(--data-green)">Сервис D</span></dt><dd>12%</dd></div>
+                </dl>
+              </div>
+            </div>
+            <p class="chart-summary equal-panel__foot"><strong>Сервис A: 42%.</strong> Крупнейшая доля, но не большинство трафика.</p>
+          </figure>
+        </div>
+      </section>
+
+      <section class="system-section" id="composition">
+        <div class="system-section__head">
+          <h2>Композиция</h2>
+          <p>Рабочий образец проверяет компоненты вместе: плотный список, выбор строки, статусы и детали на общей плоскости.</p>
+        </div>
+        <div class="queue-sample">
+          <div class="queue-sample__head">
+            <div><strong>Очередь задач</strong><span>Демонстрационные данные · 4 задачи</span></div>
+            <span class="status status--warn">2 требуют решения</span>
+          </div>
+          <div class="queue-sample__body">
+            <div class="queue-sample__list" aria-label="Задачи">
+              <button class="queue-row" type="button" aria-pressed="true" data-title="Сохранить параметры поиска" data-group="Интерфейс" data-state="требует решения" data-summary="При возврате на страницу должны восстанавливаться параметры, сортировка и позиция списка.">
+                <span><strong>Сохранить параметры поиска</strong><small>Интерфейс · открыта 2 дня назад</small></span>
+                <span class="status status--error">решение</span>
+              </button>
+              <button class="queue-row" type="button" aria-pressed="false" data-title="Убрать повторную загрузку данных" data-group="Платформа" data-state="готово" data-summary="Данные должны загружаться один раз после восстановления пользовательской сессии.">
+                <span><strong>Убрать повторную загрузку данных</strong><small>Платформа · открыта 3 дня назад</small></span>
+                <span class="status status--ok">готово</span>
+              </button>
+              <button class="queue-row" type="button" aria-pressed="false" data-title="Добавить управление доступом" data-group="Продукт" data-state="на проверке" data-summary="Экран разделяет активные и отозванные права и подтверждает сохранение изменений.">
+                <span><strong>Добавить управление доступом</strong><small>Продукт · открыта 10 часов назад</small></span>
+                <span class="status">проверка</span>
+              </button>
+              <button class="queue-row" type="button" aria-pressed="false" data-title="Проверить массовое изменение ролей" data-group="Безопасность" data-state="требует решения" data-summary="Массовое изменение ролей требует повторной проверки прав перед сохранением.">
+                <span><strong>Проверить массовое изменение ролей</strong><small>Безопасность · открыта 6 дней назад</small></span>
+                <span class="status status--error">решение</span>
+              </button>
+            </div>
+            <article class="queue-detail" aria-live="polite">
+              <span class="queue-detail__meta">Выбранная задача</span>
+              <h3 data-queue-title>Сохранить параметры поиска</h3>
+              <p data-queue-summary>При возврате на страницу должны восстанавливаться параметры, сортировка и позиция списка.</p>
+              <dl>
+                <div><dt>Направление</dt><dd data-queue-group>Интерфейс</dd></div>
+                <div><dt>Состояние</dt><dd data-queue-state>требует решения</dd></div>
+              </dl>
+              <button class="button" type="button">Открыть задачу</button>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section class="system-section" id="data">
         <div class="data-heading">
           <h2>Данные</h2>
           <p>Запись чисел и единиц измерения в русскоязычном интерфейсе.</p>
         </div>
         <div class="format-metrics" aria-label="Примеры форматирования чисел">
-          <div><strong>1 240</strong><span>целое число</span></div>
+          <div><strong>1&nbsp;240</strong><span>целое число</span></div>
           <div><strong>98,7%</strong><span>процент</span></div>
           <div><strong>18 мс</strong><span>время</span></div>
         </div>
         <table class="data-table format-table">
           <thead><tr><th>Тип</th><th>Правило</th><th>Пример</th></tr></thead>
           <tbody>
-            <tr><td>Количество</td><td>Пробел между разрядами</td><td>1 240</td></tr>
+            <tr><td>Количество</td><td>Пробел между разрядами</td><td>1&nbsp;240</td></tr>
             <tr><td>Доля</td><td>Одна десятичная, если она значима</td><td>98,7%</td></tr>
             <tr><td>Длительность</td><td>Неразрывный пробел перед единицей</td><td>18 мс</td></tr>
           </tbody>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>{{TITLE}}</title>
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol>
+  </svg>
+  <main class="shell shell--tool" data-craft-layout="tool">
+    <header class="workspace-head workspace-head--compact">
+      <div class="workspace-head__main">
+        <p class="eyebrow">Рабочий инструмент</p>
+        <h1>{{TITLE}}</h1>
+        <p class="workspace-head__lede">Назовите выбранный объект или текущее состояние работы.</p>
+      </div>
+      <div class="workspace-head__tools" aria-label="Управление инструментом">
+        <label class="search-field" for="work-search">
+          <span>Поиск</span>
+          <input id="work-search" type="search" placeholder="Введите запрос">
+        </label>
+        <button class="button button--primary" type="button">Основное действие</button>
+        <button class="button button--stable button--icon theme-switch" type="button" data-theme-toggle aria-pressed="false">
+          <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
+          <span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span>
+        </button>
+      </div>
+    </header>
+
+    <section class="workbench" aria-label="Рабочая область">
+      <section class="workbench__primary" aria-labelledby="queue-title">
+        <header class="panel-head">
+          <div><h2 id="queue-title">Очередь</h2><p>Список объектов для последовательной обработки.</p></div>
+          <span class="status">Состояние не задано</span>
+        </header>
+        <div class="scroll-region" tabindex="0">
+          <p class="empty-state"><strong>Данные не добавлены</strong><span>Добавьте список, редактор или другую основную рабочую область.</span></p>
+        </div>
+      </section>
+
+      <aside class="workbench__aside" aria-labelledby="details-title">
+        <header class="panel-head">
+          <div><h2 id="details-title">Детали</h2><p>Параметры выбранного объекта.</p></div>
+          <button class="button" type="button" disabled>Действие</button>
+        </header>
+        <div class="scroll-region" tabindex="0">
+          <p class="empty-state"><strong>Ничего не выбрано</strong><span>Выберите строку в основной области.</span></p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="activity-strip" aria-labelledby="activity-title">
+      <div><h2 id="activity-title">Результат и журнал</h2><p>Показывайте подтверждение действия или последнюю диагностическую запись.</p></div>
+      <p class="muted" role="status">Действий ещё не было</p>
+    </section>
+  </main>
+</body>
+</html>

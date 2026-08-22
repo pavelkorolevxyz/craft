@@ -81,6 +81,8 @@ def check_required() -> None:
         ROOT / "references/slides/authoring.md",
         ASSETS / "shared/tokens.css",
         ASSETS / "interfaces/theme.css",
+        ASSETS / "interfaces/theme.js",
+        ASSETS / "interfaces/section-nav.js",
         ASSETS / "interfaces/specimen.css",
         ASSETS / "interfaces/specimen.js",
         ASSETS / "slides/base.css",
@@ -176,6 +178,10 @@ def check_accessibility_contract() -> None:
         assert "prefers-reduced-motion" in css, f"у формата {surface} нет правила уменьшения движения"
         assert "@media print" in css, f"у формата {surface} нет правил печати"
 
+    interface_theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
+    assert ".select-control select:not(:disabled):hover" in interface_theme, "у select нет состояния наведения"
+    assert ".select-control:has(select:focus-visible)" in interface_theme, "стрелка select не реагирует на фокус"
+
     slide_theme = (ASSETS / "slides/theme.css").read_text(encoding="utf-8")
     sizes = [float(value) for value in re.findall(r"font(?:-size)?\s*:[^;{}]*?([0-9.]+)cqw", slide_theme)]
     assert sizes and min(sizes) >= 1.4, f"текст содержимого слайдов мельче 1.4cqw: {min(sizes)}"
@@ -192,9 +198,46 @@ def check_spacing_scale() -> None:
         assert f"var(--space-{index})" in specimen, f"каталог не показывает --space-{index}"
 
 
+def check_interface_patterns() -> None:
+    theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
+    starter = (ASSETS / "interfaces/starter-index.html").read_text(encoding="utf-8")
+    dashboard = (ASSETS / "interfaces/dashboard-index.html").read_text(encoding="utf-8")
+    tool = (ASSETS / "interfaces/tool-index.html").read_text(encoding="utf-8")
+    specimen = (ASSETS / "interfaces/specimen.html").read_text(encoding="utf-8")
+    assert ".scoreboard--compact" in theme, "нет компактной полосы метрик для отчёта"
+    assert "@page { margin: 8mm 14mm; }" in theme, "не заданы безопасные поля печати"
+    assert ".section { break-inside: auto; }" in theme, "длинная секция не может течь между страницами"
+    assert "scoreboard--compact document-block" in starter, "стартовый отчёт вытесняет текст крупными метриками"
+    assert "document-band" in starter, "стартовый отчёт не использует читаемую колонку"
+    assert 'data-craft-layout="report"' in starter, "отчёт не объявляет свой каркас"
+    assert 'data-craft-layout="dashboard"' in dashboard and "dashboard-grid" in dashboard, "нет явного каркаса дашборда"
+    assert 'data-craft-layout="tool"' in tool and "workbench" in tool, "нет явного каркаса инструмента"
+    assert "scroll-region" in tool and 'tabindex="0"' in tool, "рабочая область недоступна с клавиатуры"
+    assert "<footer" not in starter, "стартовый отчёт содержит декоративный футер"
+    assert "data-section-nav" in specimen, "каталог не использует общую навигацию по разделам"
+
+
+def check_slide_layouts() -> None:
+    registered = set(MANIFEST["surfaces"]["slides"].get("layouts", []))
+    assert registered, "в craft.json не зарегистрированы слайдовые раскладки"
+    specimen = (ASSETS / "slides/specimen.html").read_text(encoding="utf-8")
+    starter = (ASSETS / "slides/starter/index.html").read_text(encoding="utf-8")
+    used = set(re.findall(r'data-slide-layout="([a-z-]+)"', specimen))
+    unknown = used - registered
+    missing = registered - used
+    assert not unknown, f"неизвестные слайдовые раскладки: {', '.join(sorted(unknown))}"
+    assert not missing, f"каталог не показывает раскладки: {', '.join(sorted(missing))}"
+    for name, html in (("каталог", specimen), ("стартовая колода", starter)):
+        slides = len(re.findall(r'<section class="slide\b', html))
+        declarations = len(re.findall(r'data-slide-layout="[a-z-]+"', html))
+        assert slides == declarations, f"{name}: раскладка объявлена у {declarations} из {slides} слайдов"
+
+
 def check_content() -> None:
     allowed_templates = {
         ASSETS / "interfaces/starter-index.html": {"TITLE", "DATE"},
+        ASSETS / "interfaces/dashboard-index.html": {"TITLE", "DATE"},
+        ASSETS / "interfaces/tool-index.html": {"TITLE"},
         ASSETS / "slides/starter/index.html": {"TITLE"},
         ROOT / "scripts/scaffold.py": {"TITLE", "DATE"},
     }
@@ -275,6 +318,8 @@ def check_markdown_links() -> None:
 
 def check_javascript() -> None:
     paths = (
+        ASSETS / "interfaces/theme.js",
+        ASSETS / "interfaces/section-nav.js",
         ASSETS / "interfaces/specimen.js",
         ASSETS / "slides/deck.js",
         ASSETS / "slides/code-highlight.js",
@@ -292,6 +337,8 @@ def main() -> None:
         check_state_marks,
         check_accessibility_contract,
         check_spacing_scale,
+        check_interface_patterns,
+        check_slide_layouts,
         check_content,
         check_language,
         check_markdown_links,
@@ -305,6 +352,8 @@ def main() -> None:
         check_state_marks: "метки состояний",
         check_accessibility_contract: "контракт доступности",
         check_spacing_scale: "шкала отступов",
+        check_interface_patterns: "паттерны интерфейсов",
+        check_slide_layouts: "раскладки слайдов",
         check_content: "содержимое",
         check_language: "русский язык",
         check_markdown_links: "ссылки Markdown",

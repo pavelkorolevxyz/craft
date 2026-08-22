@@ -31,35 +31,37 @@ python3 scripts/scaffold.py ./output/отчёт --surface interface --template r
 
 Откройте `output/отчёт/index.html` через `file://`. Папка `output/` не входит в репозиторий и служит песочницей для черновых материалов. Для презентации замените параметры на `--surface slides --title "Название доклада"`.
 
-## Примеры
+## Кейсы
 
-### Отчёт на широком и мобильном экране
+### Очередь ревью
+
+Локальный инструмент со списком запросов на слияние, деталями выбранной задачи, фильтрами, горячими клавишами и мобильным режимом.
 
 | Широкий экран | Мобильный экран |
 |---|---|
-| ![Полноширинный отчёт Craft](tests/visual/baseline/report-desktop.png) | ![Мобильная версия отчёта Craft](tests/visual/baseline/report-mobile.png) |
+| ![Очередь ревью на широком экране](docs/cases/merge-reviews-desktop.png) | ![Очередь ревью на мобильном экране](docs/cases/merge-reviews-mobile.png) |
 
-### Каталог интерфейсной системы
+### Состояние кластера
 
-![Каталог токенов и компонентов Craft](tests/visual/baseline/system-desktop.png)
+Дашборд телеметрии с временными рядами, порогами, журналом событий и адаптивными графиками.
 
-### Презентация
-
-| Обложка | Содержательный слайд |
+| Широкий экран | Мобильный экран |
 |---|---|
-| ![Обложка презентации Craft](tests/visual/baseline/slides-cover.png) | ![Содержательный слайд Craft](tests/visual/baseline/slides-content.png) |
+| ![Состояние кластера на широком экране](docs/cases/observability-desktop.png) | ![Состояние кластера на мобильном экране](docs/cases/observability-mobile.png) |
 
-### Обзор слайдовой колоды
-
-![Обзор слайдов Craft сеткой](tests/visual/baseline/slides-grid.png)
-
-`make render` создаёт изображения, а `make visual-test` сравнивает их с текущими эталонами.
+Тестовые снимки стартовых материалов хранятся в `tests/visual/baseline/`. `make render` создаёт свежие изображения, а `make visual-test` сравнивает их с эталонами.
 
 ## Создание материала
 
 ```bash
-# Отчёт, дашборд или локальный инструмент
-python3 scripts/scaffold.py ./output --surface interface --template report --title "Название"
+# Текстовый отчёт
+python3 scripts/scaffold.py ./output/отчёт --surface interface --template report --title "Название"
+
+# Дашборд
+python3 scripts/scaffold.py ./output/дашборд --surface interface --template dashboard --title "Название"
+
+# Локальный рабочий инструмент
+python3 scripts/scaffold.py ./output/инструмент --surface interface --template tool --title "Название"
 
 # Каталог интерфейсной дизайн-системы
 python3 scripts/scaffold.py ./output --surface interface --template design-system
@@ -68,7 +70,7 @@ python3 scripts/scaffold.py ./output --surface interface --template design-syste
 python3 scripts/scaffold.py ./output --surface slides --title "Название доклада"
 ```
 
-Без параметров генератор использует `interface` и `report`. Дата отчёта по умолчанию — текущая; для воспроизводимого результата передай `--date ГГГГ-ММ-ДД`.
+Без параметров генератор использует `interface` и `report`. Каркасы `report`, `dashboard` и `tool` задают разную геометрию и поведение первого экрана. Дата по умолчанию — текущая; для воспроизводимого результата передай `--date ГГГГ-ММ-ДД`.
 
 ## Устройство репозитория
 

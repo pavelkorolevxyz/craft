@@ -1,78 +1,36 @@
-const links = [...document.querySelectorAll('.system-links a')];
-const sections = links
-  .map((link) => document.querySelector(link.hash))
-  .filter(Boolean);
+const formatTokenValue = (value) => {
+  if (!value.startsWith('rgb')) return value;
+  const channels = value.match(/[\d.]+/g)?.map(Number) || [];
+  if (channels.length < 3) return value;
+  const hex = `#${channels.slice(0, 3).map((channel) => Math.round(channel).toString(16).padStart(2, '0')).join('')}`;
+  return hex;
+};
 
-if (links.length && sections.length) {
-  let currentId;
-  const setCurrent = (id) => {
-    if (id === currentId) return;
-    currentId = id;
+const syncTokenValues = () => {
+  const styles = getComputedStyle(document.documentElement);
+  document.querySelectorAll('[data-token-value]').forEach((element) => {
+    const value = styles.getPropertyValue(element.dataset.tokenValue).trim();
+    element.textContent = formatTokenValue(value);
+  });
+};
 
-    let currentLink;
-    for (const link of links) {
-      if (link.hash === `#${id}`) {
-        link.setAttribute('aria-current', 'true');
-        currentLink = link;
-      } else {
-        link.removeAttribute('aria-current');
-      }
-    }
+syncTokenValues();
+addEventListener('craft-themechange', syncTokenValues);
 
-    if (currentLink && matchMedia('(max-width: 900px)').matches) {
-      const container = currentLink.parentElement;
-      const left = currentLink.offsetLeft - (container.clientWidth - currentLink.offsetWidth) / 2;
-      container.scrollTo({
-        left,
-        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
-      });
-    }
-  };
+const queueRows = [...document.querySelectorAll('.queue-row')];
+const queueDetail = {
+  title: document.querySelector('[data-queue-title]'),
+  summary: document.querySelector('[data-queue-summary]'),
+  group: document.querySelector('[data-queue-group]'),
+  state: document.querySelector('[data-queue-state]'),
+};
 
-  const updateCurrent = () => {
-    const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
-    if (atBottom) {
-      setCurrent(sections.at(-1).id);
-      return;
-    }
+const selectQueueRow = (selected) => {
+  for (const row of queueRows) row.setAttribute('aria-pressed', String(row === selected));
+  queueDetail.title.textContent = selected.dataset.title;
+  queueDetail.summary.textContent = selected.dataset.summary;
+  queueDetail.group.textContent = selected.dataset.group;
+  queueDetail.state.textContent = selected.dataset.state;
+};
 
-    const threshold = window.scrollY + Math.min(180, window.innerHeight * 0.3);
-    let current = sections[0];
-    for (const section of sections) {
-      if (section.offsetTop <= threshold) current = section;
-      else break;
-    }
-    setCurrent(current.id);
-  };
-
-  let scheduled = false;
-  let navigationTarget = null;
-  let navigationTimer;
-
-  const scheduleUpdate = () => {
-    if (navigationTarget) {
-      clearTimeout(navigationTimer);
-      navigationTimer = setTimeout(() => {
-        navigationTarget = null;
-        updateCurrent();
-      }, 120);
-      return;
-    }
-
-    if (scheduled) return;
-    scheduled = true;
-    requestAnimationFrame(() => {
-      updateCurrent();
-      scheduled = false;
-    });
-  };
-
-  links.forEach((link) => link.addEventListener('click', () => {
-    navigationTarget = link.hash.slice(1);
-    clearTimeout(navigationTimer);
-    setCurrent(navigationTarget);
-  }));
-  window.addEventListener('scroll', scheduleUpdate, { passive: true });
-  window.addEventListener('resize', scheduleUpdate);
-  updateCurrent();
-}
+queueRows.forEach((row) => row.addEventListener('click', () => selectQueueRow(row)));
