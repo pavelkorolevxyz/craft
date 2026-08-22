@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import shutil
-from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -19,28 +18,15 @@ def copy_shared(target: Path) -> None:
     shutil.copytree(SHARED / "fonts", target / "fonts", dirs_exist_ok=True)
 
 
-def scaffold_interface(target: Path, template: str, title: str, lang: str, report_date: str) -> None:
+def scaffold_interface(target: Path, title: str, lang: str) -> None:
     copy_shared(target)
     shutil.copy2(INTERFACES / "theme.css", target / "theme.css")
     shutil.copy2(INTERFACES / "theme.js", target / "theme.js")
     shutil.copy2(INTERFACES / "section-nav.js", target / "section-nav.js")
 
-    if template == "design-system":
-        shutil.copy2(INTERFACES / "specimen.css", target / "specimen.css")
-        shutil.copy2(INTERFACES / "specimen.js", target / "specimen.js")
-        html = (INTERFACES / "specimen.html").read_text(encoding="utf-8")
-    else:
-        source = {
-            "report": "starter-index.html",
-            "dashboard": "dashboard-index.html",
-            "tool": "tool-index.html",
-        }[template]
-        html = (INTERFACES / source).read_text(encoding="utf-8")
-        html = html.replace("{{TITLE}}", title)
-        html = html.replace("{{DATE}}", report_date)
-
+    html = (INTERFACES / "starter-index.html").read_text(encoding="utf-8")
     html = html.replace('href="../shared/tokens.css"', 'href="tokens.css"', 1)
-
+    html = html.replace("{{TITLE}}", title)
     html = html.replace('lang="ru"', f'lang="{lang}"', 1)
     (target / "index.html").write_text(html, encoding="utf-8")
 
@@ -72,21 +58,20 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("target", type=Path, help="Новая или пустая целевая папка")
     parser.add_argument("--surface", choices=("interface", "slides"), default="interface")
-    parser.add_argument("--template", choices=("report", "dashboard", "tool", "design-system", "deck", "slides"))
+    parser.add_argument("--template", choices=("blank", "deck", "slides"))
     parser.add_argument("--title", default=None)
     parser.add_argument("--lang", default="ru")
-    parser.add_argument("--date", default=date.today().isoformat(), help="Дата отчёта в формате ГГГГ-ММ-ДД")
     args = parser.parse_args()
 
-    template = args.template or ("deck" if args.surface == "slides" else "report")
+    template = args.template or ("deck" if args.surface == "slides" else "blank")
     if template == "slides":
         template = "deck"
-    if args.surface == "interface" and template not in {"report", "dashboard", "tool", "design-system"}:
-        parser.error("формат interface поддерживает шаблоны report, dashboard, tool и design-system")
+    if args.surface == "interface" and template != "blank":
+        parser.error("формат interface поддерживает только минимальный шаблон blank")
     if args.surface == "slides" and template != "deck":
         parser.error("формат slides поддерживает шаблон deck")
 
-    title = args.title or ("Новая презентация" if args.surface == "slides" else "Локальный отчёт")
+    title = args.title or ("Новая презентация" if args.surface == "slides" else "Новый материал")
     target = args.target.expanduser().resolve()
     if target.exists() and any(target.iterdir()):
         raise SystemExit(f"Непустая папка не будет перезаписана: {target}")
@@ -95,7 +80,7 @@ def main() -> None:
     if args.surface == "slides":
         scaffold_slides(target, title, args.lang)
     else:
-        scaffold_interface(target, template, title, args.lang, args.date)
+        scaffold_interface(target, title, args.lang)
 
     print(f"Создан проект Craft формата {args.surface}: {target / 'index.html'}")
 

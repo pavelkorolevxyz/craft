@@ -11,56 +11,8 @@
 <body>
 <div class="deck">
 <div class="slides">
-  <section class="slide s-cover surface-accent" data-slide-layout="cover">
+  <section class="slide s-title-card" data-slide-layout="title">
     <div class="pad"><h1 class="type-hero">{{TITLE}}</h1></div>
-    <p class="byline">Имя автора</p>
-    <p class="slide-number"></p>
-  </section>
-
-  <section class="slide" data-slide-layout="context">
-    <div class="pad">
-      <p class="slide-title">Контекст</p>
-      <div class="stack place-center">
-        <h2 class="type-title">Один вывод на слайд</h2>
-        <p class="type-lede">Дайте факт, без которого следующая мысль будет непонятна.</p>
-      </div>
-    </div>
-    <p class="slide-number"></p>
-  </section>
-
-  <section class="slide s-statement surface-accent" data-slide-layout="statement">
-    <div class="pad"><h2 class="type-hero">Главная мысль раздела</h2></div>
-    <p class="slide-number"></p>
-  </section>
-
-  <section class="slide" data-slide-layout="list">
-    <div class="pad">
-      <p class="slide-title">Аргументы</p>
-      <ul class="bullets">
-        <li class="frag" data-n="01"><div><h3>Первый аргумент</h3><small>цифра, источник или уточнение</small></div></li>
-        <li class="frag" data-n="02"><div><h3>Второй аргумент</h3></div></li>
-        <li class="frag" data-n="03"><div><h3>Третий аргумент</h3></div></li>
-      </ul>
-    </div>
-    <p class="slide-number"></p>
-  </section>
-
-  <section class="slide" data-slide-layout="code">
-    <div class="pad">
-      <p class="slide-title">Код</p>
-      <pre class="code" data-language="javascript" data-highlight-lines="2"><code>function example(input) {
-    return transform(input);
-}</code></pre>
-      <p class="type-note">Оставьте только строки, на которых строится вывод.</p>
-    </div>
-    <p class="slide-number"></p>
-  </section>
-
-  <section class="slide s-end" data-slide-layout="end">
-    <div class="pad">
-      <h2 class="type-hero">Спасибо</h2>
-      <p class="handle">@адрес</p>
-    </div>
     <p class="slide-number"></p>
   </section>
 </div>
@@ -75,10 +27,7 @@
   </div>
   <div class="help-nav" aria-label="Навигация по слайдам">
     <button type="button" data-deck-go="-1" aria-label="Предыдущий слайд"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5 7.5 12l7 7"/></svg></button>
-    <label class="help-page">
-      <input class="help-page-input" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="Перейти к странице">
-      <span class="help-page-total" aria-hidden="true"></span>
-    </label>
+    <label class="help-page"><input class="help-page-input" type="text" inputmode="numeric" pattern="[0-9]*" aria-label="Перейти к странице"><span class="help-page-total" aria-hidden="true"></span></label>
     <button type="button" data-deck-go="1" aria-label="Следующий слайд"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg></button>
   </div>
   <button class="help-close" type="button" data-deck-action="hide-help" aria-label="Скрыть управление"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg><span class="shortcut-key" aria-hidden="true">H</span></button>

@@ -46,8 +46,6 @@ def scaffold(target: Path, surface: str, template: str, title: str = "Прове
         template,
         "--title",
         title,
-        "--date",
-        "2026-01-01",
     ]
     run(*args)
 

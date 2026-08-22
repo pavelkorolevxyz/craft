@@ -14,8 +14,11 @@ from lib import ASSETS, MANIFEST, ROOT, node, run
 TEXT_SUFFIXES = {".css", ".html", ".js", ".json", ".md", ".py"}
 # output/ — черновая песочница вне репозитория, её содержимое не проверяется.
 IGNORED_DIRS = {".git", ".ralph", "output", "dist", "artifacts", "__pycache__"}
-CSS_FILES = list(ASSETS.rglob("*.css"))
+CSS_FILES = [*ASSETS.rglob("*.css"), ROOT / "tests/fixtures/interfaces/specimen.css"]
 HTML_FILES = [ROOT / path for surface in MANIFEST["surfaces"].values() for path in surface["entrypoints"]]
+FRAGMENT_FILES = [ROOT / path for surface in MANIFEST["surfaces"].values() for path in surface.get("fragments", [])]
+FIXTURE_HTML = [ROOT / "tests/fixtures/interfaces/index.html", ROOT / "tests/fixtures/slides/index.html"]
+CHECKED_HTML = [*HTML_FILES, *FIXTURE_HTML]
 MARK_SELECTOR = re.compile(r"\.icon\b|-mark\b|-dot\b|-status\b|::before|::after|\bsvg\b")
 RAW_COLOR = re.compile(r"(?<![\w-])(?:#[0-9a-fA-F]{3,8}\b|(?:rgb|hsl)a?\([^)]*\))")
 
@@ -83,22 +86,27 @@ def check_required() -> None:
         ASSETS / "interfaces/theme.css",
         ASSETS / "interfaces/theme.js",
         ASSETS / "interfaces/section-nav.js",
-        ASSETS / "interfaces/specimen.css",
-        ASSETS / "interfaces/specimen.js",
+        ROOT / "tests/fixtures/interfaces/specimen.css",
+        ROOT / "tests/fixtures/interfaces/specimen.js",
         ASSETS / "slides/base.css",
         ASSETS / "slides/theme.css",
         ASSETS / "slides/deck.js",
         *HTML_FILES,
+        *FIXTURE_HTML,
+        *FRAGMENT_FILES,
     ]
     for path in required:
         assert path.is_file(), f"отсутствует {path.relative_to(ROOT)}"
+    forbidden = [ROOT / "docs/cases", ROOT / "examples", ASSETS / "interfaces/specimen.html", ASSETS / "slides/specimen.html"]
+    for path in forbidden:
+        assert not path.exists(), f"публичные примеры и каталоги не входят в репозиторий: {path.relative_to(ROOT)}"
     fonts = list((ASSETS / "shared/fonts").glob("*.woff2"))
     expected = MANIFEST["requirements"]["fontFiles"]
     assert len(fonts) == expected, f"ожидалось локальных файлов шрифтов: {expected}, найдено: {len(fonts)}"
 
 
 def check_assets() -> None:
-    for path in HTML_FILES:
+    for path in CHECKED_HTML:
         parser = AssetParser()
         parser.feed(path.read_text(encoding="utf-8"))
         for value in parser.assets:
@@ -163,7 +171,7 @@ def check_state_marks() -> None:
 
 
 def check_accessibility_contract() -> None:
-    for path in HTML_FILES:
+    for path in CHECKED_HTML:
         if not path.is_file():
             continue
         parser = HeadingParser()
@@ -193,7 +201,7 @@ def check_spacing_scale() -> None:
     for index, value in expected.items():
         assert re.search(rf"--space-{index}:\s*{value}px\s*;", theme), f"нет --space-{index}: {value}px"
 
-    specimen = (ASSETS / "interfaces/specimen.html").read_text(encoding="utf-8")
+    specimen = (ROOT / "tests/fixtures/interfaces/index.html").read_text(encoding="utf-8")
     for index in expected:
         assert f"var(--space-{index})" in specimen, f"каталог не показывает --space-{index}"
 
@@ -201,52 +209,48 @@ def check_spacing_scale() -> None:
 def check_interface_patterns() -> None:
     theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
     starter = (ASSETS / "interfaces/starter-index.html").read_text(encoding="utf-8")
-    dashboard = (ASSETS / "interfaces/dashboard-index.html").read_text(encoding="utf-8")
-    tool = (ASSETS / "interfaces/tool-index.html").read_text(encoding="utf-8")
-    specimen = (ASSETS / "interfaces/specimen.html").read_text(encoding="utf-8")
-    assert ".scoreboard--compact" in theme, "нет компактной полосы метрик для отчёта"
+    fragments = {path.name: path.read_text(encoding="utf-8") for path in FRAGMENT_FILES if "interfaces" in path.parts}
+    assert set(fragments) == {"page-head.html", "workspace-head.html", "metric-strip.html", "section.html", "split-workspace.html", "data-table.html", "empty-state.html", "section-nav.html"}, "неполный набор интерфейсных фрагментов"
     assert "@page { margin: 8mm 14mm; }" in theme, "не заданы безопасные поля печати"
     assert ".section { break-inside: auto; }" in theme, "длинная секция не может течь между страницами"
-    assert "scoreboard--compact document-block" in starter, "стартовый отчёт вытесняет текст крупными метриками"
-    assert "document-band" in starter, "стартовый отчёт не использует читаемую колонку"
-    assert 'data-craft-layout="report"' in starter, "отчёт не объявляет свой каркас"
-    assert 'data-craft-layout="dashboard"' in dashboard and "dashboard-grid" in dashboard, "нет явного каркаса дашборда"
-    assert 'data-craft-layout="tool"' in tool and "workbench" in tool, "нет явного каркаса инструмента"
-    assert "scroll-region" in tool and 'tabindex="0"' in tool, "рабочая область недоступна с клавиатуры"
-    assert "<footer" not in starter, "стартовый отчёт содержит декоративный футер"
-    assert "data-section-nav" in specimen, "каталог не использует общую навигацию по разделам"
+    assert 'data-craft-layout="interface"' in starter, "стартер не объявляет универсальную поверхность"
+    assert 'id="craft-content"' in starter, "в стартере нет пустой области композиции"
+    assert "scoreboard" not in starter and "workbench" not in starter and "document-band" not in starter, "стартер навязывает предметную композицию"
+    assert "scroll-region" in fragments["split-workspace.html"] and 'tabindex="0"' in fragments["split-workspace.html"], "рабочая область недоступна с клавиатуры"
+    assert "data-section-nav" in fragments["section-nav.html"], "фрагмент навигации не подключает общую механику"
+    assert "<footer" not in starter, "стартер содержит декоративный футер"
 
 
 def check_slide_layouts() -> None:
     registered = set(MANIFEST["surfaces"]["slides"].get("layouts", []))
     assert registered, "в craft.json не зарегистрированы слайдовые раскладки"
-    specimen = (ASSETS / "slides/specimen.html").read_text(encoding="utf-8")
-    starter = (ASSETS / "slides/starter/index.html").read_text(encoding="utf-8")
-    used = set(re.findall(r'data-slide-layout="([a-z-]+)"', specimen))
+    fragments = [path.read_text(encoding="utf-8") for path in FRAGMENT_FILES if "slides" in path.parts]
+    used = {value for html in fragments for value in re.findall(r'data-slide-layout="([a-z-]+)"', html)}
     unknown = used - registered
     missing = registered - used
     assert not unknown, f"неизвестные слайдовые раскладки: {', '.join(sorted(unknown))}"
-    assert not missing, f"каталог не показывает раскладки: {', '.join(sorted(missing))}"
-    for name, html in (("каталог", specimen), ("стартовая колода", starter)):
-        slides = len(re.findall(r'<section class="slide\b', html))
-        declarations = len(re.findall(r'data-slide-layout="[a-z-]+"', html))
-        assert slides == declarations, f"{name}: раскладка объявлена у {declarations} из {slides} слайдов"
+    assert not missing, f"нет фрагментов раскладок: {', '.join(sorted(missing))}"
+    for path in (path for path in FRAGMENT_FILES if "slides" in path.parts):
+        html = path.read_text(encoding="utf-8")
+        assert len(re.findall(r'<section class="slide\b', html)) == 1, f"{path.relative_to(ROOT)} должен содержать один слайд"
+        assert len(re.findall(r'data-slide-layout="[a-z-]+"', html)) == 1, f"{path.relative_to(ROOT)} не объявляет раскладку"
+    starter = (ASSETS / "slides/starter/index.html").read_text(encoding="utf-8")
+    assert re.findall(r'data-slide-layout="([a-z-]+)"', starter) == ["title"], "стартовая колода должна содержать только титульный слайд"
 
 
 def check_content() -> None:
     allowed_templates = {
-        ASSETS / "interfaces/starter-index.html": {"TITLE", "DATE"},
-        ASSETS / "interfaces/dashboard-index.html": {"TITLE", "DATE"},
-        ASSETS / "interfaces/tool-index.html": {"TITLE"},
+        ASSETS / "interfaces/starter-index.html": {"TITLE"},
         ASSETS / "slides/starter/index.html": {"TITLE"},
-        ROOT / "scripts/scaffold.py": {"TITLE", "DATE"},
+        ROOT / "scripts/scaffold.py": {"TITLE"},
     }
     for path in ROOT.rglob("*"):
         if not path.is_file() or path.suffix not in TEXT_SUFFIXES or IGNORED_DIRS & set(path.parts):
             continue
         text = path.read_text(encoding="utf-8", errors="ignore")
         placeholders = set(re.findall(r"\{\{([A-Z][A-Z0-9_]*)\}\}", text))
-        assert placeholders <= allowed_templates.get(path, set()), f"неожиданные подстановки в {path.relative_to(ROOT)}: {placeholders}"
+        allowed = placeholders if path in FRAGMENT_FILES else allowed_templates.get(path, set())
+        assert placeholders <= allowed, f"неожиданные подстановки в {path.relative_to(ROOT)}: {placeholders}"
 
     searchable = "\n".join(
         path.read_text(encoding="utf-8", errors="ignore")
@@ -276,7 +280,7 @@ def check_language() -> None:
         assert not unknown, f"английские слова в {path.relative_to(ROOT)}: {', '.join(sorted(unknown))}"
 
 
-    for path in HTML_FILES:
+    for path in CHECKED_HTML:
         parser = LanguageParser()
         parser.feed(path.read_text(encoding="utf-8"))
         assert parser.lang == "ru", f"в {path.relative_to(ROOT)} должен быть lang=ru"
@@ -320,7 +324,7 @@ def check_javascript() -> None:
     paths = (
         ASSETS / "interfaces/theme.js",
         ASSETS / "interfaces/section-nav.js",
-        ASSETS / "interfaces/specimen.js",
+        ROOT / "tests/fixtures/interfaces/specimen.js",
         ASSETS / "slides/deck.js",
         ASSETS / "slides/code-highlight.js",
     )

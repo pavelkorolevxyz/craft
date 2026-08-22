@@ -95,12 +95,16 @@ img, svg { display: block; max-width: 100%; }
 /* Явный режим страницы задаёт условия композиции. Отчёт ограничивает
    читаемый текст, дашборд отдаёт ширину данным, инструмент отдаёт первый
    экран рабочей области. Эти классы выбирают каркас, а не оформление. */
-.shell--report { --layout-density: document; }
-.shell--dashboard { --layout-density: data; }
-.shell--tool { --layout-density: work; display: flex; flex-direction: column; }
+.shell--document { --layout-density: document; }
+.shell--data { --layout-density: data; }
+.shell--workspace { --layout-density: work; display: flex; flex-direction: column; }
 /* Документ ограничивает содержимое, но оставляет плоскости и линии секций
    полноширинными. Поля слева и справа растут одинаково. */
 .document-block { width: min(calc(100% - var(--gutter) - var(--gutter)), var(--document-width)); margin-inline: auto; }
+/* Блок с рамкой и внутренними полями выравнивает по читаемой колонке своё
+   содержимое, а не рамку. Поэтому рамка выходит за колонку ровно на
+   внутренний отступ, и числа встают под текстом документа. */
+.document-block--framed { width: min(100%, calc(var(--document-width) + var(--gutter) + var(--gutter))); }
 
 .report-head {
   position: relative;

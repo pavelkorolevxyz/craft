@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
   <title>Craft · Интерфейсы</title>
-  <script src="theme.js"></script>
-  <link rel="stylesheet" href="../shared/tokens.css">
-  <link rel="stylesheet" href="theme.css">
+  <script src="../../../assets/interfaces/theme.js"></script>
+  <link rel="stylesheet" href="../../../assets/shared/tokens.css">
+  <link rel="stylesheet" href="../../../assets/interfaces/theme.css">
   <link rel="stylesheet" href="specimen.css">
-  <script src="section-nav.js" defer></script>
+  <script src="../../../assets/interfaces/section-nav.js" defer></script>
   <script src="specimen.js" defer></script>
 </head>
 <body>
@@ -25,7 +25,7 @@
       </div>
       <div class="system-links" data-section-nav>
         <a href="#foundation">Правила</a>
-        <a href="#layouts">Каркасы</a>
+        <a href="#layouts">Режимы</a>
         <a href="#color">Цвет</a>
         <a href="#type">Типографика</a>
         <a href="#spacing">Ритм</a>
@@ -68,21 +68,21 @@
 
       <section class="system-section" id="layouts">
         <div class="system-section__head">
-          <h2>Каркасы страниц</h2>
-          <p>Выбор шаблона сразу задаёт ширину, первый экран, мобильное поведение и печать. Локальная композиция заполняет каркас, а не пересобирает его.</p>
+          <h2>Композиционные режимы</h2>
+          <p>Режим задаёт геометрию поверхности, но не предметную структуру материала.</p>
         </div>
         <div class="layout-map" role="list">
           <article class="layout-row" role="listitem">
-            <div><h3>Отчёт</h3><p>Читаемая колонка внутри полноширинных секций, компактные метрики и естественная прокрутка документа.</p><code>--template report</code></div>
-            <div class="layout-diagram layout-diagram--report" aria-label="Схема отчёта"><i></i><i></i><i></i></div>
+            <div><h3>Документ</h3><p>Читаемая колонка внутри полноширинных секций и естественная прокрутка страницы.</p><code>.shell--document</code></div>
+            <div class="layout-diagram layout-diagram--document" aria-label="Схема документа"><i></i><i></i><i></i></div>
           </article>
           <article class="layout-row" role="listitem">
-            <div><h3>Дашборд</h3><p>Полная ширина для данных, рабочие параметры в шапке, главный график и сигналы на первом экране.</p><code>--template dashboard</code></div>
-            <div class="layout-diagram layout-diagram--dashboard" aria-label="Схема дашборда"><i></i><i></i><i></i><i></i></div>
+            <div><h3>Поверхность данных</h3><p>Полная ширина для таблиц, графиков, фильтров и точного сравнения значений.</p><code>.shell--data</code></div>
+            <div class="layout-diagram layout-diagram--data" aria-label="Схема поверхности данных"><i></i><i></i><i></i><i></i></div>
           </article>
           <article class="layout-row" role="listitem">
-            <div><h3>Инструмент</h3><p>Компактное управление, независимая рабочая область и детали выбранного объекта на общей плоскости.</p><code>--template tool</code></div>
-            <div class="layout-diagram layout-diagram--tool" aria-label="Схема инструмента"><i></i><i></i><i></i></div>
+            <div><h3>Рабочая поверхность</h3><p>Компактное управление и связанные области с независимой прокруткой.</p><code>.shell--workspace</code></div>
+            <div class="layout-diagram layout-diagram--workspace" aria-label="Схема рабочей поверхности"><i></i><i></i><i></i></div>
           </article>
         </div>
       </section>

@@ -23,37 +23,27 @@ class Shot:
 
 
 SHOT_LABELS = {
-    "report-desktop": "Отчёт · широкий экран",
-    "report-mobile": "Отчёт · мобильный экран",
-    "dashboard-desktop": "Дашборд · широкий экран",
-    "dashboard-mobile": "Дашборд · мобильный экран",
-    "tool-desktop": "Инструмент · широкий экран",
-    "tool-mobile": "Инструмент · мобильный экран",
-    "system-desktop": "Каталог · широкий экран",
-    "system-mobile": "Каталог · мобильный экран",
-    "system-light-desktop": "Каталог · светлая тема",
-    "system-light-mobile": "Каталог · светлая тема на мобильном экране",
-    "slides-cover": "Слайды · обложка",
-    "slides-content": "Слайды · содержимое",
-    "slides-recording": "Слайды · запись на мобильном экране",
-    "slides-grid": "Слайды · обзор сеткой",
+    "interface-starter": "Минимальный интерфейсный стартер",
+    "interface-fixture-dark": "Интерфейсная фикстура · тёмная тема",
+    "interface-fixture-mobile": "Интерфейсная фикстура · мобильный экран",
+    "interface-fixture-light": "Интерфейсная фикстура · светлая тема",
+    "slides-starter": "Минимальная колода",
+    "slides-fixture-cover": "Слайдовая фикстура · титульная раскладка",
+    "slides-fixture-content": "Слайдовая фикстура · содержимое",
+    "slides-fixture-recording": "Слайдовая фикстура · мобильная запись",
+    "slides-fixture-grid": "Слайдовая фикстура · обзор сеткой",
 }
 
 SHOTS = (
-    Shot("interface-report", "report-desktop", 1440, 900, "?theme=dark"),
-    Shot("interface-report", "report-mobile", 500, 844, "?theme=dark"),
-    Shot("interface-dashboard", "dashboard-desktop", 1440, 900, "?theme=dark"),
-    Shot("interface-dashboard", "dashboard-mobile", 500, 844, "?theme=dark"),
-    Shot("interface-tool", "tool-desktop", 1440, 900, "?theme=dark"),
-    Shot("interface-tool", "tool-mobile", 500, 844, "?theme=dark"),
-    Shot("interface-design-system", "system-desktop", 1440, 900, "?theme=dark"),
-    Shot("interface-design-system", "system-mobile", 500, 844, "?theme=dark"),
-    Shot("interface-design-system", "system-light-desktop", 1440, 900, "?theme=light"),
-    Shot("interface-design-system", "system-light-mobile", 500, 844, "?theme=light"),
-    Shot("slides-deck", "slides-cover", 1280, 720, "#1"),
-    Shot("slides-deck", "slides-content", 1280, 720, "#5"),
-    Shot("slides-deck", "slides-recording", 500, 844, "#1"),
-    Shot("slides-deck", "slides-grid", 1440, 900, "?view=grid#1"),
+    Shot("interface-blank", "interface-starter", 1440, 900, "?theme=dark"),
+    Shot("interface-fixture", "interface-fixture-dark", 1440, 900, "?theme=dark"),
+    Shot("interface-fixture", "interface-fixture-mobile", 390, 844, "?theme=dark"),
+    Shot("interface-fixture", "interface-fixture-light", 1440, 900, "?theme=light"),
+    Shot("slides-deck", "slides-starter", 1280, 720, "#1"),
+    Shot("slides-fixture", "slides-fixture-cover", 1280, 720, "#1"),
+    Shot("slides-fixture", "slides-fixture-content", 1280, 720, "#5"),
+    Shot("slides-fixture", "slides-fixture-recording", 390, 844, "#1"),
+    Shot("slides-fixture", "slides-fixture-grid", 1440, 900, "?view=grid#1"),
 )
 
 
@@ -100,15 +90,20 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory(prefix="craft-render-") as directory:
         projects = scaffold_matrix(Path(directory))
+        sources = {
+            **{key: path / "index.html" for key, path in projects.items()},
+            "interface-fixture": ROOT / "tests/fixtures/interfaces/index.html",
+            "slides-fixture": ROOT / "tests/fixtures/slides/index.html",
+        }
         rendered: list[tuple[Shot, Path]] = []
         for shot in SHOTS:
             target = output / f"{shot.name}.png"
-            screenshot(projects[shot.project] / "index.html", target, shot.width, shot.height, shot.suffix)
+            screenshot(sources[shot.project], target, shot.width, shot.height, shot.suffix)
             rendered.append((shot, target))
             print(f"✓ {target.relative_to(output.parent)}")
 
         pdf = output / "slides.pdf"
-        run(*chromium_args(1280, 720), f"--print-to-pdf={pdf}", projects["slides-deck"].joinpath("index.html").as_uri())
+        run(*chromium_args(1280, 720), f"--print-to-pdf={pdf}", sources["slides-fixture"].as_uri())
         assert pdf.stat().st_size > 30_000
         write_gallery(output, rendered)
 

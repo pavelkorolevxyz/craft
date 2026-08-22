@@ -14,69 +14,17 @@
     <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
     <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol>
   </svg>
-  <main class="shell shell--report" data-craft-layout="report">
-    <header class="report-head document-band">
-      <div class="report-head__main">
-        <p class="eyebrow">Локальный отчёт</p>
-        <h1>{{TITLE}}</h1>
-        <p class="report-head__lede">Сформулируйте главное изменение и его последствия.</p>
-      </div>
-      <div class="report-head__aside" aria-label="Параметры отчёта">
-        <p>Период: укажите период</p>
-        <p>Обновлено: {{DATE}}</p>
-        <p>Источник: укажите источник</p>
-        <div class="report-head__tools report-head__tools--theme">
-          <button class="button button--stable button--icon theme-switch" type="button" data-theme-toggle aria-pressed="false">
-            <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
-            <span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span>
-          </button>
-        </div>
+  <main class="shell" data-craft-layout="interface">
+    <header class="workspace-head workspace-head--compact">
+      <div class="workspace-head__main"><h1>{{TITLE}}</h1></div>
+      <div class="workspace-head__tools">
+        <button class="button button--stable button--icon theme-switch" type="button" data-theme-toggle aria-pressed="false">
+          <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
+          <span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span>
+        </button>
       </div>
     </header>
-
-    <section class="scoreboard scoreboard--compact document-block" aria-label="Ключевые показатели" style="--metrics: 3">
-      <div class="metric">
-        <strong class="metric__value">—</strong>
-        <span class="metric__label">Первый показатель</span>
-      </div>
-      <div class="metric">
-        <strong class="metric__value">—</strong>
-        <span class="metric__label">Второй показатель</span>
-      </div>
-      <div class="metric">
-        <strong class="metric__value">—</strong>
-        <span class="metric__label">Третий показатель</span>
-      </div>
-    </section>
-
-    <section class="section document-band">
-      <div class="section-head">
-        <h2>Сводка</h2>
-        <p>Укажите период, источник и поясните данные, если без этого их можно понять неверно.</p>
-      </div>
-      <div class="split">
-        <div class="stack">
-          <h3>Данные не добавлены</h3>
-          <p class="muted">Замените этот блок основным графиком, списком изменений или другим материалом отчёта.</p>
-        </div>
-        <aside class="stack">
-          <h3>Сигналы</h3>
-          <p class="muted">Оставьте наблюдения, которые требуют внимания или решения.</p>
-        </aside>
-      </div>
-    </section>
-
-    <section class="section section--tight document-band">
-      <div class="section-head">
-        <h2>Детали</h2>
-        <p>Таблица нужна для точного сравнения значений.</p>
-      </div>
-      <table class="data-table">
-        <thead><tr><th>Параметр</th><th>Состояние</th><th>Значение</th></tr></thead>
-        <tbody><tr><td colspan="3" class="muted">Данные не добавлены</td></tr></tbody>
-      </table>
-    </section>
-
+    <div id="craft-content"></div>
   </main>
 </body>
 </html>

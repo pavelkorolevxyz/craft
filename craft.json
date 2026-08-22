@@ -1,51 +1,58 @@
 {
   "name": "Craft",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "language": "ru",
   "surfaces": {
     "interface": {
       "templates": [
-        "report",
-        "dashboard",
-        "tool",
-        "design-system"
+        "blank"
       ],
       "entrypoints": [
-        "assets/interfaces/starter-index.html",
-        "assets/interfaces/dashboard-index.html",
-        "assets/interfaces/tool-index.html",
-        "assets/interfaces/specimen.html"
+        "assets/interfaces/starter-index.html"
+      ],
+      "fragments": [
+        "assets/interfaces/fragments/page-head.html",
+        "assets/interfaces/fragments/workspace-head.html",
+        "assets/interfaces/fragments/metric-strip.html",
+        "assets/interfaces/fragments/section.html",
+        "assets/interfaces/fragments/split-workspace.html",
+        "assets/interfaces/fragments/data-table.html",
+        "assets/interfaces/fragments/empty-state.html",
+        "assets/interfaces/fragments/section-nav.html"
       ]
     },
     "slides": {
       "templates": [
         "deck"
       ],
+      "entrypoints": [
+        "assets/slides/starter/index.html"
+      ],
       "layouts": [
-        "cover",
-        "context",
+        "title",
         "section",
         "statement",
         "list",
         "comparison",
-        "quote",
-        "metrics",
-        "code",
         "figure",
-        "screenshot",
-        "table",
-        "steps",
         "chart",
-        "timeline",
+        "table",
+        "code",
         "flow",
-        "visual-comparison",
-        "title",
-        "resource",
         "end"
       ],
-      "entrypoints": [
-        "assets/slides/starter/index.html",
-        "assets/slides/specimen.html"
+      "fragments": [
+        "assets/slides/fragments/title.html",
+        "assets/slides/fragments/section.html",
+        "assets/slides/fragments/statement.html",
+        "assets/slides/fragments/list.html",
+        "assets/slides/fragments/split.html",
+        "assets/slides/fragments/figure.html",
+        "assets/slides/fragments/chart.html",
+        "assets/slides/fragments/table.html",
+        "assets/slides/fragments/code.html",
+        "assets/slides/fragments/flow.html",
+        "assets/slides/fragments/end.html"
       ]
     }
   },
