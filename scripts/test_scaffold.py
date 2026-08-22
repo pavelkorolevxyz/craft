@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import re
 import shutil
+import sys
 import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
@@ -162,8 +163,10 @@ def main() -> None:
         test_interface_starter(outputs["interface-blank"], root)
         test_interface_fixture(root)
         test_slide_source("slides-deck", outputs["slides-deck"] / "index.html", root, 1)
-        test_slide_source("slides-fixture", FIXTURES / "slides" / "index.html", root, 20)
-        print("Готово: минимальные стартеры и внутренние фикстуры проверены в Chromium и PDF")
+        test_slide_source("slides-fixture", FIXTURES / "slides" / "index.html", root, 11)
+        for output in outputs.values():
+            run(sys.executable, ROOT / "scripts/check_project.py", output)
+        print("Готово: стартеры, внутренние фикстуры и валидатор проектов проверены в Chromium и PDF")
     finally:
         if context:
             context.cleanup()

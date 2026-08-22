@@ -86,9 +86,11 @@
   --craft-selection-on-accent: rgb(255 255 255 / .3);
 
   /* Служебное. --craft-overlay-line обводит образец цвета поверх любого
-     фона, --craft-disabled — недоступный элемент управления. */
+     фона, --craft-disabled — недоступный элемент управления, --craft-scrim
+     затемняет страницу под модальным окном. */
   --craft-overlay-line: rgb(255 255 255 / .16);
   --craft-disabled: #666;
+  --craft-scrim: rgb(0 0 0 / .64);
 
   /* Код и только код. Подсветка синтаксиса живёт отдельно от палитры
      интерфейса, чтобы яркие статусы не попадали в листинг. */
@@ -154,6 +156,7 @@
   --craft-light-selection: rgb(178 41 56 / .24);
   --craft-light-overlay-line: rgb(32 32 30 / .16);
   --craft-light-disabled: #8a8780;
+  --craft-light-scrim: rgb(32 32 30 / .48);
   --craft-light-data-blue: #1e659f;
   --craft-light-data-amber: #8a5a00;
   --craft-light-data-green: #237447;
@@ -184,6 +187,7 @@
   --craft-selection: var(--craft-light-selection);
   --craft-overlay-line: var(--craft-light-overlay-line);
   --craft-disabled: var(--craft-light-disabled);
+  --craft-scrim: var(--craft-light-scrim);
   --craft-code-text: #383532;
   --craft-code-gold: #73521f;
   --craft-code-blue: #365f7d;

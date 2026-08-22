@@ -11,6 +11,7 @@ from lib import ROOT, run
 def main() -> None:
     run(sys.executable, ROOT / "scripts/check.py", capture=False)
     run(sys.executable, ROOT / "scripts/test_scaffold.py", capture=False)
+    run(sys.executable, ROOT / "scripts/test_compose.py", capture=False)
     print("Готово: полная проверка Craft пройдена")
 
 

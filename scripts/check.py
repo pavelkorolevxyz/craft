@@ -9,6 +9,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+from audit_css import audit as audit_css
 from lib import ASSETS, MANIFEST, ROOT, node, run
 
 TEXT_SUFFIXES = {".css", ".html", ".js", ".json", ".md", ".py"}
@@ -16,7 +17,8 @@ TEXT_SUFFIXES = {".css", ".html", ".js", ".json", ".md", ".py"}
 IGNORED_DIRS = {".git", ".ralph", "output", "dist", "artifacts", "__pycache__"}
 CSS_FILES = [*ASSETS.rglob("*.css"), ROOT / "tests/fixtures/interfaces/specimen.css"]
 HTML_FILES = [ROOT / path for surface in MANIFEST["surfaces"].values() for path in surface["entrypoints"]]
-FRAGMENT_FILES = [ROOT / path for surface in MANIFEST["surfaces"].values() for path in surface.get("fragments", [])]
+FRAGMENT_DEFINITIONS = [fragment for surface in MANIFEST["surfaces"].values() for fragment in surface.get("fragments", [])]
+FRAGMENT_FILES = [ROOT / fragment["path"] for fragment in FRAGMENT_DEFINITIONS]
 FIXTURE_HTML = [ROOT / "tests/fixtures/interfaces/index.html", ROOT / "tests/fixtures/slides/index.html"]
 CHECKED_HTML = [*HTML_FILES, *FIXTURE_HTML]
 MARK_SELECTOR = re.compile(r"\.icon\b|-mark\b|-dot\b|-status\b|::before|::after|\bsvg\b")
@@ -86,6 +88,9 @@ def check_required() -> None:
         ASSETS / "interfaces/theme.css",
         ASSETS / "interfaces/theme.js",
         ASSETS / "interfaces/section-nav.js",
+        ASSETS / "interfaces/copy.js",
+        ASSETS / "interfaces/dialog.js",
+        ASSETS / "interfaces/tabs.js",
         ROOT / "tests/fixtures/interfaces/specimen.css",
         ROOT / "tests/fixtures/interfaces/specimen.js",
         ASSETS / "slides/base.css",
@@ -143,6 +148,13 @@ def check_tokens() -> None:
     assert not missing_light, f"неполная светлая тема: {', '.join(sorted(missing_light))}"
 
 
+def check_css_api() -> None:
+    report = audit_css()
+    groups = report["groups"]
+    assert not groups["fixtureOnly"], f"классы используются только фикстурами: {', '.join(groups['fixtureOnly'])}"
+    assert not groups["unused"], f"неиспользуемые классы: {', '.join(groups['unused'])}"
+
+
 def check_borders() -> None:
     adjacent = ({"top", "right"}, {"right", "bottom"}, {"bottom", "left"}, {"left", "top"})
     opposite = ({"top", "bottom"}, {"left", "right"})
@@ -168,6 +180,44 @@ def check_state_marks() -> None:
             assert MARK_SELECTOR.search(selector), (
                 f"сигнальный цвет окрашивает текст, а не метку, в {path.relative_to(ROOT)}: {selector}"
             )
+
+
+def check_control_states() -> None:
+    """У каждого элемента управления различимы наведение и недоступность.
+
+    Видимый фокус даёт общее правило страницы, поэтому здесь проверяются те
+    состояния, которые компонент описывает сам. Список закрыт: новый элемент
+    управления добавляется в него вместе с правилами темы."""
+    theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
+    selectors = [match.group(1).strip() for match in re.finditer(r"([^{}]+)\{[^{}]*\}", theme)]
+    marks = {
+        "hover": (":hover",),
+        "disabled": (":disabled", "[disabled]", ":has(input:disabled)"),
+    }
+    controls = {
+        ".button": ("hover", "disabled"),
+        ".button--quiet": ("hover",),
+        "textarea": ("hover", "disabled"),
+        ".select-control select": ("hover", "disabled"),
+        'input[type="checkbox"]': ("hover", "disabled"),
+        'input[type="radio"]': ("hover", "disabled"),
+        ".switch input": ("hover", "disabled"),
+        ".range": ("disabled",),
+        ".segmented span": ("hover",),
+        ".tablist button": ("hover", "disabled"),
+        ".pagination__page": ("hover",),
+        ".breadcrumbs a": ("hover",),
+        ".disclosure > summary": ("hover",),
+        ".data-table__sort": ("hover",),
+        ".section-nav__links a": ("hover",),
+    }
+    for control, required in controls.items():
+        for state in required:
+            found = any(
+                control in selector and any(mark in selector for mark in marks[state])
+                for selector in selectors
+            )
+            assert found, f"у элемента управления {control} нет состояния «{state}»"
 
 
 def check_accessibility_contract() -> None:
@@ -206,11 +256,38 @@ def check_spacing_scale() -> None:
         assert f"var(--space-{index})" in specimen, f"каталог не показывает --space-{index}"
 
 
+def check_fragment_manifest() -> None:
+    allowed_kinds = {"text", "html", "id", "number", "token"}
+    for surface_id, surface in MANIFEST["surfaces"].items():
+        target = surface.get("fragmentTarget")
+        assert isinstance(target, str) and target, f"для {surface_id} не задан fragmentTarget"
+        fragments = surface.get("fragments", [])
+        ids = [fragment.get("id") for fragment in fragments]
+        assert len(ids) == len(set(ids)) and all(ids), f"идентификаторы фрагментов {surface_id} не уникальны"
+        for fragment in fragments:
+            assert set(fragment) == {"id", "path", "purpose", "placeholders", "dependencies"}, f"неполная запись фрагмента {fragment.get('id')}"
+            path = ROOT / fragment["path"]
+            assert path.is_file(), f"не найден фрагмент {fragment['path']}"
+            assert isinstance(fragment["purpose"], str) and fragment["purpose"].strip(), f"не описано назначение {fragment['id']}"
+            placeholders = fragment["placeholders"]
+            assert isinstance(placeholders, dict) and placeholders, f"не описаны подстановки {fragment['id']}"
+            assert set(placeholders.values()) <= allowed_kinds, f"неизвестный тип подстановки в {fragment['id']}"
+            actual = set(re.findall(r"\{\{([A-Z][A-Z0-9_]*)\}\}", path.read_text(encoding="utf-8")))
+            assert actual == set(placeholders), f"метаданные подстановок расходятся с {fragment['path']}"
+            for dependency in fragment["dependencies"]:
+                assert (ROOT / dependency).is_file(), f"не найдена зависимость {dependency} для {fragment['id']}"
+            if surface_id == "slides":
+                html = path.read_text(encoding="utf-8")
+                layouts = re.findall(r'data-slide-layout="([a-z-]+)"', html)
+                assert layouts == [fragment["id"]], f"id и раскладка расходятся в {fragment['path']}"
+
+
 def check_interface_patterns() -> None:
     theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
     starter = (ASSETS / "interfaces/starter-index.html").read_text(encoding="utf-8")
     fragments = {path.name: path.read_text(encoding="utf-8") for path in FRAGMENT_FILES if "interfaces" in path.parts}
-    assert set(fragments) == {"page-head.html", "workspace-head.html", "metric-strip.html", "section.html", "split-workspace.html", "data-table.html", "empty-state.html", "section-nav.html"}, "неполный набор интерфейсных фрагментов"
+    essential = {"page-head.html", "workspace-head.html", "metric-strip.html", "section.html", "split-workspace.html", "data-table.html", "empty-state.html", "section-nav.html"}
+    assert essential <= set(fragments), "неполный базовый набор интерфейсных фрагментов"
     assert "@page { margin: 8mm 14mm; }" in theme, "не заданы безопасные поля печати"
     assert ".section { break-inside: auto; }" in theme, "длинная секция не может течь между страницами"
     assert 'data-craft-layout="interface"' in starter, "стартер не объявляет универсальную поверхность"
@@ -321,13 +398,8 @@ def check_markdown_links() -> None:
 
 
 def check_javascript() -> None:
-    paths = (
-        ASSETS / "interfaces/theme.js",
-        ASSETS / "interfaces/section-nav.js",
-        ROOT / "tests/fixtures/interfaces/specimen.js",
-        ASSETS / "slides/deck.js",
-        ASSETS / "slides/code-highlight.js",
-    )
+    paths = [path for path in ASSETS.rglob("*.js") if "vendor" not in path.parts]
+    paths.append(ROOT / "tests/fixtures/interfaces/specimen.js")
     for path in paths:
         run(node(), "--check", path)
 
@@ -337,10 +409,13 @@ def main() -> None:
         check_required,
         check_assets,
         check_tokens,
+        check_css_api,
         check_borders,
         check_state_marks,
+        check_control_states,
         check_accessibility_contract,
         check_spacing_scale,
+        check_fragment_manifest,
         check_interface_patterns,
         check_slide_layouts,
         check_content,
@@ -352,10 +427,13 @@ def main() -> None:
         check_required: "обязательные файлы",
         check_assets: "ресурсы",
         check_tokens: "токены",
+        check_css_api: "публичный CSS API",
         check_borders: "рамки",
         check_state_marks: "метки состояний",
+        check_control_states: "состояния управления",
         check_accessibility_contract: "контракт доступности",
         check_spacing_scale: "шкала отступов",
+        check_fragment_manifest: "метаданные фрагментов",
         check_interface_patterns: "паттерны интерфейсов",
         check_slide_layouts: "раскладки слайдов",
         check_content: "содержимое",

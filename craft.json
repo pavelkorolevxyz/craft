@@ -1,6 +1,6 @@
 {
   "name": "Craft",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "language": "ru",
   "surfaces": {
     "interface": {
@@ -11,15 +11,239 @@
         "assets/interfaces/starter-index.html"
       ],
       "fragments": [
-        "assets/interfaces/fragments/page-head.html",
-        "assets/interfaces/fragments/workspace-head.html",
-        "assets/interfaces/fragments/metric-strip.html",
-        "assets/interfaces/fragments/section.html",
-        "assets/interfaces/fragments/split-workspace.html",
-        "assets/interfaces/fragments/data-table.html",
-        "assets/interfaces/fragments/empty-state.html",
-        "assets/interfaces/fragments/section-nav.html"
-      ]
+        {
+          "id": "page-head",
+          "path": "assets/interfaces/fragments/page-head.html",
+          "purpose": "Заголовок документа с контекстом, резюме и метаданными",
+          "placeholders": {
+            "CONTEXT": "text",
+            "TITLE": "text",
+            "SUMMARY": "text",
+            "META_LABEL": "text",
+            "META": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "workspace-head",
+          "path": "assets/interfaces/fragments/workspace-head.html",
+          "purpose": "Компактная шапка рабочей поверхности с состоянием и действиями",
+          "placeholders": {
+            "CONTEXT": "text",
+            "TITLE": "text",
+            "CURRENT_STATE": "text",
+            "TOOLS_LABEL": "text",
+            "TOOLS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "metric-strip",
+          "path": "assets/interfaces/fragments/metric-strip.html",
+          "purpose": "Горизонтальная группа ключевых значений",
+          "placeholders": {
+            "METRIC_COUNT": "number",
+            "METRICS_LABEL": "text",
+            "LABEL": "text",
+            "VALUE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "section",
+          "path": "assets/interfaces/fragments/section.html",
+          "purpose": "Озаглавленный смысловой раздел",
+          "placeholders": {
+            "SECTION_ID": "id",
+            "SECTION_TITLE": "text",
+            "SECTION_SUMMARY": "text",
+            "SECTION_CONTENT": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "split-workspace",
+          "path": "assets/interfaces/fragments/split-workspace.html",
+          "purpose": "Связанные основная и вспомогательная рабочие области",
+          "placeholders": {
+            "WORKSPACE_LABEL": "text",
+            "PRIMARY_ID": "id",
+            "PRIMARY_TITLE": "text",
+            "PRIMARY_SUMMARY": "text",
+            "PRIMARY_ACTION": "html",
+            "PRIMARY_CONTENT": "html",
+            "ASIDE_ID": "id",
+            "ASIDE_TITLE": "text",
+            "ASIDE_SUMMARY": "text",
+            "ASIDE_ACTION": "html",
+            "ASIDE_CONTENT": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "data-table",
+          "path": "assets/interfaces/fragments/data-table.html",
+          "purpose": "Таблица данных с подписью и доступным контейнером",
+          "placeholders": {
+            "TABLE_LABEL": "text",
+            "TABLE_CAPTION": "text",
+            "TABLE_HEADINGS": "html",
+            "TABLE_ROWS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "empty-state",
+          "path": "assets/interfaces/fragments/empty-state.html",
+          "purpose": "Пустое состояние с объяснением и необязательным действием",
+          "placeholders": {
+            "EMPTY_TITLE": "text",
+            "EMPTY_EXPLANATION": "text",
+            "EMPTY_ACTION": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "section-nav",
+          "path": "assets/interfaces/fragments/section-nav.html",
+          "purpose": "Навигация по разделам текущей страницы",
+          "placeholders": {
+            "NAV_LABEL": "text",
+            "NAV_LINKS": "html"
+          },
+          "dependencies": [
+            "assets/interfaces/section-nav.js"
+          ]
+        },
+        {
+          "id": "field",
+          "path": "assets/interfaces/fragments/field.html",
+          "purpose": "Поле формы с подписью, подсказкой и сообщением об ошибке",
+          "placeholders": {
+            "FIELD_ID": "id",
+            "FIELD_LABEL": "text",
+            "FIELD_CONTROL": "html",
+            "FIELD_HINT": "text",
+            "FIELD_ERROR": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "filter-bar",
+          "path": "assets/interfaces/fragments/filter-bar.html",
+          "purpose": "Полоса параметров над областью данных со счётчиком записей",
+          "placeholders": {
+            "FILTER_LABEL": "text",
+            "FILTER_CONTROLS": "html",
+            "FILTER_COUNT": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "notice",
+          "path": "assets/interfaces/fragments/notice.html",
+          "purpose": "Уведомление внутри страницы с меткой тона",
+          "placeholders": {
+            "NOTICE_TONE": "token",
+            "NOTICE_TITLE": "text",
+            "NOTICE_TEXT": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "dialog",
+          "path": "assets/interfaces/fragments/dialog.html",
+          "purpose": "Модальное окно с шапкой, содержимым и полосой действий",
+          "placeholders": {
+            "DIALOG_ID": "id",
+            "DIALOG_TITLE": "text",
+            "DIALOG_CLOSE_LABEL": "text",
+            "DIALOG_CONTENT": "html",
+            "DIALOG_ACTIONS": "html"
+          },
+          "dependencies": [
+            "assets/interfaces/dialog.js"
+          ]
+        },
+        {
+          "id": "kv-list",
+          "path": "assets/interfaces/fragments/kv-list.html",
+          "purpose": "Озаглавленный список пар «поле — значение»",
+          "placeholders": {
+            "KV_TITLE": "text",
+            "KV_ROWS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "timeline",
+          "path": "assets/interfaces/fragments/timeline.html",
+          "purpose": "Вертикальная лента событий с метками состояния",
+          "placeholders": {
+            "TIMELINE_LABEL": "text",
+            "TIMELINE_ITEMS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "code-block",
+          "path": "assets/interfaces/fragments/code-block.html",
+          "purpose": "Блок кода с подписью источника и копированием",
+          "placeholders": {
+            "CODE_ID": "id",
+            "CODE_LABEL": "text",
+            "CODE": "text"
+          },
+          "dependencies": [
+            "assets/interfaces/copy.js"
+          ]
+        },
+        {
+          "id": "tabs",
+          "path": "assets/interfaces/fragments/tabs.html",
+          "purpose": "Список вкладок и связанные панели",
+          "placeholders": {
+            "TABS_LABEL": "text",
+            "TAB_BUTTONS": "html",
+            "TAB_PANELS": "html"
+          },
+          "dependencies": [
+            "assets/interfaces/tabs.js"
+          ]
+        },
+        {
+          "id": "pagination",
+          "path": "assets/interfaces/fragments/pagination.html",
+          "purpose": "Постраничная навигация с положением в наборе",
+          "placeholders": {
+            "PAGINATION_LABEL": "text",
+            "PAGINATION_LINKS": "html",
+            "PAGINATION_STATUS": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "breadcrumbs",
+          "path": "assets/interfaces/fragments/breadcrumbs.html",
+          "purpose": "Цепочка разделов до текущего материала",
+          "placeholders": {
+            "TRAIL_LABEL": "text",
+            "TRAIL_ITEMS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "steps",
+          "path": "assets/interfaces/fragments/steps.html",
+          "purpose": "Шаги процесса с отметкой текущего",
+          "placeholders": {
+            "STEPS_LABEL": "text",
+            "STEPS_ITEMS": "html"
+          },
+          "dependencies": []
+        }
+      ],
+      "fragmentTarget": "#craft-content"
     },
     "slides": {
       "templates": [
@@ -42,18 +266,130 @@
         "end"
       ],
       "fragments": [
-        "assets/slides/fragments/title.html",
-        "assets/slides/fragments/section.html",
-        "assets/slides/fragments/statement.html",
-        "assets/slides/fragments/list.html",
-        "assets/slides/fragments/split.html",
-        "assets/slides/fragments/figure.html",
-        "assets/slides/fragments/chart.html",
-        "assets/slides/fragments/table.html",
-        "assets/slides/fragments/code.html",
-        "assets/slides/fragments/flow.html",
-        "assets/slides/fragments/end.html"
-      ]
+        {
+          "id": "title",
+          "path": "assets/slides/fragments/title.html",
+          "purpose": "Титульный слайд",
+          "placeholders": {
+            "TITLE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "section",
+          "path": "assets/slides/fragments/section.html",
+          "purpose": "Разделитель смыслового блока",
+          "placeholders": {
+            "SECTION_TITLE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "statement",
+          "path": "assets/slides/fragments/statement.html",
+          "purpose": "Один главный тезис с уточнением",
+          "placeholders": {
+            "STATEMENT": "text",
+            "QUALIFIER": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "list",
+          "path": "assets/slides/fragments/list.html",
+          "purpose": "Последовательность коротких пунктов",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "LIST_ITEMS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "comparison",
+          "path": "assets/slides/fragments/split.html",
+          "purpose": "Сопоставление двух областей",
+          "placeholders": {
+            "LEFT_CONTENT": "html",
+            "RIGHT_CONTENT": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "figure",
+          "path": "assets/slides/fragments/figure.html",
+          "purpose": "Медиа с выводом и источником",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "MEDIA": "html",
+            "FINDING": "text",
+            "SOURCE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "chart",
+          "path": "assets/slides/fragments/chart.html",
+          "purpose": "График с кратким выводом и источником",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "CHART_SUMMARY": "text",
+            "CHART_ROWS": "html",
+            "FINDING": "text",
+            "SOURCE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "table",
+          "path": "assets/slides/fragments/table.html",
+          "purpose": "Таблица с выводом и источником",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "TABLE_CAPTION": "text",
+            "TABLE_HEADINGS": "html",
+            "TABLE_ROWS": "html",
+            "SOURCE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "code",
+          "path": "assets/slides/fragments/code.html",
+          "purpose": "Фрагмент кода с подсветкой строк",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "CODE_LANGUAGE": "token",
+            "HIGHLIGHT_LINES": "text",
+            "CODE": "text",
+            "FINDING": "text"
+          },
+          "dependencies": [
+            "assets/slides/vendor/highlight.min.js",
+            "assets/slides/code-highlight.js"
+          ]
+        },
+        {
+          "id": "flow",
+          "path": "assets/slides/fragments/flow.html",
+          "purpose": "Последовательность узлов или этапов",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "FLOW_NODES": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "end",
+          "path": "assets/slides/fragments/end.html",
+          "purpose": "Финальный тезис и контактная строка",
+          "placeholders": {
+            "FINAL_STATEMENT": "text",
+            "CONTACT": "text"
+          },
+          "dependencies": []
+        }
+      ],
+      "fragmentTarget": ".slides"
     }
   },
   "dynamicCssProperties": [
@@ -70,5 +406,45 @@
     "fontFiles": 4,
     "offline": true,
     "buildRequired": false
-  }
+  },
+  "dynamicCssClasses": [
+    "chart-row",
+    "chart-track",
+    "is-focus",
+    "comparison-title",
+    "comparison-body",
+    "comparison-label",
+    "comparison-value",
+    "comparison-points",
+    "flow-node",
+    "flow-node--accent",
+    "flow-step",
+    "flow-step--down",
+    "flow-arrow",
+    "flow-arrow--down",
+    "flow-return",
+    "num",
+    "hljs-comment",
+    "hljs-quote",
+    "hljs-keyword",
+    "hljs-selector-tag",
+    "hljs-literal",
+    "hljs-type",
+    "hljs-string",
+    "hljs-regexp",
+    "hljs-template-tag",
+    "hljs-template-variable",
+    "hljs-number",
+    "hljs-symbol",
+    "hljs-bullet",
+    "hljs-title",
+    "hljs-built_in",
+    "hljs-attr",
+    "hljs-attribute",
+    "hljs-variable",
+    "hljs-params",
+    "hljs-punctuation",
+    "class_",
+    "function_"
+  ]
 }

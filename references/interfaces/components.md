@@ -5,8 +5,8 @@
 ## Каркас
 
 ```html
-<main class="shell shell--report" data-craft-layout="report">
-  <header class="report-head">...</header>
+<main class="shell shell" data-craft-layout="interface">
+  <header class="page-head">...</header>
   <section class="scoreboard">...</section>
   <section class="section">...</section>
   <aside class="callout">...</aside>
@@ -15,18 +15,18 @@
 
 `.shell` занимает всю ширину и минимум всю высоту области просмотра. Внешний центрированный контейнер не нужен.
 
-## Заголовок инструмента или отчёта
+## Заголовок страницы
 
 ```html
-<header class="report-head">
-  <div class="report-head__main">
-    <p class="eyebrow">Состояние системы</p>
-    <h1>Отчёт за неделю</h1>
-    <p class="report-head__lede">Главный вывод одной фразой.</p>
+<header class="page-head">
+  <div class="page-head__main">
+    <p class="eyebrow">Контекст</p>
+    <h1>Название материала</h1>
+    <p class="page-head__lede">Краткое пояснение содержания.</p>
   </div>
-  <div class="report-head__aside" aria-label="Параметры отчёта">
-    <p>Период: 7 дней</p>
-    <p>Обновлено: 2026-08-14</p>
+  <div class="page-head__aside" aria-label="Параметры">
+    <p>Параметр: значение</p>
+    <p>Состояние: значение</p>
   </div>
 </header>
 ```
@@ -307,6 +307,32 @@ addEventListener("keydown", (event) => {
 ```
 
 `.prose` ограничивает длину строки, но не ширину рабочей поверхности.
+
+## Дополнительные универсальные компоненты
+
+Публичная тема также содержит компактные примитивы для повторяющейся механики. Используй их только вместе с подходящей семантикой и локальным поведением:
+
+| Классы | Назначение |
+|---|---|
+| `.button--quiet` | второстепенное действие без дополнительной плоскости |
+| `.field-set`, `.field__label`, `.field__hint`, `.field__error`, `.form-grid`, `.form-actions`, `.check-group` | группы полей, подписи, подсказки, ошибки и действия формы |
+| `.tag-list`, `.tag--accent`, `.state-label`, `.state-label--ok`, `.state-label--warn`, `.state-label--error` | независимые категории и подписанные состояния |
+| `.kv-block`, `.kv-block__title`, `.kv-list`, `.kv-list--lined` | список самостоятельных пар «название — значение» |
+| `.progress`, `.progress__head`, `.progress__track`, `.progress__fill`, `.progress--indeterminate` | подписанный ход конечной или неопределённой операции |
+| `.skeleton`, `.skeleton--block` | спокойная заглушка геометрии во время загрузки |
+| `.notice`, `.notice__mark`, `.notice__title`, `.notice__actions`, `.notice--ok`, `.notice--warn`, `.notice--error` | встроенное уведомление с текстовым смыслом и графической меткой |
+| `.disclosure`, `.disclosure__body` | нативно раскрываемая дополнительная область |
+| `.dialog`, `.dialog__head`, `.dialog__body`, `.dialog__foot` | нативное модальное окно с явными зонами |
+| `.tabs`, `.tablist` | вкладки с клавиатурной механикой и связанными панелями |
+| `.breadcrumbs` | положение текущей страницы в иерархии |
+| `.pagination`, `.pagination__page`, `.pagination__status` | постраничная навигация и текущее положение |
+| `.filter-bar`, `.filter-bar__count` | параметры непосредственно над изменяемой областью данных |
+| `.steps`, `.steps__index`, `.steps__title` | конечная последовательность состояний процесса |
+| `.timeline`, `.timeline__mark`, `.timeline__time`, `.timeline__title` | хронология независимых событий |
+| `.code-block`, `.code-block__head`, `.code-block__copy` | блок кода с источником и стабильной кнопкой копирования |
+| `.data-table__sort`, `.data-table__detail`, `.data-table--sticky` | сортировка, подробности строки и закреплённая шапка таблицы |
+
+Не объединяй эти классы в обязательный набор страницы. Каждый компонент появляется только при наличии соответствующего содержимого или взаимодействия. JavaScript хранится локально в проекте и обновляет стандартные атрибуты состояния, а не создаёт параллельную модель доступности.
 
 ## Финальное действие
 

@@ -13,6 +13,12 @@ from lib import MANIFEST, ROOT, sha256
 
 DIST = ROOT / "dist"
 FORBIDDEN_RELEASE_PARTS = {"tests", "docs", "examples", "output", "artifacts"}
+RUNTIME_SCRIPTS = (
+    "scripts/lib.py",
+    "scripts/scaffold.py",
+    "scripts/compose.py",
+    "scripts/check_project.py",
+)
 
 
 def files_under(*roots: str) -> list[Path]:
@@ -64,13 +70,11 @@ def main() -> None:
         "craft-interface": files_under(*common, "assets/interfaces", "references/interfaces"),
         "craft-slides": files_under(*common, "assets/slides", "references/slides"),
         "craft-complete": files_under(
-            "README.md",
             "SKILL.md",
-            "Makefile",
             "craft.json",
             "assets",
             "references",
-            "scripts",
+            *RUNTIME_SCRIPTS,
         ),
     }
 
@@ -82,6 +86,9 @@ def main() -> None:
     package_data: dict[str, object] = release["packages"]  # type: ignore[assignment]
     for name, files in packages.items():
         validate_release_files(name, files)
+        if name == "craft-complete":
+            packaged_scripts = {path.relative_to(ROOT).as_posix() for path in files if "scripts" in path.parts}
+            assert packaged_scripts == set(RUNTIME_SCRIPTS), "craft-complete: неверный набор исполняемых команд"
         archive = output / f"{name}.zip"
         write_archive(archive, name, files)
         package_data[name] = {
