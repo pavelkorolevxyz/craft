@@ -92,7 +92,7 @@ def test_interface_starter(output: Path, work: Path) -> None:
 
 
 def test_interface_catalog(work: Path) -> None:
-    source = CATALOG / "interfaces" / "index.html"
+    source = ROOT / MANIFEST["surfaces"]["interface"]["testPage"]
     for width, height in VIEWPORTS:
         dumped = dump_probe(
             source,
@@ -117,6 +117,52 @@ def test_interface_catalog(work: Path) -> None:
         assert mechanics == "true", "interface-catalog: вкладки, диалог или составной флажок не работают"
         assert before != after and "тему" in label, "interface-catalog: тема не работает"
     print_pdf(source, work / "interface-catalog.pdf", 1440, 900, 20_000)
+
+
+def test_interface_docs() -> None:
+    surface = MANIFEST["surfaces"]["interface"]
+    index = CATALOG / "interfaces/index.html"
+    for width in (1440, 320):
+        dumped = dump_probe(
+            index,
+            "addEventListener('load',()=>{const toggle=document.querySelector('[data-theme-toggle]');const before=document.documentElement.dataset.theme;toggle.click();document.title=`docs-index:${document.documentElement.scrollWidth}:${innerWidth}:${document.querySelectorAll('.component-index a').length}:${document.querySelectorAll('.component-group').length}:${before!==document.documentElement.dataset.theme}`});",
+            width,
+            900,
+        )
+        match = re.search(r"<title>docs-index:(\d+):(\d+):(\d+):(\d+):(true|false)</title>", dumped)
+        assert match, f"индекс документации не открылся при {width}px"
+        scroll_width, viewport, components, categories = map(int, match.groups()[:4])
+        assert scroll_width <= viewport, f"индекс документации переполнен при {width}px"
+        assert components == len(surface["components"]) and categories == len(surface["componentCategories"]), "индекс документации расходится с реестром"
+        assert match.group(5) == "true", "переключатель темы индекса не работает"
+
+    pages = {category["id"]: [component["id"] for component in surface["components"] if component["category"] == category["id"]] for category in surface["componentCategories"]}
+    pages["recipes"] = []
+    for page, expected in pages.items():
+        source = CATALOG / "interfaces" / f"{page}.html"
+        widths = (1440, 320) if page in {"layout", "forms"} else (1440,)
+        for width in widths:
+            dumped = dump_probe(
+                source,
+                "addEventListener('load',()=>{"
+                "const toggle=document.querySelector('[data-theme-toggle]');const before=document.documentElement.dataset.theme;toggle.click();"
+                "const ids=[...document.querySelectorAll('[data-component-doc]')].map(node=>node.dataset.componentDoc).join(',');"
+                "const code=[...document.querySelectorAll('[data-preview-code]')];const generated=code.length>0&&code.every(node=>node.textContent.trim().length>0);"
+                "const tabs=document.querySelector('[data-tabs]');if(tabs){const first=tabs.querySelector('[role=tab]');first.focus();first.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))}"
+                "const opener=document.querySelector('[data-dialog-open]');if(opener)opener.click();"
+                "const mechanics=(!tabs||tabs.querySelectorAll('[aria-selected=true]').length===1)&&(!opener||document.querySelector('dialog').open);"
+                "document.title=`docs:${document.documentElement.scrollWidth}:${innerWidth}:${ids}:${generated}:${document.querySelectorAll('.system-links [aria-current=true]').length}:${before!==document.documentElement.dataset.theme}:${mechanics}`});",
+                width,
+                900,
+            )
+            match = re.search(r"<title>docs:(\d+):(\d+):([^<]*):(true|false):(\d+):(true|false):(true|false)</title>", dumped)
+            assert match, f"{page}: браузерная проверка документации не выполнена при {width}px"
+            scroll_width, viewport = map(int, match.groups()[:2])
+            ids, generated, current, theme, mechanics = match.groups()[2:]
+            assert scroll_width <= viewport, f"{page}: переполнение документации при {width}px"
+            assert (ids.split(",") if ids else []) == expected, f"{page}: браузер видит неполный набор компонентов"
+            assert generated == "true" and int(current) == 1, f"{page}: код или навигация документации не работают"
+            assert theme == "true" and mechanics == "true", f"{page}: тема или механика примера не работает"
 
 
 def test_slide_source(name: str, source: Path, work: Path, minimum_pages: int) -> None:
@@ -169,6 +215,7 @@ def main() -> None:
             print(f"✓ {key}")
         test_interface_starter(outputs["interface-blank"], root)
         test_interface_catalog(root)
+        test_interface_docs()
         test_slide_source("slides-deck", outputs["slides-deck"] / "index.html", root, 1)
         test_slide_source("slides-catalog", CATALOG / "slides" / "index.html", root, MANIFEST["surfaces"]["slides"]["catalogPages"])
         for output in outputs.values():

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Craft · Основы интерфейсов</title>
+  <script src="../../assets/interfaces/theme.js"></script>
+  <link rel="stylesheet" href="../../assets/shared/tokens.css">
+  <link rel="stylesheet" href="../../assets/interfaces/theme.css">
+  <link rel="stylesheet" href="catalog.css">
+  <script src="docs.js" defer></script>
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11"/><path d="M16 8V5H5v11h3"/></symbol>
+    <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  </svg>
+  <div class="system-layout docs-layout">
+    <nav class="system-nav docs-nav" aria-label="Документация компонентов">
+      <div class="system-brand"><a class="system-name" href="index.html">Craft</a><span class="system-version">0.5</span></div>
+      <p class="docs-nav__label">Документация</p>
+      <div class="system-links">
+        <a href="foundations.html" aria-current="true">Основы</a><a href="layout.html">Каркасы</a><a href="actions.html">Действия</a><a href="forms.html">Формы</a><a href="navigation.html">Навигация</a><a href="data.html">Данные</a><a href="feedback.html">Состояния</a><a href="overlays.html">Оверлеи</a><a href="recipes.html">Рецепты</a>
+      </div>
+      <a class="docs-sheet-link" href="sheet.html">Проверочный лист · 42</a>
+      <button class="button button--stable button--icon theme-switch system-theme" type="button" data-theme-toggle aria-pressed="false"><span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span><span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span></button>
+    </nav>
+    <main class="docs-main" data-craft-layout="interface">
+      <article class="docs-article">
+        <header class="docs-page-head"><h1>Основы</h1><p>Шкала текста и единый способ подключения служебных пиктограмм.</p></header>
+
+        <section class="component-doc" id="typography" data-component-doc="typography">
+          <header class="component-doc__head"><div><h2>Типографика</h2><p class="component-doc__summary">Фиксированная шкала отделяет служебную подпись, основной текст и три уровня заголовков.</p></div><dl class="component-meta"><div><dt>Тип</dt><dd>основа</dd></div><div><dt>Источник</dt><dd><code>theme.css</code></dd></div><div><dt>Зависимости</dt><dd>Geologica, Onest</dd></div></dl></header>
+          <div class="component-preview component-preview--start" data-preview>
+            <div class="type-specimens">
+              <div class="type-row"><span>32 / 34</span><strong class="sample-page">Заголовок страницы</strong></div>
+              <div class="type-row"><span>24 / 27</span><strong class="sample-section">Заголовок секции</strong></div>
+              <div class="type-row"><span>18 / 23</span><strong class="sample-local">Локальный заголовок</strong></div>
+              <div class="type-row"><span>14 / 21</span><p class="sample-body">Основной текст объясняет состояние и следующее действие.</p></div>
+              <div class="type-row"><span>12 / 18</span><p class="sample-meta">Служебная подпись · локальные данные</p></div>
+            </div>
+          </div>
+          <details class="disclosure component-code"><summary><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg>Разметка примера</summary><pre><code data-preview-code></code></pre></details>
+          <div class="component-notes"><section><h3>Правило</h3><p>Onest используется в тексте и управлении. Geologica остаётся в коротких заголовках и числах. Размер не меняется плавно между контрольными ширинами.</p></section><section><h3>Доступность</h3><p>Уровень заголовка задаёт структуру документа, а не внешний размер. На странице остаётся один <code>h1</code>.</p></section></div>
+          <table class="component-api"><caption>Шкала</caption><tbody><tr><th>Служебный</th><td><code>--type-service</code> · 12 px</td></tr><tr><th>Основной</th><td><code>--type-body</code> · 14 px</td></tr><tr><th>Вводный</th><td><code>--type-lede</code> · 16 px</td></tr><tr><th>Локальный</th><td><code>--type-local</code> · 18 px</td></tr><tr><th>Секция</th><td><code>--type-section</code> · 24 px</td></tr><tr><th>Страница</th><td><code>--type-page</code> · 32 px</td></tr></tbody></table>
+        </section>
+
+        <section class="component-doc" id="icon" data-component-doc="icon">
+          <header class="component-doc__head"><div><h2>Иконка</h2><p class="component-doc__summary">Линейная пиктограмма сопровождает знакомое действие и не заменяет доступное имя.</p></div><dl class="component-meta"><div><dt>Тип</dt><dd>основа</dd></div><div><dt>Источник</dt><dd><code>theme.css</code></dd></div><div><dt>Корень</dt><dd><code>.icon</code></dd></div></dl></header>
+          <div class="component-preview" data-preview>
+            <div class="docs-icon-grid">
+              <div><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg><span>Светлая тема</span></div>
+              <div><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg><span>Тёмная тема</span></div>
+              <div><svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg><span>Готово</span></div>
+              <div><svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg><span>Копировать</span></div>
+            </div>
+          </div>
+          <details class="disclosure component-code"><summary><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg>Разметка примера</summary><pre><code data-preview-code></code></pre></details>
+          <div class="component-notes"><section><h3>Применение</h3><p>Символ хранится один раз в скрытом SVG-спрайте. Экземпляр подключается через <code>use</code> и наследует текущий цвет.</p></section><section><h3>Доступность</h3><p>Декоративная иконка получает <code>aria-hidden="true"</code>. Кнопка только с иконкой обязана иметь <code>aria-label</code>.</p></section></div>
+          <table class="component-api"><caption>Публичный контракт</caption><tbody><tr><th>Класс</th><td><code>.icon</code></td></tr><tr><th>Геометрия</th><td>18 × 18 px, линия 1.7 px</td></tr><tr><th>Цвет</th><td><code>currentColor</code></td></tr></tbody></table>
+        </section>
+      </article>
+      <aside class="docs-toc" aria-label="На этой странице"><p>На этой странице</p><a href="#typography">Типографика</a><a href="#icon">Иконка</a></aside>
+    </main>
+  </div>
+</body>
+</html>

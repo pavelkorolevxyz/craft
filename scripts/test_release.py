@@ -13,10 +13,11 @@ import tempfile
 import zipfile
 from pathlib import Path, PurePosixPath
 
-from lib import ROOT
+from lib import ROOT, chromium_args
 
 FORBIDDEN_PARTS = {"tests", "docs", "examples", "output", "artifacts"}
 RUNTIME_SCRIPTS = {"lib.py", "scaffold.py", "compose.py", "check_project.py"}
+INTERFACE_DOCS = {"index.html", "sheet.html", "foundations.html", "layout.html", "actions.html", "forms.html", "navigation.html", "data.html", "feedback.html", "overlays.html", "recipes.html"}
 
 
 def digest(path: Path) -> str:
@@ -64,10 +65,11 @@ def main() -> None:
         assert archive.stat().st_size == metadata["bytes"]
         assert digest(archive) == metadata["sha256"]
         assert len(names) == metadata["entries"]
+        interface_docs = {f"catalog/interfaces/{name}" for name in INTERFACE_DOCS}
         expected_catalogs = {
-            "craft-interface": {"catalog/interfaces/index.html"},
+            "craft-interface": interface_docs,
             "craft-slides": {"catalog/slides/index.html"},
-            "craft-complete": {"catalog/interfaces/index.html", "catalog/slides/index.html"},
+            "craft-complete": interface_docs | {"catalog/slides/index.html"},
         }[package]
         relative_names = {"/".join(PurePosixPath(name).parts[1:]) for name in names}
         assert expected_catalogs <= relative_names, f"{package}: не включён публичный каталог"
@@ -88,6 +90,12 @@ def main() -> None:
         assert {path.name for path in scripts.glob("*.py")} == RUNTIME_SCRIPTS
         execute(root, sys.executable, scripts / "check_project.py", root / "catalog/interfaces")
         execute(root, sys.executable, scripts / "check_project.py", root / "catalog/slides")
+        for page in ("index.html", "forms.html", "overlays.html", "recipes.html"):
+            source = root / "catalog/interfaces" / page
+            dumped = execute(root, *chromium_args(390 if page == "forms.html" else 1440, 900), "--dump-dom", source.as_uri()).stdout
+            assert "<main" in dumped and "Craft" in dumped, f"{page}: документация не открывается из архива"
+            if page != "index.html":
+                assert "data-preview-code=\"\"" in dumped and "&lt;" in dumped, f"{page}: код примера не создан из архива"
 
         interface = temporary / "interface-project"
         execute(root, sys.executable, scripts / "scaffold.py", interface, "--surface", "interface", "--title", "Проверка релиза")

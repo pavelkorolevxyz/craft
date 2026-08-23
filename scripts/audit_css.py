@@ -48,7 +48,7 @@ def audit() -> dict[str, object]:
         public_html.extend(ROOT / fragment["path"] for fragment in surface["fragments"])
     public_js = list(ASSETS.rglob("*.js"))
     references = sorted((ROOT / "references").rglob("*.md")) + [ROOT / "README.md", ROOT / "SKILL.md"]
-    catalogs = [ROOT / surface["catalog"] for surface in MANIFEST["surfaces"].values()]
+    catalogs = sorted((ROOT / "catalog").rglob("*.html"))
 
     definitions = class_definitions(css_paths)
     public_text = read_all([*public_html, *public_js])

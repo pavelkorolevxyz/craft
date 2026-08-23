@@ -1,11 +1,11 @@
 # Компоненты и примитивы
 
-Базовые классы находятся в `assets/interfaces/theme.css`, составные конструкции — в `assets/interfaces/fragments/`. Сначала добавь ближайший фрагмент через `scripts/compose.py`, затем пиши локальный CSS конкретной композиции. Состояния и сочетания компонентов можно посмотреть в `catalog/interfaces/index.html`; каталог не копируют целиком как готовую страницу.
+Базовые классы находятся в `assets/interfaces/theme.css`, составные конструкции — в `assets/interfaces/fragments/`. Полный индекс 42 компонентов лежит в `catalog/interfaces/index.html`; страницы категорий показывают живой пример, разметку, применение, доступность и публичный контракт. Сначала добавь ближайший зарегистрированный фрагмент через `scripts/compose.py`, затем пиши локальный CSS конкретной композиции. `catalog/interfaces/sheet.html` служит проверочным листом и не копируется как готовая страница.
 
 ## Каркас
 
 ```html
-<main class="shell shell" data-craft-layout="interface">
+<main class="shell" data-craft-layout="interface">
   <header class="page-head">...</header>
   <section class="scoreboard">...</section>
   <section class="section">...</section>
@@ -20,18 +20,13 @@
 ```html
 <header class="page-head">
   <div class="page-head__main">
-    <p class="eyebrow">Контекст</p>
     <h1>Название материала</h1>
     <p class="page-head__lede">Краткое пояснение содержания.</p>
-  </div>
-  <div class="page-head__aside" aria-label="Параметры">
-    <p>Параметр: значение</p>
-    <p>Состояние: значение</p>
   </div>
 </header>
 ```
 
-Правая колонка существует ради параметров, фильтров или действий. Без них удали её и сделай заголовок одноколоночным.
+В базовой шапке нет надписи над заголовком и отдельной колонки метаданных. Заголовок и пояснение образуют одну группу; расстояние между ними равно `var(--space-2)` и совпадает с `workspace-head`.
 
 ## Метрики
 

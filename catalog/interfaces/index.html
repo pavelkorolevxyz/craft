@@ -4,708 +4,104 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
-  <title>Craft · Каталог интерфейсов</title>
+  <title>Craft · Компоненты интерфейсов</title>
   <script src="../../assets/interfaces/theme.js"></script>
   <link rel="stylesheet" href="../../assets/shared/tokens.css">
   <link rel="stylesheet" href="../../assets/interfaces/theme.css">
   <link rel="stylesheet" href="catalog.css">
   <script src="../../assets/interfaces/section-nav.js" defer></script>
-  <script src="../../assets/interfaces/tabs.js" defer></script>
-  <script src="../../assets/interfaces/dialog.js" defer></script>
-  <script src="../../assets/interfaces/copy.js" defer></script>
-  <script src="catalog.js" defer></script>
 </head>
 <body>
   <svg class="icon-sprite" aria-hidden="true">
     <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
     <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol>
   </svg>
-  <div class="system-layout">
-    <nav class="system-nav" aria-label="Разделы дизайн-системы">
+
+  <div class="system-layout docs-layout">
+    <nav class="system-nav docs-nav" aria-label="Документация компонентов">
       <div class="system-brand">
-        <a class="system-name" href="#top">Craft</a>
-        <span class="system-version">0.4</span>
+        <a class="system-name" href="index.html" aria-current="page">Craft</a>
+        <span class="system-version">0.5</span>
       </div>
+      <p class="docs-nav__label">Компоненты</p>
       <div class="system-links" data-section-nav>
-        <a href="#foundation">Правила</a>
-        <a href="#layouts">Режимы</a>
-        <a href="#fragments">Фрагменты</a>
-        <a href="#color">Цвет</a>
-        <a href="#type">Типографика</a>
-        <a href="#spacing">Ритм</a>
-        <a href="#controls">Управление</a>
+        <a href="#foundations">Основы</a>
+        <a href="#layout">Каркасы</a>
+        <a href="#actions">Действия</a>
         <a href="#forms">Формы</a>
-        <a href="#records">Записи</a>
-        <a href="#messages">Сообщения</a>
         <a href="#navigation">Навигация</a>
-        <a href="#charts">Графики</a>
-        <a href="#composition">Композиция</a>
         <a href="#data">Данные</a>
+        <a href="#feedback">Состояния</a>
+        <a href="#overlays">Оверлеи</a>
+        <a href="recipes.html">Рецепты</a>
       </div>
+      <a class="docs-sheet-link" href="sheet.html">Проверочный лист · 42</a>
       <button class="button button--stable button--icon theme-switch system-theme" type="button" data-theme-toggle aria-pressed="false">
         <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
         <span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span>
       </button>
     </nav>
 
-    <main class="system-main" id="top" data-craft-layout="interface">
-      <header class="system-intro">
-        <div>
-          <h1>Локальные интерфейсы</h1>
-          <p class="system-intro__lede">Токены и компоненты для отчётов, дашбордов и небольших рабочих инструментов.</p>
-        </div>
-        <dl class="system-meta">
-          <div><dt>Формат</dt><dd>HTML + CSS + JavaScript</dd></div>
-          <div><dt>Зависимости</dt><dd>Нет</dd></div>
-          <div><dt>Минимальная ширина</dt><dd>320 px</dd></div>
-        </dl>
-      </header>
+    <main class="docs-main" id="top" data-craft-layout="interface">
+      <div class="docs-content">
+        <header class="docs-intro">
+          <p class="docs-kicker">Интерфейсная система</p>
+          <h1>Компоненты</h1>
+          <p>Канонические конструкции Craft для локальных отчётов, рабочих инструментов и поверхностей данных. Каждый компонент работает без сборки и внешних зависимостей.</p>
+          <dl class="docs-facts">
+            <div><dt>Компонентов</dt><dd>42</dd></div>
+            <div><dt>HTML-фрагментов</dt><dd>19</dd></div>
+            <div><dt>Минимальная ширина</dt><dd>320 px</dd></div>
+          </dl>
+        </header>
 
-      <section class="system-section" id="foundation">
-        <div class="system-section__head">
-          <h2>Правила</h2>
-          <p>Эти правила связывают разные инструменты одной визуальной системой.</p>
-        </div>
-        <div class="rule-list" role="list">
-          <article role="listitem"><h3>Использовать весь экран</h3><p>Рабочая поверхность занимает доступную ширину и минимум высоту окна браузера.</p><span>Без внешнего ограничения</span></article>
-          <article role="listitem"><h3>Ограничивать текст, не интерфейс</h3><p>Длинная строка остаётся в пределах 65–75 знаков. Таблицы и графики используют доступное место.</p><span>65–75 знаков</span></article>
-          <article role="listitem"><h3>Отделять секции линиями</h3><p>Полная рамка нужна только самостоятельному компоненту.</p><span>Линия всегда 1 px</span></article>
-          <article role="listitem"><h3>Подписывать состояние</h3><p>Цвет выделяет сигнал, а текст объясняет его.</p><span>Текст + цвет</span></article>
-        </div>
-      </section>
+        <section class="component-group" id="foundations">
+          <header><h2>Основы</h2><p>Шрифт и пиктограммы, на которых строятся остальные компоненты.</p></header>
+          <div class="component-index"><a href="foundations.html#typography">Типографика<span>Шкала текста и заголовков</span></a><a href="foundations.html#icon">Иконка<span>Линейная служебная пиктограмма</span></a></div>
+        </section>
 
-      <section class="system-section" id="layouts">
-        <div class="system-section__head">
-          <h2>Композиционные режимы</h2>
-          <p>Режим задаёт геометрию поверхности, но не предметную структуру материала.</p>
-        </div>
-        <div class="layout-map" role="list">
-          <article class="layout-row" role="listitem">
-            <div><h3>Документ</h3><p>Читаемая колонка внутри полноширинных секций и естественная прокрутка страницы.</p><code>поток страницы</code></div>
-            <div class="layout-diagram layout-diagram--document" aria-label="Схема документа"><i></i><i></i><i></i></div>
-          </article>
-          <article class="layout-row" role="listitem">
-            <div><h3>Поверхность данных</h3><p>Полная ширина для таблиц, графиков, фильтров и точного сравнения значений.</p><code>полная ширина</code></div>
-            <div class="layout-diagram layout-diagram--data" aria-label="Схема поверхности данных"><i></i><i></i><i></i><i></i></div>
-          </article>
-          <article class="layout-row" role="listitem">
-            <div><h3>Рабочая поверхность</h3><p>Компактное управление и связанные области с независимой прокруткой.</p><code>связанные области</code></div>
-            <div class="layout-diagram layout-diagram--workspace" aria-label="Схема рабочей поверхности"><i></i><i></i><i></i></div>
-          </article>
-        </div>
-      </section>
+        <section class="component-group" id="layout">
+          <header><h2>Каркасы</h2><p>Структура страницы, секций и связанных рабочих областей.</p></header>
+          <div class="component-index">
+            <a href="layout.html#page-head">Заголовок страницы<code>page-head</code></a><a href="layout.html#workspace-head">Рабочая шапка<code>workspace-head</code></a><a href="layout.html#metric-strip">Полоса метрик<code>metric-strip</code></a><a href="layout.html#section">Секция<code>section</code></a><a href="layout.html#split-workspace">Рабочая область<code>split-workspace</code></a><a href="layout.html#section-nav">Навигация по секциям<code>section-nav</code></a><a href="layout.html#stack">Вертикальный поток<code>stack</code></a><a href="layout.html#equal-panels">Равные панели<code>equal-panels</code></a><a href="layout.html#callout">Акцентная врезка<code>callout</code></a><a href="layout.html#prose">Длинный текст<code>prose</code></a>
+          </div>
+        </section>
 
-      <section class="system-section" id="fragments">
-        <div class="system-section__head">
-          <h2>Базовые фрагменты</h2>
-          <p>Каталог показывает геометрию всех основных конструкций. Специализированные фрагменты форм, данных, сообщений и навигации раскрыты в следующих разделах.</p>
-        </div>
-        <div class="fragment-showcase">
-          <article class="fragment-stage">
-            <p class="fragment-stage__label">Заголовок страницы · <code>page-head</code></p>
-            <header class="page-head catalog-page-head">
-              <div class="page-head__main">
-                <p class="eyebrow">Контекст материала</p>
-                <h3>Название страницы</h3>
-                <p class="page-head__lede">Краткое пояснение стоит сразу под заголовком и не пересказывает значения справа.</p>
-              </div>
-              <div class="page-head__aside" aria-label="Параметры материала">
-                <p>Параметр: значение</p>
-                <p>Состояние: доступно</p>
-              </div>
-            </header>
-          </article>
+        <section class="component-group" id="actions">
+          <header><h2>Действия</h2><p>Запуск команд и выбор короткого режима.</p></header>
+          <div class="component-index"><a href="actions.html#button">Кнопка<code>button</code></a><a href="actions.html#segmented">Сегментированный выбор<code>segmented</code></a><a href="actions.html#disclosure">Раскрываемый блок<code>disclosure</code></a></div>
+        </section>
 
-          <article class="fragment-stage">
-            <p class="fragment-stage__label">Рабочая шапка · <code>workspace-head</code></p>
-            <header class="workspace-head catalog-workspace-head">
-              <div class="workspace-head__main">
-                <p class="eyebrow">Рабочая область</p>
-                <h3>Название инструмента</h3>
-                <p class="workspace-head__lede">Управление относится ко всей области и остаётся рядом с названием.</p>
-              </div>
-              <div class="workspace-head__tools" aria-label="Действия рабочей области">
-                <button class="button" type="button">Обновить</button>
-                <button class="button button--primary" type="button">Сохранить</button>
-              </div>
-            </header>
-          </article>
+        <section class="component-group" id="forms">
+          <header><h2>Формы</h2><p>Ввод, выбор и фильтрация значений.</p></header>
+          <div class="component-index"><a href="forms.html#field">Поле<code>field</code></a><a href="forms.html#input">Однострочный ввод<code>input</code></a><a href="forms.html#textarea">Многострочный ввод<code>textarea</code></a><a href="forms.html#select">Выбор из списка<code>select</code></a><a href="forms.html#checkbox">Флажок<code>checkbox</code></a><a href="forms.html#radio">Радиогруппа<code>radio</code></a><a href="forms.html#switch">Переключатель<code>switch</code></a><a href="forms.html#range">Шкала значения<code>range</code></a><a href="forms.html#filter-bar">Панель фильтров<code>filter-bar</code></a></div>
+        </section>
 
-          <article class="fragment-stage">
-            <p class="fragment-stage__label">Полоса значений · <code>metric-strip</code></p>
-            <section class="scoreboard" aria-label="Ключевые значения" style="--metrics:3">
-              <div class="metric metric--accent"><strong class="metric__value">24</strong><span class="metric__label">Приоритетное значение</span></div>
-              <div class="metric"><strong class="metric__value">68%</strong><span class="metric__label">Доля от общего числа</span></div>
-              <div class="metric"><strong class="metric__value">1,4 с</strong><span class="metric__label">Продолжительность операции</span></div>
-            </section>
-          </article>
+        <section class="component-group" id="navigation">
+          <header><h2>Навигация</h2><p>Положение, выбор раздела и переход между частями набора.</p></header>
+          <div class="component-index"><a href="navigation.html#breadcrumbs">Хлебные крошки<code>breadcrumbs</code></a><a href="navigation.html#tabs">Вкладки<code>tabs</code></a><a href="navigation.html#pagination">Пагинация<code>pagination</code></a><a href="navigation.html#steps">Шаги<code>steps</code></a></div>
+        </section>
 
-          <article class="fragment-stage">
-            <p class="fragment-stage__label">Связанные области · <code>split-workspace</code></p>
-            <div class="workbench catalog-workbench" aria-label="Основная область и связанные детали">
-              <section class="workbench__primary" aria-labelledby="catalog-primary-title">
-                <header class="panel-head"><div><h3 id="catalog-primary-title">Основная область</h3><p>Содержимое с независимой прокруткой на широком экране</p></div><button class="button" type="button">Действие</button></header>
-                <div class="scroll-region" tabindex="0"><div class="catalog-workbench__content"><strong>Выбранная запись</strong><p>Здесь размещается список, редактор, график или другая основная работа.</p></div></div>
-              </section>
-              <aside class="workbench__aside" aria-labelledby="catalog-aside-title">
-                <header class="panel-head"><div><h3 id="catalog-aside-title">Связанные детали</h3><p>Самостоятельные значения выбранного объекта</p></div></header>
-                <div class="scroll-region" tabindex="0"><dl class="kv-list kv-list--lined"><dt>Поле</dt><dd>Значение</dd><dt>Состояние</dt><dd>Доступно</dd><dt>Версия</dt><dd>2.4.1</dd></dl></div>
-              </aside>
-            </div>
-          </article>
+        <section class="component-group" id="data">
+          <header><h2>Данные</h2><p>Сравнение записей, значений, событий и кода.</p></header>
+          <div class="component-index"><a href="data.html#data-table">Таблица<code>data-table</code></a><a href="data.html#kv-list">Поле и значение<code>kv-list</code></a><a href="data.html#timeline">Хронология<code>timeline</code></a><a href="data.html#code-block">Блок кода<code>code-block</code></a><a href="data.html#bar-chart">Полосовой график<code>bar-chart</code></a><a href="data.html#series-key">Ключ ряда<code>series-key</code></a></div>
+        </section>
 
-          <div class="fragment-pair">
-            <article class="fragment-stage">
-              <p class="fragment-stage__label">Таблица · <code>data-table</code></p>
-              <div class="table-scroll" tabindex="0" role="region" aria-label="Таблица значений">
-                <table class="data-table">
-                  <caption>Сравнение значений</caption>
-                  <thead><tr><th>Название</th><th>Состояние</th><th>Значение</th></tr></thead>
-                  <tbody><tr><td>Первая строка</td><td><span class="status status--ok">доступно</span></td><td>42</td></tr><tr><td>Вторая строка</td><td><span class="status status--warn">проверить</span></td><td>18</td></tr></tbody>
-                </table>
-              </div>
-            </article>
-            <article class="fragment-stage">
-              <p class="fragment-stage__label">Пустое состояние · <code>empty-state</code></p>
-              <div class="catalog-empty-state">
-                <div class="empty-state"><strong>Ничего не выбрано</strong><span>Выберите строку, чтобы увидеть связанные детали.</span><button class="button" type="button">Выбрать первую</button></div>
-              </div>
-            </article>
-          </div>
+        <section class="component-group" id="feedback">
+          <header><h2>Состояния</h2><p>Результат, ход работы, отсутствие данных и загрузка.</p></header>
+          <div class="component-index"><a href="feedback.html#empty-state">Пустое состояние<code>empty-state</code></a><a href="feedback.html#notice">Уведомление<code>notice</code></a><a href="feedback.html#status">Статус<code>status</code></a><a href="feedback.html#state-label">Лейбл состояния<code>state-label</code></a><a href="feedback.html#tag">Метка<code>tag</code></a><a href="feedback.html#progress">Прогресс<code>progress</code></a><a href="feedback.html#skeleton">Заглушка загрузки<code>skeleton</code></a></div>
+        </section>
 
-          <article class="fragment-stage">
-            <p class="fragment-stage__label">Навигация документа · <code>section-nav</code></p>
-            <nav class="section-nav catalog-section-nav" aria-label="Разделы каталога">
-              <div class="section-nav__links" data-section-nav>
-                <a href="#foundation">Правила</a><a href="#fragments">Фрагменты</a><a href="#forms">Формы</a><a href="#data">Данные</a>
-              </div>
-            </nav>
-          </article>
-        </div>
-      </section>
+        <section class="component-group" id="overlays">
+          <header><h2>Оверлеи</h2><p>Короткое действие, которое требует отдельного верхнего слоя.</p></header>
+          <div class="component-index"><a href="overlays.html#dialog">Диалог<code>dialog</code></a></div>
+        </section>
+      </div>
 
-      <section class="system-section" id="color">
-        <div class="system-section__head">
-          <h2>Цвет</h2>
-          <p>У красного четыре роли: акцентный текст, насыщенная метка, плоскость под белым текстом и прозрачный фон сигнала. Остальная палитра нейтральная.</p>
-        </div>
-        <div class="token-table" role="list" aria-label="Цветовые токены">
-          <div class="token-row" role="listitem"><i style="--swatch:var(--bg)"></i><strong>Фон</strong><code>--bg</code><em>фон страницы</em><span data-token-value="--bg">#111111</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--surface)"></i><strong>Поверхность</strong><code>--surface</code><em>выделенная смысловая группа</em><span data-token-value="--surface">#1a1a1a</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--line)"></i><strong>Линия</strong><code>--line</code><em>разделитель секций и таблиц</em><span data-token-value="--line">#2a2a2a</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--text)"></i><strong>Текст</strong><code>--text</code><em>заголовки и значения</em><span data-token-value="--text">#eeeeee</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--muted)"></i><strong>Вторичный</strong><code>--muted</code><em>подписи, единицы, пояснения</em><span data-token-value="--muted">#a8a8a8</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--accent)"></i><strong>Акцент</strong><code>--accent</code><em>акцентный текст и ссылка</em><span data-token-value="--accent">#ff5a67</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-mark)"></i><strong>Метка</strong><code>--accent-mark</code><em>точка, полоса, линия графика, фокус</em><span data-token-value="--accent-mark">#ff3f4d</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-fill)"></i><strong>Заливка</strong><code>--accent-fill</code><em>плоскость под белым текстом</em><span data-token-value="--accent-fill">#c5303d</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-tint)"></i><strong>Фон сигнала</strong><code>--accent-tint</code><em>тихое выделение под обычным текстом</em><span data-token-value="--accent-tint">9%</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--ok)"></i><strong>Норма</strong><code>--ok</code><em>состояние в норме</em><span data-token-value="--ok">#23cc70</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--warn)"></i><strong>Предупреждение</strong><code>--warn</code><em>требует внимания</em><span data-token-value="--warn">#ffae1a</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--error)"></i><strong>Ошибка</strong><code>--error</code><em>сбой, тот же красный, что и метка</em><span data-token-value="--error">#ff3f4d</span></div>
-        </div>
-        <div class="series-palette">
-          <p class="control-label">Ряды данных: приоритетный ряд красный, остальные различаются тоном и подписью</p>
-          <div class="control-line">
-            <span class="series-key" style="--swatch: var(--data-red)">Приоритет</span>
-            <span class="series-key" style="--swatch: var(--data-neutral)">Нейтральный</span>
-            <span class="series-key" style="--swatch: var(--data-blue)">Синий</span>
-            <span class="series-key" style="--swatch: var(--data-amber)">Янтарный</span>
-            <span class="series-key" style="--swatch: var(--data-green)">Зелёный</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="system-section" id="type">
-        <h2 class="standalone-title">Типографика</h2>
-        <div class="type-specimens">
-          <div class="type-row"><span>Заголовок страницы · 48/51</span><strong class="sample-page">Сводка за неделю</strong></div>
-          <div class="type-row"><span>Заголовок секции · 34/38</span><strong class="sample-section">Что требует решения</strong></div>
-          <div class="type-row"><span>Локальный заголовок · 22/28</span><strong class="sample-local">Стабильность потока</strong></div>
-          <div class="type-row"><span>Основной текст · 18/29</span><p class="sample-body">Интерфейс показывает состояние, объясняет изменение и предлагает следующее действие.</p></div>
-          <div class="type-row"><span>Служебный текст · 13/18</span><p class="sample-meta">Обновлено 14 августа · источник: локальные данные</p></div>
-        </div>
-      </section>
-
-      <section class="system-section rhythm-section" id="spacing">
-        <div>
-          <h2>Ритм</h2>
-          <p>Базовый шаг — 4 px. Шкала содержит семь значений.</p>
-        </div>
-        <div class="space-scale">
-          <div><span>04</span><i style="--space:var(--space-1)"></i></div>
-          <div><span>08</span><i style="--space:var(--space-2)"></i></div>
-          <div><span>12</span><i style="--space:var(--space-3)"></i></div>
-          <div><span>16</span><i style="--space:var(--space-4)"></i></div>
-          <div><span>24</span><i style="--space:var(--space-5)"></i></div>
-          <div><span>32</span><i style="--space:var(--space-6)"></i></div>
-          <div><span>48</span><i style="--space:var(--space-7)"></i></div>
-        </div>
-      </section>
-
-      <section class="system-section" id="controls">
-        <div class="system-section__head">
-          <h2>Управление</h2>
-          <p>У элементов управления есть состояния наведения, фокуса и недоступности.</p>
-        </div>
-        <div class="control-demo">
-          <div class="control-group">
-            <span class="control-label">Действия</span>
-            <div class="control-line"><button class="button button--primary">Сформировать</button><button class="button">Экспортировать</button><button class="button" disabled>Недоступно</button></div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="period">Период</label>
-            <span class="select-control">
-              <select id="period"><option>Последние 7 дней</option><option>Последние 30 дней</option></select>
-              <svg class="select-control__icon" viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
-            </span>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="search">Поиск</label>
-            <input id="search" type="search" placeholder="Название или идентификатор">
-          </div>
-          <div class="control-group">
-            <span class="control-label">Состояния</span>
-            <div class="control-line"><span class="status status--ok">стабильно</span><span class="status status--warn">проверить</span><span class="status status--error">блокер</span></div>
-          </div>
-          <div class="control-group">
-            <span class="control-label" id="mode-label">Переключатель режима: один выбор из нескольких</span>
-            <div class="segmented" role="radiogroup" aria-labelledby="mode-label">
-              <label><input type="radio" name="catalog-mode" value="all" checked><span>Все</span></label>
-              <label><input type="radio" name="catalog-mode" value="warn"><span>Предупреждения</span></label>
-              <label><input type="radio" name="catalog-mode" value="error"><span>Ошибки</span></label>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="system-section" id="forms">
-        <div class="system-section__head">
-          <h2>Формы</h2>
-          <p>Поле собирает подпись, управление, подсказку и ошибку в одну колонку. Разметка не меняется от появления ошибки.</p>
-        </div>
-        <div class="demo-grid">
-          <div class="demo-cell">
-            <span class="demo-label">Поле с подсказкой</span>
-            <div class="field">
-              <label class="field__label" for="threshold">Порог оповещения</label>
-              <input id="threshold" type="number" value="120" aria-describedby="threshold-hint">
-              <p class="field__hint" id="threshold-hint">Значение в миллисекундах.</p>
-              <p class="field__error"></p>
-            </div>
-          </div>
-          <div class="demo-cell">
-            <span class="demo-label">Поле с ошибкой</span>
-            <div class="field">
-              <label class="field__label" for="window">Окно усреднения</label>
-              <input id="window" type="number" value="-5" aria-invalid="true" aria-describedby="window-error">
-              <p class="field__hint"></p>
-              <p class="field__error" id="window-error">Окно не может быть меньше нуля.</p>
-            </div>
-          </div>
-          <div class="demo-cell">
-            <span class="demo-label">Флажок и радиокнопка</span>
-            <fieldset class="field-set">
-              <legend>Что показывать</legend>
-              <div class="check-group">
-                <label class="check"><input type="checkbox" checked><span>Ошибки</span></label>
-                <label class="check"><input type="checkbox" data-catalog-mixed><span>Предупреждения</span></label>
-                <label class="check"><input type="checkbox" disabled><span>Отладка недоступна</span></label>
-                <label class="check"><input type="radio" name="catalog-scope" checked><span>Все потоки</span></label>
-                <label class="check"><input type="radio" name="catalog-scope"><span>Только основной</span></label>
-              </div>
-            </fieldset>
-          </div>
-          <div class="demo-cell">
-            <span class="demo-label">Переключатель и ползунок</span>
-            <label class="switch"><input type="checkbox" role="switch" checked><span>Обновлять автоматически</span></label>
-            <label class="switch"><input type="checkbox" role="switch" disabled><span>Недоступно без прав</span></label>
-            <label class="field__label" for="interval">Интервал</label>
-            <input class="range" id="interval" type="range" min="1" max="60" value="15" aria-describedby="interval-value">
-            <output class="muted" id="interval-value">15 минут</output>
-          </div>
-          <div class="demo-cell">
-            <span class="demo-label">Состояния кнопок</span>
-            <div class="control-line">
-              <button class="button button--primary" type="button">Сохранить</button>
-              <button class="button" type="button">Отмена</button>
-              <button class="button button--quiet" type="button">Сбросить</button>
-            </div>
-            <div class="control-line">
-              <button class="button" type="button" aria-busy="true">Обновляю</button>
-              <button class="button" type="button" disabled>Недоступно</button>
-            </div>
-          </div>
-          <div class="demo-cell">
-            <span class="demo-label">Недоступные поля</span>
-            <input value="Только чтение" readonly aria-label="Поле только для чтения">
-            <input value="Недоступно" disabled aria-label="Недоступное поле">
-            <textarea rows="2" disabled aria-label="Недоступная область текста">Правка закрыта</textarea>
-          </div>
-        </div>
-      </section>
-
-      <section class="system-section" id="records">
-        <div class="system-section__head">
-          <h2>Записи</h2>
-          <p>Метка называет принадлежность, лейбл — состояние, лента — хронологию. Ход выполнения всегда дублируется числом.</p>
-        </div>
-        <div class="demo-grid">
-          <div class="demo-cell">
-            <span class="demo-label">Метки и состояния</span>
-            <div class="tag-list"><span class="tag">Интерфейс</span><span class="tag">Безопасность</span><span class="tag tag--accent">Приоритет</span></div>
-            <div class="control-line">
-              <span class="state-label state-label--ok">пройдено</span>
-              <span class="state-label state-label--warn">на проверке</span>
-              <span class="state-label state-label--error">отклонено</span>
-              <span class="state-label">черновик</span>
-            </div>
-          </div>
-          <div class="demo-cell">
-            <span class="demo-label">Пары «поле — значение»</span>
-            <div class="kv-block">
-              <h3 class="kv-block__title">Параметры запуска</h3>
-              <dl class="kv-list kv-list--lined">
-                <dt>Версия</dt><dd>2.4.1</dd>
-                <dt>Окружение</dt><dd>Предпродакшен</dd>
-                <dt>Запущено</dt><dd>14:02</dd>
-              </dl>
-            </div>
-          </div>
-          <div class="demo-cell">
-            <span class="demo-label">Ход выполнения</span>
-            <div class="progress">
-              <div class="progress__head"><span>Обработано</span><strong>420 из 900</strong></div>
-              <div class="progress__track"><span class="progress__fill" style="--value: 47%"></span></div>
-            </div>
-            <div class="progress progress--indeterminate">
-              <div class="progress__head"><span>Ожидание источника</span><strong>доля неизвестна</strong></div>
-              <div class="progress__track"><span class="progress__fill"></span></div>
-            </div>
-          </div>
-          <div class="demo-cell">
-            <span class="demo-label">Лента событий</span>
-            <ol class="timeline" aria-label="История задачи">
-              <li>
-                <span class="timeline__mark" style="--status: var(--ok)" aria-hidden="true"></span>
-                <span class="timeline__time">14:02</span>
-                <div><span class="timeline__title">Запуск проверки</span><p>Очередь приняла 42 записи.</p></div>
-              </li>
-              <li>
-                <span class="timeline__mark" style="--status: var(--warn)" aria-hidden="true"></span>
-                <span class="timeline__time">14:11</span>
-                <div><span class="timeline__title">Повтор источника</span><p>Один источник ответил со второй попытки.</p></div>
-              </li>
-              <li>
-                <span class="timeline__mark" aria-hidden="true"></span>
-                <span class="timeline__time">14:20</span>
-                <div><span class="timeline__title">Готово</span><p>Ошибок нет.</p></div>
-              </li>
-            </ol>
-          </div>
-          <div class="demo-cell demo-cell--wide">
-            <span class="demo-label">Блок кода</span>
-            <figure class="code-block">
-              <figcaption class="code-block__head">
-                <span>Команда проверки</span>
-                <button class="button button--stable code-block__copy" type="button" data-copy="#catalog-code" aria-pressed="false">
-                  <span class="button__label button__label--rest">Копировать</span>
-                  <span class="button__label button__label--pressed">Скопировано</span>
-                </button>
-              </figcaption>
-              <pre id="catalog-code"><code>python3 scripts/check.py</code></pre>
-            </figure>
-          </div>
-        </div>
-      </section>
-
-      <section class="system-section" id="messages">
-        <div class="system-section__head">
-          <h2>Сообщения</h2>
-          <p>Уведомление стоит рядом с тем содержимым, которого касается. Модальное окно прерывает работу только ради решения.</p>
-        </div>
-        <div class="demo-grid">
-          <div class="demo-cell">
-            <span class="demo-label">Уведомления</span>
-            <aside class="notice notice--ok" role="status">
-              <span class="notice__mark" aria-hidden="true"></span>
-              <div><strong class="notice__title">Выгрузка завершена</strong><p>Готовы данные за прошлую неделю.</p></div>
-            </aside>
-            <aside class="notice notice--warn" role="status">
-              <span class="notice__mark" aria-hidden="true"></span>
-              <div><strong class="notice__title">Данные за вчера неполные</strong><p>Три источника из двенадцати ещё не прислали выгрузку.</p></div>
-            </aside>
-            <aside class="notice notice--error" role="status">
-              <span class="notice__mark" aria-hidden="true"></span>
-              <div>
-                <strong class="notice__title">Отчёт не собран</strong>
-                <p>Источник ответил ошибкой доступа.</p>
-                <div class="notice__actions"><button class="button" type="button">Повторить</button></div>
-              </div>
-            </aside>
-          </div>
-          <div class="demo-cell">
-            <span class="demo-label">Ожидание данных</span>
-            <div aria-busy="true" aria-label="Загрузка сводки">
-              <span class="skeleton" style="width: 60%"></span>
-              <span class="skeleton" style="width: 90%; margin-top: var(--space-2)"></span>
-              <div class="skeleton skeleton--block" style="margin-top: var(--space-3)"></div>
-            </div>
-          </div>
-          <div class="demo-cell">
-            <span class="demo-label">Раскрываемое уточнение</span>
-            <details class="disclosure">
-              <summary>
-                <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>
-                Как считается задержка
-              </summary>
-              <div class="disclosure__body"><p>Медиана времени ответа за пятиминутное окно.</p></div>
-            </details>
-          </div>
-          <div class="demo-cell">
-            <span class="demo-label">Модальное окно</span>
-            <button class="button" type="button" data-dialog-open="#catalog-dialog">Отозвать доступ</button>
-            <dialog class="dialog" id="catalog-dialog" aria-labelledby="catalog-dialog-title">
-              <header class="dialog__head">
-                <h3 id="catalog-dialog-title">Отозвать доступ</h3>
-                <button class="button button--icon" type="button" data-dialog-close aria-label="Закрыть окно">
-                  <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
-                </button>
-              </header>
-              <div class="dialog__body"><p>Права пропадут сразу, восстановить их сможет только владелец потока.</p></div>
-              <footer class="dialog__foot">
-                <button class="button" type="button" data-dialog-close>Отмена</button>
-                <button class="button button--primary" type="button" data-dialog-close>Отозвать</button>
-              </footer>
-            </dialog>
-          </div>
-        </div>
-      </section>
-
-      <section class="system-section" id="navigation">
-        <div class="system-section__head">
-          <h2>Навигация</h2>
-          <p>Вкладки делят равноправные представления, шаги показывают конечную последовательность, полоса параметров стоит над данными.</p>
-        </div>
-        <nav aria-label="Путь к материалу">
-          <ol class="breadcrumbs">
-            <li><a href="#top">Каталог</a></li>
-            <li><a href="#controls">Управление</a></li>
-            <li><span aria-current="page">Навигация</span></li>
-          </ol>
-        </nav>
-        <div class="tabs" data-tabs>
-          <div class="tablist" role="tablist" aria-label="Представления очереди">
-            <button role="tab" type="button" id="catalog-tab-open" aria-controls="catalog-panel-open" aria-selected="true">Открытые</button>
-            <button role="tab" type="button" id="catalog-tab-done" aria-controls="catalog-panel-done" aria-selected="false">Закрытые</button>
-            <button role="tab" type="button" id="catalog-tab-archive" aria-controls="catalog-panel-archive" aria-selected="false" disabled>Архив</button>
-          </div>
-          <div role="tabpanel" id="catalog-panel-open" aria-labelledby="catalog-tab-open" tabindex="0">
-            <div class="filter-bar" role="group" aria-label="Параметры очереди">
-              <label class="field__label" for="catalog-stream">Поток</label>
-              <span class="select-control">
-                <select id="catalog-stream"><option>Все потоки</option><option>Основной</option></select>
-                <svg class="select-control__icon" viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
-              </span>
-              <p class="filter-bar__count" role="status">Отобрано 18 из 84</p>
-            </div>
-            <table class="data-table data-table--sticky">
-              <caption>Открытые записи очереди</caption>
-              <thead><tr>
-                <th>Запись</th>
-                <th aria-sort="ascending"><button class="data-table__sort" type="button">Задержка<svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4"/></svg></button></th>
-                <th>Состояние</th>
-              </tr></thead>
-              <tbody>
-                <tr><td>Сохранение параметров поиска</td><td>18 мс</td><td><span class="state-label state-label--ok">пройдено</span></td></tr>
-                <tr><td>Управление доступом</td><td>64 мс</td><td><span class="state-label state-label--warn">на проверке</span></td></tr>
-                <tr class="data-table__detail"><td colspan="3">Проверка ждёт второго одобрения от владельца потока.</td></tr>
-              </tbody>
-            </table>
-            <nav class="pagination" aria-label="Страницы очереди">
-              <a class="button" href="#navigation">Назад</a>
-              <a class="pagination__page" href="#navigation">1</a>
-              <a class="pagination__page" href="#navigation" aria-current="page">2</a>
-              <a class="pagination__page" href="#navigation">3</a>
-              <a class="button" href="#navigation">Вперёд</a>
-              <p class="pagination__status" role="status">21–40 из 84</p>
-            </nav>
-          </div>
-          <div role="tabpanel" id="catalog-panel-done" aria-labelledby="catalog-tab-done" tabindex="0" hidden>
-            <p class="muted">За выбранный период закрытых записей нет.</p>
-          </div>
-          <div role="tabpanel" id="catalog-panel-archive" aria-labelledby="catalog-tab-archive" tabindex="0" hidden>
-            <p class="muted">Архив доступен только владельцу потока.</p>
-          </div>
-        </div>
-        <ol class="steps" aria-label="Ход публикации">
-          <li data-state="done"><span class="steps__index">01</span><span class="steps__title">Сборка</span></li>
-          <li data-state="done"><span class="steps__index">02</span><span class="steps__title">Проверка</span></li>
-          <li data-state="current"><span class="steps__index">03</span><span class="steps__title">Ревью</span></li>
-          <li><span class="steps__index">04</span><span class="steps__title">Публикация</span></li>
-        </ol>
-      </section>
-
-      <section class="system-section" id="charts">
-        <div class="system-section__head">
-          <h2>Графики</h2>
-          <p>Временной ряд проверяет палитру данных, порог, отметку события и подписи в обеих темах.</p>
-        </div>
-        <figure class="chart-sample">
-          <figcaption class="chart-sample__head">
-            <div>
-              <h3>Запросы по сервисам</h3>
-              <p>Демонстрационные данные · запросов в секунду</p>
-            </div>
-            <div class="control-line" aria-label="Ряды графика">
-              <span class="series-key" style="--swatch:var(--data-neutral)">Сервис A</span>
-              <span class="series-key" style="--swatch:var(--data-blue)">Сервис B</span>
-              <span class="series-key" style="--swatch:var(--data-green)">Сервис C</span>
-            </div>
-          </figcaption>
-          <div class="chart-canvas">
-            <div class="chart-y-axis" aria-hidden="true"><span>1&nbsp;000</span><span>750</span><span>500</span><span>250</span><span>0</span></div>
-            <div class="chart-plot">
-              <i style="--at:0%"></i><i style="--at:25%"></i><i style="--at:50%"></i><i style="--at:75%"></i><i style="--at:100%"></i>
-              <svg viewBox="0 0 100 40" preserveAspectRatio="none" role="img" aria-labelledby="chart-title chart-description">
-                <title id="chart-title">Запросы по сервисам с 09:00 до 12:00</title>
-                <desc id="chart-description">Нагрузка постепенно растёт. Около 11:00 у сервиса A краткий провал, после восстановления поток возвращается к прежнему тренду.</desc>
-                <path class="chart-line chart-line--neutral" d="M0 32 L5 31 L10 29 L15 28 L20 25 L25 24 L30 22 L35 21 L40 18 L45 19 L50 16 L55 15 L60 17 L64 16 L66 29 L68 27 L70 15 L75 14 L80 12 L85 13 L90 9 L95 7 L100 8"/>
-                <path class="chart-line chart-line--blue" d="M0 35 L5 34 L10 34 L15 32 L20 31 L25 30 L30 28 L35 29 L40 26 L45 25 L50 24 L55 22 L60 23 L65 24 L68 27 L70 24 L75 23 L80 21 L85 22 L90 19 L95 20 L100 18"/>
-                <path class="chart-line chart-line--green" d="M0 38 L10 37 L20 36 L30 36 L40 35 L50 33 L60 34 L66 33 L70 30 L80 31 L90 29 L100 28"/>
-              </svg>
-              <span class="chart-event" aria-hidden="true"><b></b></span>
-              <span class="chart-threshold" aria-hidden="true">порог 900</span>
-            </div>
-          </div>
-          <div class="chart-x-axis" aria-hidden="true"><span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span></div>
-          <p class="chart-summary"><strong>Сейчас 812 запросов/с.</strong> Провал в 11:00 совпал с выкладкой, поток восстановился за 6 минут.</p>
-        </figure>
-
-        <div class="chart-pair equal-panels">
-          <figure class="chart-panel equal-panel">
-            <figcaption class="equal-panel__head">
-              <div><h3>Задержка по регионам</h3><p>95-й процентиль · миллисекунды</p></div>
-            </figcaption>
-            <div class="equal-panel__body">
-              <div class="column-chart" role="img" aria-label="Задержка по пяти регионам. Порог 500 миллисекунд превышен только в регионе D.">
-              <span class="column-threshold" aria-hidden="true">порог 500</span>
-              <div><strong>318</strong><i style="--value:53%"></i><span>A</span></div>
-              <div><strong>276</strong><i style="--value:46%"></i><span>B</span></div>
-              <div><strong>421</strong><i style="--value:70%"></i><span>C</span></div>
-              <div class="column-chart__alert"><strong>548</strong><i style="--value:91%"></i><span>D</span></div>
-                <div><strong>352</strong><i style="--value:59%"></i><span>E</span></div>
-              </div>
-            </div>
-            <p class="chart-summary equal-panel__foot"><strong>Регион D: 548 мс.</strong> Единственный регион выше порога обслуживания.</p>
-          </figure>
-
-          <figure class="chart-panel equal-panel">
-            <figcaption class="heatmap-heading equal-panel__head">
-              <div><h3>Распределение задержки</h3><p>Доля запросов по корзинам</p></div>
-              <span class="heatmap-legend" aria-hidden="true">реже <i></i><i></i><i></i><i></i> чаще</span>
-            </figcaption>
-            <div class="equal-panel__body">
-              <div class="heatmap" role="img" aria-label="Основная доля запросов лежит в корзинах от 32 до 128 миллисекунд. В 11 часов выросла доля запросов от 256 миллисекунд.">
-              <span>512</span><i class="heat-1"></i><i class="heat-1"></i><i class="heat-1"></i><i class="heat-1"></i><i class="heat-1"></i><i class="heat-3"></i><i class="heat-2"></i><i class="heat-1"></i>
-              <span>256</span><i class="heat-1"></i><i class="heat-2"></i><i class="heat-1"></i><i class="heat-2"></i><i class="heat-2"></i><i class="heat-4"></i><i class="heat-3"></i><i class="heat-2"></i>
-              <span>128</span><i class="heat-3"></i><i class="heat-3"></i><i class="heat-4"></i><i class="heat-4"></i><i class="heat-3"></i><i class="heat-4"></i><i class="heat-4"></i><i class="heat-3"></i>
-              <span>64</span><i class="heat-4"></i><i class="heat-5"></i><i class="heat-5"></i><i class="heat-4"></i><i class="heat-5"></i><i class="heat-3"></i><i class="heat-4"></i><i class="heat-5"></i>
-              <span>32</span><i class="heat-3"></i><i class="heat-4"></i><i class="heat-4"></i><i class="heat-5"></i><i class="heat-4"></i><i class="heat-2"></i><i class="heat-3"></i><i class="heat-4"></i>
-              </div>
-              <div class="heatmap-axis" aria-hidden="true"><span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span></div>
-            </div>
-            <p class="chart-summary equal-panel__foot"><strong>Основная корзина: 32–64 мс.</strong> В 11:00 хвост распределения стал тяжелее.</p>
-          </figure>
-
-          <figure class="chart-panel equal-panel">
-            <figcaption class="equal-panel__head"><div><h3>Состав трафика</h3><p>Доля запросов за 6 часов</p></div></figcaption>
-            <div class="equal-panel__body">
-              <div class="donut-layout">
-              <svg class="donut-chart" viewBox="0 0 160 160" role="img" aria-label="Сервис A 42 процента, сервис B 27 процентов, сервис C 19 процентов, сервис D 12 процентов.">
-                <circle class="donut-chart__base" cx="80" cy="80" r="54" pathLength="100"/>
-                <circle class="donut-chart__segment donut-chart__segment--red" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="42 58" stroke-dashoffset="0"/>
-                <circle class="donut-chart__segment donut-chart__segment--blue" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="27 73" stroke-dashoffset="-42"/>
-                <circle class="donut-chart__segment donut-chart__segment--amber" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="19 81" stroke-dashoffset="-69"/>
-                <circle class="donut-chart__segment donut-chart__segment--green" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="12 88" stroke-dashoffset="-88"/>
-                <text class="donut-chart__value" x="80" y="77" text-anchor="middle">1,8 млн</text>
-                <text class="donut-chart__label" x="80" y="97" text-anchor="middle">запросов</text>
-              </svg>
-              <dl class="donut-legend">
-                <div><dt><span class="series-key" style="--swatch:var(--data-red)">Сервис A</span></dt><dd>42%</dd></div>
-                <div><dt><span class="series-key" style="--swatch:var(--data-blue)">Сервис B</span></dt><dd>27%</dd></div>
-                <div><dt><span class="series-key" style="--swatch:var(--data-amber)">Сервис C</span></dt><dd>19%</dd></div>
-                <div><dt><span class="series-key" style="--swatch:var(--data-green)">Сервис D</span></dt><dd>12%</dd></div>
-                </dl>
-              </div>
-            </div>
-            <p class="chart-summary equal-panel__foot"><strong>Сервис A: 42%.</strong> Крупнейшая доля, но не большинство трафика.</p>
-          </figure>
-        </div>
-      </section>
-
-      <section class="system-section" id="composition">
-        <div class="system-section__head">
-          <h2>Композиция</h2>
-          <p>Рабочий образец проверяет компоненты вместе: плотный список, выбор строки, статусы и детали на общей плоскости.</p>
-        </div>
-        <div class="queue-sample">
-          <div class="queue-sample__head">
-            <div><strong>Очередь задач</strong><span>Демонстрационные данные · 4 задачи</span></div>
-            <span class="status status--warn">2 требуют решения</span>
-          </div>
-          <div class="queue-sample__body">
-            <div class="queue-sample__list" aria-label="Задачи">
-              <button class="queue-row" type="button" aria-pressed="true" data-title="Сохранить параметры поиска" data-group="Интерфейс" data-state="требует решения" data-summary="При возврате на страницу должны восстанавливаться параметры, сортировка и позиция списка.">
-                <span><strong>Сохранить параметры поиска</strong><small>Интерфейс · открыта 2 дня назад</small></span>
-                <span class="status status--error">решение</span>
-              </button>
-              <button class="queue-row" type="button" aria-pressed="false" data-title="Убрать повторную загрузку данных" data-group="Платформа" data-state="готово" data-summary="Данные должны загружаться один раз после восстановления пользовательской сессии.">
-                <span><strong>Убрать повторную загрузку данных</strong><small>Платформа · открыта 3 дня назад</small></span>
-                <span class="status status--ok">готово</span>
-              </button>
-              <button class="queue-row" type="button" aria-pressed="false" data-title="Добавить управление доступом" data-group="Продукт" data-state="на проверке" data-summary="Экран разделяет активные и отозванные права и подтверждает сохранение изменений.">
-                <span><strong>Добавить управление доступом</strong><small>Продукт · открыта 10 часов назад</small></span>
-                <span class="status">проверка</span>
-              </button>
-              <button class="queue-row" type="button" aria-pressed="false" data-title="Проверить массовое изменение ролей" data-group="Безопасность" data-state="требует решения" data-summary="Массовое изменение ролей требует повторной проверки прав перед сохранением.">
-                <span><strong>Проверить массовое изменение ролей</strong><small>Безопасность · открыта 6 дней назад</small></span>
-                <span class="status status--error">решение</span>
-              </button>
-            </div>
-            <article class="queue-detail" aria-live="polite">
-              <span class="queue-detail__meta">Выбранная задача</span>
-              <h3 data-queue-title>Сохранить параметры поиска</h3>
-              <p data-queue-summary>При возврате на страницу должны восстанавливаться параметры, сортировка и позиция списка.</p>
-              <dl>
-                <div><dt>Направление</dt><dd data-queue-group>Интерфейс</dd></div>
-                <div><dt>Состояние</dt><dd data-queue-state>требует решения</dd></div>
-              </dl>
-              <button class="button" type="button">Открыть задачу</button>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="system-section" id="data">
-        <div class="data-heading">
-          <h2>Данные</h2>
-          <p>Запись чисел и единиц измерения в русскоязычном интерфейсе.</p>
-        </div>
-        <div class="format-metrics" aria-label="Примеры форматирования чисел">
-          <div><strong>1&nbsp;240</strong><span>целое число</span></div>
-          <div><strong>98,7%</strong><span>процент</span></div>
-          <div><strong>18 мс</strong><span>время</span></div>
-        </div>
-        <table class="data-table format-table">
-          <thead><tr><th>Тип</th><th>Правило</th><th>Пример</th></tr></thead>
-          <tbody>
-            <tr><td>Количество</td><td>Пробел между разрядами</td><td>1&nbsp;240</td></tr>
-            <tr><td>Доля</td><td>Одна десятичная, если она значима</td><td>98,7%</td></tr>
-            <tr><td>Длительность</td><td>Неразрывный пробел перед единицей</td><td>18 мс</td></tr>
-          </tbody>
-        </table>
-      </section>
-
+      <aside class="docs-toc" aria-label="На этой странице">
+        <p>На этой странице</p>
+        <a href="#foundations">Основы</a><a href="#layout">Каркасы</a><a href="#actions">Действия</a><a href="#forms">Формы</a><a href="#navigation">Навигация</a><a href="#data">Данные</a><a href="#feedback">Состояния</a><a href="#overlays">Оверлеи</a>
+      </aside>
     </main>
   </div>
 </body>

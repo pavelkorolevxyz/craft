@@ -92,7 +92,7 @@ def main() -> None:
         projects = scaffold_matrix(Path(directory))
         sources = {
             **{key: path / "index.html" for key, path in projects.items()},
-            "interface-catalog": ROOT / "catalog/interfaces/index.html",
+            "interface-catalog": ROOT / "catalog/interfaces/sheet.html",
             "slides-catalog": ROOT / "catalog/slides/index.html",
         }
         rendered: list[tuple[Shot, Path]] = []

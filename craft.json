@@ -1,6 +1,6 @@
 {
   "name": "Craft",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "language": "ru",
   "surfaces": {
     "interface": {
@@ -14,13 +14,10 @@
         {
           "id": "page-head",
           "path": "assets/interfaces/fragments/page-head.html",
-          "purpose": "Заголовок документа с контекстом, резюме и метаданными",
+          "purpose": "Заголовок документа с кратким пояснением",
           "placeholders": {
-            "CONTEXT": "text",
             "TITLE": "text",
-            "SUMMARY": "text",
-            "META_LABEL": "text",
-            "META": "html"
+            "SUMMARY": "text"
           },
           "dependencies": []
         },
@@ -29,7 +26,6 @@
           "path": "assets/interfaces/fragments/workspace-head.html",
           "purpose": "Компактная шапка рабочей поверхности с состоянием и действиями",
           "placeholders": {
-            "CONTEXT": "text",
             "TITLE": "text",
             "CURRENT_STATE": "text",
             "TOOLS_LABEL": "text",
@@ -244,7 +240,472 @@
         }
       ],
       "fragmentTarget": "#craft-content",
-      "catalog": "catalog/interfaces/index.html"
+      "catalog": "catalog/interfaces/index.html",
+      "componentCategories": [
+        {
+          "id": "foundations",
+          "title": "Основы"
+        },
+        {
+          "id": "layout",
+          "title": "Каркасы"
+        },
+        {
+          "id": "actions",
+          "title": "Действия"
+        },
+        {
+          "id": "forms",
+          "title": "Формы"
+        },
+        {
+          "id": "navigation",
+          "title": "Навигация"
+        },
+        {
+          "id": "data",
+          "title": "Данные"
+        },
+        {
+          "id": "feedback",
+          "title": "Состояния"
+        },
+        {
+          "id": "overlays",
+          "title": "Оверлеи"
+        }
+      ],
+      "components": [
+        {
+          "id": "typography",
+          "title": "Типографика",
+          "category": "foundations",
+          "kind": "foundation",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": null,
+          "dependencies": [],
+          "summary": "Шкала текста и заголовков"
+        },
+        {
+          "id": "icon",
+          "title": "Иконка",
+          "category": "foundations",
+          "kind": "foundation",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "icon",
+          "dependencies": [],
+          "summary": "Линейная служебная пиктограмма"
+        },
+        {
+          "id": "page-head",
+          "title": "Заголовок страницы",
+          "category": "layout",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/page-head.html",
+          "rootClass": "page-head",
+          "dependencies": [],
+          "summary": "Название страницы с кратким пояснением"
+        },
+        {
+          "id": "workspace-head",
+          "title": "Рабочая шапка",
+          "category": "layout",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/workspace-head.html",
+          "rootClass": "workspace-head",
+          "dependencies": [],
+          "summary": "Название рабочей области с общими действиями"
+        },
+        {
+          "id": "metric-strip",
+          "title": "Полоса метрик",
+          "category": "layout",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/metric-strip.html",
+          "rootClass": "scoreboard",
+          "dependencies": [],
+          "summary": "Группа ключевых значений"
+        },
+        {
+          "id": "section",
+          "title": "Секция",
+          "category": "layout",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/section.html",
+          "rootClass": "section",
+          "dependencies": [],
+          "summary": "Самостоятельная часть документа"
+        },
+        {
+          "id": "split-workspace",
+          "title": "Рабочая область",
+          "category": "layout",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/split-workspace.html",
+          "rootClass": "workbench",
+          "dependencies": [],
+          "summary": "Две связанные области с независимой прокруткой"
+        },
+        {
+          "id": "section-nav",
+          "title": "Навигация по секциям",
+          "category": "layout",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/section-nav.html",
+          "rootClass": "section-nav__links",
+          "dependencies": [
+            "assets/interfaces/section-nav.js"
+          ],
+          "summary": "Навигация длинного документа"
+        },
+        {
+          "id": "stack",
+          "title": "Вертикальный поток",
+          "category": "layout",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "stack",
+          "dependencies": [],
+          "summary": "Ритм последовательных блоков"
+        },
+        {
+          "id": "equal-panels",
+          "title": "Равные панели",
+          "category": "layout",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "equal-panels",
+          "dependencies": [],
+          "summary": "Панели с общими смысловыми рядами"
+        },
+        {
+          "id": "callout",
+          "title": "Акцентная врезка",
+          "category": "layout",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "callout",
+          "dependencies": [],
+          "summary": "Полноширинный вывод с действием"
+        },
+        {
+          "id": "prose",
+          "title": "Длинный текст",
+          "category": "layout",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "prose",
+          "dependencies": [],
+          "summary": "Читаемая колонка размеченного текста"
+        },
+        {
+          "id": "button",
+          "title": "Кнопка",
+          "category": "actions",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "button",
+          "dependencies": [],
+          "summary": "Запуск действия"
+        },
+        {
+          "id": "segmented",
+          "title": "Сегментированный выбор",
+          "category": "actions",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "segmented",
+          "dependencies": [],
+          "summary": "Выбор одного режима из короткого набора"
+        },
+        {
+          "id": "disclosure",
+          "title": "Раскрываемый блок",
+          "category": "actions",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "disclosure",
+          "dependencies": [],
+          "summary": "Показ дополнительного содержания по запросу"
+        },
+        {
+          "id": "field",
+          "title": "Поле",
+          "category": "forms",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/field.html",
+          "rootClass": "field",
+          "dependencies": [],
+          "summary": "Подпись, управление, подсказка и ошибка"
+        },
+        {
+          "id": "input",
+          "title": "Однострочный ввод",
+          "category": "forms",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": null,
+          "dependencies": [],
+          "summary": "Ввод короткого текстового значения"
+        },
+        {
+          "id": "textarea",
+          "title": "Многострочный ввод",
+          "category": "forms",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": null,
+          "dependencies": [],
+          "summary": "Ввод текста в несколько строк"
+        },
+        {
+          "id": "select",
+          "title": "Выбор из списка",
+          "category": "forms",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "select-control",
+          "dependencies": [],
+          "summary": "Выбор одного известного значения"
+        },
+        {
+          "id": "checkbox",
+          "title": "Флажок",
+          "category": "forms",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "check",
+          "dependencies": [],
+          "summary": "Независимый двоичный выбор"
+        },
+        {
+          "id": "radio",
+          "title": "Радиогруппа",
+          "category": "forms",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "check-group",
+          "dependencies": [],
+          "summary": "Выбор одного значения из группы"
+        },
+        {
+          "id": "switch",
+          "title": "Переключатель",
+          "category": "forms",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "switch",
+          "dependencies": [],
+          "summary": "Немедленное включение или выключение режима"
+        },
+        {
+          "id": "range",
+          "title": "Шкала значения",
+          "category": "forms",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "range",
+          "dependencies": [],
+          "summary": "Выбор числового значения в диапазоне"
+        },
+        {
+          "id": "filter-bar",
+          "title": "Панель фильтров",
+          "category": "forms",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/filter-bar.html",
+          "rootClass": "filter-bar",
+          "dependencies": [],
+          "summary": "Параметры отбора над областью данных"
+        },
+        {
+          "id": "breadcrumbs",
+          "title": "Хлебные крошки",
+          "category": "navigation",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/breadcrumbs.html",
+          "rootClass": "breadcrumbs",
+          "dependencies": [],
+          "summary": "Положение страницы в иерархии"
+        },
+        {
+          "id": "tabs",
+          "title": "Вкладки",
+          "category": "navigation",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/tabs.html",
+          "rootClass": "tabs",
+          "dependencies": [
+            "assets/interfaces/tabs.js"
+          ],
+          "summary": "Переключение связанных панелей"
+        },
+        {
+          "id": "pagination",
+          "title": "Пагинация",
+          "category": "navigation",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/pagination.html",
+          "rootClass": "pagination",
+          "dependencies": [],
+          "summary": "Переход между страницами набора"
+        },
+        {
+          "id": "steps",
+          "title": "Шаги",
+          "category": "navigation",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/steps.html",
+          "rootClass": "steps",
+          "dependencies": [],
+          "summary": "Положение в коротком процессе"
+        },
+        {
+          "id": "data-table",
+          "title": "Таблица",
+          "category": "data",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/data-table.html",
+          "rootClass": "data-table",
+          "dependencies": [],
+          "summary": "Сравнение однородных записей"
+        },
+        {
+          "id": "kv-list",
+          "title": "Поле и значение",
+          "category": "data",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/kv-list.html",
+          "rootClass": "kv-list",
+          "dependencies": [],
+          "summary": "Компактное описание одной сущности"
+        },
+        {
+          "id": "timeline",
+          "title": "Хронология",
+          "category": "data",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/timeline.html",
+          "rootClass": "timeline",
+          "dependencies": [],
+          "summary": "Последовательность событий во времени"
+        },
+        {
+          "id": "code-block",
+          "title": "Блок кода",
+          "category": "data",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/code-block.html",
+          "rootClass": "code-block",
+          "dependencies": [
+            "assets/interfaces/copy.js"
+          ],
+          "summary": "Локальный код с копированием"
+        },
+        {
+          "id": "bar-chart",
+          "title": "Полосовой график",
+          "category": "data",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "bar-list",
+          "dependencies": [],
+          "summary": "Сравнение значений по общей шкале"
+        },
+        {
+          "id": "series-key",
+          "title": "Ключ ряда",
+          "category": "data",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "series-key",
+          "dependencies": [],
+          "summary": "Подпись ряда данных"
+        },
+        {
+          "id": "empty-state",
+          "title": "Пустое состояние",
+          "category": "feedback",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/empty-state.html",
+          "rootClass": "empty-state",
+          "dependencies": [],
+          "summary": "Объяснение отсутствия результата"
+        },
+        {
+          "id": "notice",
+          "title": "Уведомление",
+          "category": "feedback",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/notice.html",
+          "rootClass": "notice",
+          "dependencies": [],
+          "summary": "Сообщение внутри текущего потока"
+        },
+        {
+          "id": "status",
+          "title": "Статус",
+          "category": "feedback",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "status",
+          "dependencies": [],
+          "summary": "Короткое состояние с точкой"
+        },
+        {
+          "id": "state-label",
+          "title": "Лейбл состояния",
+          "category": "feedback",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "state-label",
+          "dependencies": [],
+          "summary": "Состояние в плотной таблице"
+        },
+        {
+          "id": "tag",
+          "title": "Метка",
+          "category": "feedback",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "tag",
+          "dependencies": [],
+          "summary": "Категория или признак без статуса"
+        },
+        {
+          "id": "progress",
+          "title": "Прогресс",
+          "category": "feedback",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "progress",
+          "dependencies": [],
+          "summary": "Определённый или неопределённый ход работы"
+        },
+        {
+          "id": "skeleton",
+          "title": "Заглушка загрузки",
+          "category": "feedback",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "skeleton",
+          "dependencies": [],
+          "summary": "Стабильная геометрия до появления данных"
+        },
+        {
+          "id": "dialog",
+          "title": "Диалог",
+          "category": "overlays",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/dialog.html",
+          "rootClass": "dialog",
+          "dependencies": [
+            "assets/interfaces/dialog.js"
+          ],
+          "summary": "Модальное подтверждение короткого действия"
+        }
+      ],
+      "testPage": "catalog/interfaces/sheet.html"
     },
     "slides": {
       "templates": [

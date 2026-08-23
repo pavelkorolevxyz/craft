@@ -15,7 +15,7 @@ from lib import ASSETS, MANIFEST, ROOT, node, run
 TEXT_SUFFIXES = {".css", ".html", ".js", ".json", ".md", ".py"}
 # output/ — черновая песочница вне репозитория, её содержимое не проверяется.
 IGNORED_DIRS = {".git", ".ralph", "output", "dist", "artifacts", "__pycache__"}
-CATALOG_HTML = [ROOT / surface["catalog"] for surface in MANIFEST["surfaces"].values()]
+CATALOG_HTML = sorted((ROOT / "catalog").rglob("*.html"))
 CSS_FILES = [*ASSETS.rglob("*.css"), ROOT / "catalog/interfaces/catalog.css"]
 HTML_FILES = [ROOT / path for surface in MANIFEST["surfaces"].values() for path in surface["entrypoints"]]
 FRAGMENT_DEFINITIONS = [fragment for surface in MANIFEST["surfaces"].values() for fragment in surface.get("fragments", [])]
@@ -251,7 +251,7 @@ def check_spacing_scale() -> None:
     for index, value in expected.items():
         assert re.search(rf"--space-{index}:\s*{value}px\s*;", theme), f"нет --space-{index}: {value}px"
 
-    catalog = (ROOT / "catalog/interfaces/index.html").read_text(encoding="utf-8")
+    catalog = (ROOT / MANIFEST["surfaces"]["interface"]["testPage"]).read_text(encoding="utf-8")
     for index in expected:
         assert f"var(--space-{index})" in catalog, f"каталог не показывает --space-{index}"
 
@@ -280,6 +280,83 @@ def check_fragment_manifest() -> None:
                 html = path.read_text(encoding="utf-8")
                 layouts = re.findall(r'data-slide-layout="([a-z-]+)"', html)
                 assert layouts == [fragment["id"]], f"id и раскладка расходятся в {fragment['path']}"
+
+
+def check_interface_components() -> None:
+    surface = MANIFEST["surfaces"]["interface"]
+    categories = surface.get("componentCategories", [])
+    category_ids = [category.get("id") for category in categories]
+    assert category_ids and len(category_ids) == len(set(category_ids)), "категории компонентов не уникальны"
+    assert all(set(category) == {"id", "title"} and category["title"].strip() for category in categories), "неполная категория компонентов"
+
+    components = surface.get("components", [])
+    component_ids = [component.get("id") for component in components]
+    assert component_ids and len(component_ids) == len(set(component_ids)), "компоненты интерфейса не уникальны"
+    fields = {"id", "title", "category", "kind", "source", "rootClass", "dependencies", "summary"}
+    theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
+    for component in components:
+        assert set(component) == fields, f"неполная запись компонента {component.get('id')}"
+        assert component["category"] in category_ids, f"неизвестная категория у {component['id']}"
+        assert component["kind"] in {"foundation", "primitive", "fragment"}, f"неизвестный вид компонента {component['id']}"
+        assert component["title"].strip() and component["summary"].strip(), f"не описан компонент {component['id']}"
+        assert (ROOT / component["source"]).is_file(), f"не найден источник {component['source']}"
+        for dependency in component["dependencies"]:
+            assert (ROOT / dependency).is_file(), f"не найдена зависимость {dependency} для {component['id']}"
+        root_class = component["rootClass"]
+        if root_class:
+            assert re.search(rf"\.{re.escape(root_class)}(?![\w-])", theme), f"не определён корневой класс {root_class}"
+
+    fragment_ids = {fragment["id"] for fragment in surface["fragments"]}
+    registered_fragments = {component["id"] for component in components if component["kind"] == "fragment"}
+    assert registered_fragments == fragment_ids, "реестр компонентов не покрывает интерфейсные фрагменты"
+
+
+def check_interface_documentation() -> None:
+    directory = ROOT / "catalog/interfaces"
+    surface = MANIFEST["surfaces"]["interface"]
+    category_pages = {category["id"]: directory / f"{category['id']}.html" for category in surface["componentCategories"]}
+    expected_ids = {component["id"] for component in surface["components"]}
+    documented: set[str] = set()
+    index = (directory / "index.html").read_text(encoding="utf-8")
+
+    expected_navigation = ["foundations.html", "layout.html", "actions.html", "forms.html", "navigation.html", "data.html", "feedback.html", "overlays.html", "recipes.html"]
+    for category, path in category_pages.items():
+        assert path.is_file(), f"нет страницы категории {path.relative_to(ROOT)}"
+        text = path.read_text(encoding="utf-8")
+        actual = re.findall(r'data-component-doc="([a-z-]+)"', text)
+        expected = [component["id"] for component in surface["components"] if component["category"] == category]
+        assert actual == expected, f"страница {path.name} расходится с реестром компонентов"
+        assert len(actual) == text.count('data-preview>'), f"не у каждого компонента {path.name} есть preview"
+        assert len(actual) == text.count("data-preview-code"), f"не у каждого компонента {path.name} есть код"
+        assert len(actual) == text.count('class="component-notes"'), f"не у каждого компонента {path.name} описано применение"
+        assert len(actual) == text.count('class="component-api"'), f"не у каждого компонента {path.name} есть API-справочник"
+        navigation = re.search(r'<div class="system-links">(.*?)</div>', text, re.DOTALL)
+        assert navigation, f"в {path.name} нет общей навигации"
+        links = re.findall(r'href="([a-z-]+\.html)"', navigation.group(1))
+        assert links == expected_navigation, f"навигация расходится в {path.name}"
+        for component_id in actual:
+            assert f'href="{path.name}#{component_id}"' in index, f"индекс не ведёт к {component_id}"
+        documented.update(actual)
+    assert documented == expected_ids, "документация не покрывает реестр компонентов"
+
+    recipes = (directory / "recipes.html").read_text(encoding="utf-8")
+    recipe_ids = re.findall(r'data-recipe-doc="([a-z-]+)"', recipes)
+    assert len(recipe_ids) == 3 and len(recipe_ids) == recipes.count("data-preview-code"), "рецепты не имеют живого примера и кода"
+
+    short_version = ".".join(MANIFEST["version"].split(".")[:2])
+    for path in sorted(directory.glob("*.html")):
+        text = path.read_text(encoding="utf-8")
+        if "system-version" in text:
+            assert f'<span class="system-version">{short_version}</span>' in text, f"устаревшая версия в {path.relative_to(ROOT)}"
+        for href in re.findall(r'<a\b[^>]*href="([^"]+)"', text):
+            parts = urlsplit(href)
+            if parts.scheme or not parts.path:
+                continue
+            target = (path.parent / unquote(parts.path)).resolve()
+            assert target.is_file() and ROOT in target.parents, f"неработающая ссылка {href} в {path.relative_to(ROOT)}"
+            if parts.fragment:
+                target_text = target.read_text(encoding="utf-8")
+                assert re.search(rf'\bid="{re.escape(parts.fragment)}"', target_text), f"нет якоря {href} в {path.relative_to(ROOT)}"
 
 
 def check_interface_patterns() -> None:
@@ -422,6 +499,8 @@ def main() -> None:
         check_accessibility_contract,
         check_spacing_scale,
         check_fragment_manifest,
+        check_interface_components,
+        check_interface_documentation,
         check_interface_patterns,
         check_slide_layouts,
         check_content,
@@ -440,6 +519,8 @@ def main() -> None:
         check_accessibility_contract: "контракт доступности",
         check_spacing_scale: "шкала отступов",
         check_fragment_manifest: "метаданные фрагментов",
+        check_interface_components: "реестр компонентов",
+        check_interface_documentation: "документация компонентов",
         check_interface_patterns: "паттерны интерфейсов",
         check_slide_layouts: "раскладки слайдов",
         check_content: "содержимое",
