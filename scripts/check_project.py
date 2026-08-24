@@ -13,7 +13,9 @@ from urllib.parse import unquote, urlsplit
 from lib import chromium_args, run
 
 PLACEHOLDER = re.compile(r"\{\{[A-Z][A-Z0-9_]*\}\}")
-REMOTE_SCHEMES = {"http", "https"}
+CSS_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
+CSS_IMPORT = re.compile(r"@import\s+(?:url\(\s*)?[\"']?([^\"')\s;]+)", re.I)
+CSS_URL = re.compile(r"url\(\s*[\"']?([^\"')]+)[\"']?\s*\)", re.I)
 VIEWPORTS = ((1440, 900), (390, 844), (320, 720))
 
 
@@ -35,8 +37,20 @@ class ProjectParser(HTMLParser):
             self.slides = True
         if tag == "link" and values.get("href"):
             self.assets.append(values["href"] or "")
-        if tag in {"script", "img", "source", "video"} and values.get("src"):
+        if tag in {"script", "img", "source", "video", "audio", "track", "iframe", "embed"} and values.get("src"):
             self.assets.append(values["src"] or "")
+        if tag == "object" and values.get("data"):
+            self.assets.append(values["data"] or "")
+        if tag == "video" and values.get("poster"):
+            self.assets.append(values["poster"] or "")
+        if tag in {"img", "source"} and values.get("srcset"):
+            self.assets.extend(
+                candidate.strip().split()[0]
+                for candidate in (values["srcset"] or "").split(",")
+                if candidate.strip()
+            )
+        if values.get("style"):
+            self.assets.extend(css_references(values["style"] or ""))
 
 
 def project_index(path: Path) -> Path:
@@ -46,27 +60,47 @@ def project_index(path: Path) -> Path:
     return index
 
 
+def css_references(text: str) -> list[str]:
+    source = CSS_COMMENT.sub("", text)
+    return [*CSS_IMPORT.findall(source), *CSS_URL.findall(source)]
+
+
+def validate_reference(root: Path, base: Path, value: str, origin: Path) -> None:
+    reference = value.strip()
+    if not reference or reference.startswith("#"):
+        return
+    parsed = urlsplit(reference)
+    if parsed.scheme in {"data", "blob"}:
+        return
+    assert not parsed.scheme and not reference.startswith("//"), f"внешний ресурс в {origin.relative_to(root)}: {reference}"
+    relative = Path(unquote(parsed.path))
+    assert not relative.is_absolute(), f"абсолютный путь к ресурсу в {origin.relative_to(root)}: {reference}"
+    target = (base / relative).resolve()
+    assert target == root or root in target.parents, f"ресурс выходит за папку проекта в {origin.relative_to(root)}: {reference}"
+    assert target.is_file(), f"сломанный локальный ресурс в {origin.relative_to(root)}: {reference}"
+
+
 def check_static(index: Path) -> str:
     root = index.parent
     project_files = [path for path in root.rglob("*") if path.is_file() and path.suffix in {".html", ".css", ".js"}]
+    html_parsers: dict[Path, ProjectParser] = {}
     for path in project_files:
         text = path.read_text(encoding="utf-8")
         match = PLACEHOLDER.search(text)
         assert not match, f"необработанная подстановка {match.group(0)} в {path.relative_to(root)}"
+        if path.suffix == ".html":
+            parser = ProjectParser()
+            parser.feed(text)
+            html_parsers[path] = parser
+            for value in parser.assets:
+                validate_reference(root, path.parent, value, path)
+        elif path.suffix == ".css":
+            for value in css_references(text):
+                validate_reference(root, path.parent, value, path)
 
-    parser = ProjectParser()
-    parser.feed(index.read_text(encoding="utf-8"))
+    parser = html_parsers[index]
     assert parser.h1_count == 1, f"ожидался один h1, найдено: {parser.h1_count}"
     assert parser.interface != parser.slides, "не удалось однозначно определить поверхность Craft"
-
-    for value in parser.assets:
-        parsed = urlsplit(value)
-        assert parsed.scheme not in REMOTE_SCHEMES and not value.startswith("//"), f"внешний ресурс: {value}"
-        if parsed.scheme in {"data", "blob"} or value.startswith("#"):
-            continue
-        assert not Path(unquote(parsed.path)).is_absolute(), f"абсолютный путь к ресурсу: {value}"
-        target = (root / unquote(parsed.path)).resolve()
-        assert target.is_file(), f"сломанный локальный ресурс: {value}"
     return "interface" if parser.interface else "slides"
 
 
@@ -122,10 +156,12 @@ def main() -> None:
     index = project_index(args.project)
     surface = check_static(index)
     print(f"✓ статические контракты: {surface}")
-    if not args.static_only:
+    if args.static_only:
+        print(f"Готово: статическая проверка завершена, Chromium и PDF не запускались — {index}")
+    else:
         check_browser(index, surface)
         print("✓ Chromium: 1440, 390 и 320 px, тема, доступность и PDF")
-    print(f"Готово: проект Craft корректен — {index}")
+        print(f"Готово: проект Craft корректен — {index}")
 
 
 if __name__ == "__main__":

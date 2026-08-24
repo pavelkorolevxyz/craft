@@ -12,9 +12,10 @@ import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
 
-from lib import MANIFEST, ROOT, chromium_args, run, scaffold_matrix
+from lib import MANIFEST, ROOT, chromium_args, run, scaffold, scaffold_matrix
 
 CATALOG = ROOT / "catalog"
+CHECK_PROJECT = ROOT / "scripts/check_project.py"
 VIEWPORTS = ((1440, 900), (390, 844), (320, 720))
 
 
@@ -94,6 +95,43 @@ def test_scaffold_inputs(root: Path) -> None:
         capture_output=True,
     )
     assert result.returncode != 0 and not invalid.exists(), "невалидный --lang создал проект"
+
+
+def assert_static_failure(project: Path, expected: str) -> None:
+    result = subprocess.run(
+        [sys.executable, str(CHECK_PROJECT), str(project), "--static-only"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+    )
+    assert result.returncode != 0 and expected in result.stderr, result.stdout + result.stderr
+
+
+def test_static_resources(root: Path) -> None:
+    iframe = root / "external-iframe"
+    scaffold(iframe, "interface", "blank")
+    index = iframe / "index.html"
+    index.write_text(index.read_text(encoding="utf-8").replace("</body>", '<iframe src="https://example.com/embed"></iframe></body>'), encoding="utf-8")
+    assert_static_failure(iframe, "внешний ресурс")
+
+    srcset = root / "external-srcset"
+    scaffold(srcset, "interface", "blank")
+    index = srcset / "index.html"
+    index.write_text(index.read_text(encoding="utf-8").replace("</body>", '<img alt="" srcset="https://example.com/a.png 1x, local.png 2x"></body>'), encoding="utf-8")
+    assert_static_failure(srcset, "внешний ресурс")
+
+    imported = root / "external-import"
+    scaffold(imported, "interface", "blank")
+    theme = imported / "theme.css"
+    theme.write_text(theme.read_text(encoding="utf-8") + '\n@import url("https://example.com/theme.css");\n', encoding="utf-8")
+    assert_static_failure(imported, "внешний ресурс")
+
+    escaped = root / "escaped-resource"
+    scaffold(escaped, "interface", "blank")
+    root.joinpath("outside.css").write_text("body {}\n", encoding="utf-8")
+    index = escaped / "index.html"
+    index.write_text(index.read_text(encoding="utf-8").replace("</head>", '<link rel="stylesheet" href="../outside.css"></head>'), encoding="utf-8")
+    assert_static_failure(escaped, "ресурс выходит за папку проекта")
 
 
 def test_interface_starter(output: Path, work: Path) -> None:
@@ -251,6 +289,7 @@ def main() -> None:
             validate_output(key, output)
             print(f"✓ {key}")
         test_scaffold_inputs(root)
+        test_static_resources(root)
         test_interface_starter(outputs["interface-blank"], root)
         test_interface_catalog(root)
         test_interface_docs()
