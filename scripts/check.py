@@ -245,6 +245,11 @@ def check_accessibility_contract() -> None:
     interface_theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
     assert ".select-control select:not(:disabled):hover" in interface_theme, "у select нет состояния наведения"
     assert ".select-control:has(select:focus-visible)" in interface_theme, "стрелка select не реагирует на фокус"
+    assert ".sr-only" in interface_theme, "не определена утилита визуально скрытого текста"
+    assert ".data-table--records td::before" in interface_theme, "у текстовой таблицы нет мобильных подписей"
+    data_catalog = (ROOT / "catalog/interfaces/data.html").read_text(encoding="utf-8")
+    record_table = re.search(r'<table class="data-table data-table--records">(.*?)</table>', data_catalog, re.DOTALL)
+    assert record_table and all("data-label=" in tag for tag in re.findall(r"<td[^>]*>", record_table.group(1))), "ячейки мобильной таблицы не повторяют заголовки в data-label"
 
     slide_theme = (ASSETS / "slides/theme.css").read_text(encoding="utf-8")
     sizes = [float(value) for value in re.findall(r"font(?:-size)?\s*:[^;{}]*?([0-9.]+)cqw", slide_theme)]

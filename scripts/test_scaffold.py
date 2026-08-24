@@ -169,7 +169,8 @@ def test_interface_catalog(work: Path) -> None:
             "const tabsWork=document.querySelector('#catalog-tab-done').getAttribute('aria-selected')==='true'&&!document.querySelector('#catalog-panel-done').hidden;"
             "const opener=document.querySelector('[data-dialog-open]');opener.click();const dialog=document.querySelector('dialog');const dialogOpened=dialog.open;dialog.querySelector('[data-dialog-close]').click();"
             "const selectedRow=document.querySelector('tr[data-interactive][aria-selected=true]');const idleRow=document.querySelector('tr[data-interactive][aria-selected=false]');const rowSelection=getComputedStyle(selectedRow).backgroundColor!==getComputedStyle(idleRow).backgroundColor;"
-            "const mechanics=tabsWork&&dialogOpened&&!dialog.open&&document.querySelector('[data-catalog-mixed]').indeterminate&&rowSelection;"
+            "const donut=document.querySelector('.donut-layout');const donutReady=innerWidth>600||getComputedStyle(donut).gridTemplateColumns.trim().split(/\\s+/).length===1;"
+            "const mechanics=tabsWork&&dialogOpened&&!dialog.open&&document.querySelector('[data-catalog-mixed]').indeterminate&&rowSelection&&donutReady;"
             "document.title=`catalog:${document.documentElement.scrollWidth}:${innerWidth}:${document.querySelectorAll('main').length}:${theme}:${aligned}:${document.querySelectorAll('.system-nav').length}:${document.querySelectorAll('[data-section-nav]').length}:${mechanics}`});",
             width,
             height,
@@ -206,7 +207,7 @@ def test_interface_docs() -> None:
     pages["recipes"] = []
     for page, expected in pages.items():
         source = CATALOG / "interfaces" / f"{page}.html"
-        widths = (1440, 320) if page in {"layout", "forms", "recipes"} else (1440,)
+        widths = (1440, 320) if page in {"layout", "forms", "data", "recipes"} else (1440,)
         for width in widths:
             dumped = dump_probe(
                 source,
@@ -218,7 +219,8 @@ def test_interface_docs() -> None:
                 "const opener=document.querySelector('[data-dialog-open]');if(opener)opener.click();"
                 "const codePanel=document.querySelector('.component-code');codePanel.open=true;const codeBlock=codePanel.querySelector('pre');const codeFits=codeBlock.scrollWidth<=codeBlock.clientWidth;"
                 "const currentLink=document.querySelector('.docs-nav .system-links [aria-current=true]');const links=currentLink.parentElement.getBoundingClientRect();const currentBox=currentLink.getBoundingClientRect();const currentVisible=currentBox.left>=links.left&&currentBox.right<=links.right;"
-                "const mechanics=(!tabs||tabs.querySelectorAll('[aria-selected=true]').length===1)&&(!opener||document.querySelector('dialog').open)&&codeFits;"
+                "const records=document.querySelector('.data-table--records');const recordCells=records?[...records.querySelectorAll('td')]:[];const recordsReady=!records||innerWidth>520||(getComputedStyle(records.querySelector('tbody')).display==='grid'&&recordCells.every(cell=>cell.dataset.label&&getComputedStyle(cell,'::before').content!=='none'));"
+                "const mechanics=(!tabs||tabs.querySelectorAll('[aria-selected=true]').length===1)&&(!opener||document.querySelector('dialog').open)&&codeFits&&recordsReady;"
                 "document.title=`docs:${document.documentElement.scrollWidth}:${innerWidth}:${ids}:${generated}:${document.querySelectorAll('.docs-nav [aria-current=true]').length}:${before!==document.documentElement.dataset.theme}:${mechanics}:${currentVisible}`});",
                 width,
                 900,

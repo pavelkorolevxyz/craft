@@ -336,7 +336,8 @@
   .heatmap { padding-inline: var(--space-4); }
   .heatmap i { height: 28px; }
   .heatmap-axis { margin-inline: calc(var(--space-4) + 40px) var(--space-4); }
-  .donut-layout { min-height: 0; grid-template-columns: minmax(130px, .8fr) minmax(130px, 1fr); padding: var(--space-4); }
+  .donut-layout { min-height: 0; grid-template-columns: 1fr; padding: var(--space-4); }
+  .donut-chart { max-width: 180px; }
   .queue-sample__head { align-items: flex-start; }
   .queue-row { grid-template-columns: 1fr; gap: var(--space-2); }
 }
