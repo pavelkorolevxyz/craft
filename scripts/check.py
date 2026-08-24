@@ -250,6 +250,11 @@ def check_accessibility_contract() -> None:
     sizes = [float(value) for value in re.findall(r"font(?:-size)?\s*:[^;{}]*?([0-9.]+)cqw", slide_theme)]
     assert sizes and min(sizes) >= 1.4, f"текст содержимого слайдов мельче 1.4cqw: {min(sizes)}"
 
+    slide_base = (ASSETS / "slides/base.css").read_text(encoding="utf-8")
+    assert "--control-size: 2.5rem" in slide_base and "width: 2.5rem; height: 2.5rem" in slide_base, "цели управления колодой меньше 40 px"
+    assert "@media (hover: none), (pointer: coarse)" in slide_base, "нет touch-режима управления колодой"
+    assert ".help-reveal { opacity: 1; pointer-events: auto; }" in slide_base, "на touch-экране не видна кнопка управления колодой"
+
 
 def check_spacing_scale() -> None:
     theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")

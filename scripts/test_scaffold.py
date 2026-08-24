@@ -204,19 +204,20 @@ def test_slide_source(name: str, source: Path, work: Path, minimum_pages: int) -
         "const interactionStart=afterArrow;const link=document.createElement('a');link.href='#test-link';document.body.append(link);const button=document.createElement('button');document.body.append(button);"
         "const enterEvent=new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true});link.dispatchEvent(enterEvent);const spaceEvent=new KeyboardEvent('keydown',{key:' ',bubbles:true,cancelable:true});button.dispatchEvent(spaceEvent);"
         "const interactiveKeys=!enterEvent.defaultPrevented&&!spaceEvent.defaultPrevented&&document.querySelector('.slide[data-active]')?.dataset.index===interactionStart;link.remove();button.remove();"
+        "const toolbar=document.querySelector('.help-panel');const controlSize=parseFloat(getComputedStyle(toolbar.querySelector('button')).width);const revealSize=parseFloat(getComputedStyle(document.querySelector('.help-reveal')).width);const accessibleControls=toolbar.getAttribute('role')==='toolbar'&&Boolean(toolbar.getAttribute('aria-label'))&&controlSize>=40&&revealSize>=40;"
         "const pageInput=document.querySelector('.help-page-input');pageInput.value='0';pageInput.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));"
         "const afterClamp=document.querySelector('.slide[data-active]')?.dataset.index;"
         "const deck=document.querySelector('.deck');const center=()=>{const a=document.querySelector('.slide[data-active]').getBoundingClientRect();const d=deck.getBoundingClientRect();return Math.round(Math.max(Math.abs(a.left+a.width/2-(d.left+deck.clientWidth/2)),Math.abs(a.top+a.height/2-(d.top+deck.clientHeight/2))))};"
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));const stripError=center();document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
         "const before=document.documentElement.dataset.theme;document.dispatchEvent(new KeyboardEvent('keydown',{key:'T'}));"
-        "document.title=`slides:${document.querySelectorAll('.slide').length}:${document.querySelectorAll('.slide[data-active]').length}:${afterArrow}:${afterClamp}:${stripError}:${deck.dataset.stripDirection}:${before}:${document.documentElement.dataset.theme}:${document.querySelectorAll('.slide:not([data-slide-layout])').length}:${interactiveKeys}`",
+        "document.title=`slides:${document.querySelectorAll('.slide').length}:${document.querySelectorAll('.slide[data-active]').length}:${afterArrow}:${afterClamp}:${stripError}:${deck.dataset.stripDirection}:${before}:${document.documentElement.dataset.theme}:${document.querySelectorAll('.slide:not([data-slide-layout])').length}:${interactiveKeys}:${accessibleControls}`",
         1280,
         720,
     )
-    match = re.search(r"<title>slides:(\d+):(\d+):(\d+):(\d+):(\d+):(\w+):(light|dark):(light|dark):(\d+):(true|false)</title>", dumped)
+    match = re.search(r"<title>slides:(\d+):(\d+):(\d+):(\d+):(\d+):(\w+):(light|dark):(light|dark):(\d+):(true|false):(true|false)</title>", dumped)
     assert match, f"{name}: проверка механики колоды не выполнена"
     pages, active, after_arrow, after_clamp, strip_error = map(int, match.groups()[:5])
-    direction, before, after, undeclared, interactive_keys = match.groups()[5:]
+    direction, before, after, undeclared, interactive_keys, accessible_controls = match.groups()[5:]
     assert pages >= minimum_pages and active == 1 and after_clamp == 1, f"{name}: недопустимое состояние колоды"
     if name == "slides-catalog":
         assert pages == MANIFEST["surfaces"]["slides"]["catalogPages"], f"{name}: ожидалось 58 страниц, получено {pages}"
@@ -224,6 +225,7 @@ def test_slide_source(name: str, source: Path, work: Path, minimum_pages: int) -
     assert direction == "vertical" and strip_error <= 1, f"{name}: активный слайд ленты не по центру"
     assert before != after and undeclared == "0", f"{name}: тема или объявления раскладок не работают"
     assert interactive_keys == "true", f"{name}: Enter или Space перехватываются у ссылок и кнопок"
+    assert accessible_controls == "true", f"{name}: панель управления не имеет toolbar-семантики или цели меньше 40 px"
 
     pdf = work / f"{name}.pdf"
     print_pdf(source, pdf, 1280, 720, 20_000 if minimum_pages > 1 else 10_000)
