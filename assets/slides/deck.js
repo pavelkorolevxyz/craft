@@ -428,10 +428,15 @@
 
   document.addEventListener('keydown', (event) => {
     if (event.metaKey || event.ctrlKey) return;
+
+    const target = event.target;
+    const isInteractive = target instanceof Element
+      && Boolean(target.closest('a, button, input, textarea, select, [contenteditable]'));
+    if (isInteractive && event.key !== 'Escape') return;
+
     // Обзор листается с клавиш — гасим наведение до первого движения мыши.
     deck.dataset.input = 'keyboard';
 
-    const target = event.target;
     const isEditing = target instanceof HTMLInputElement
       || target instanceof HTMLTextAreaElement
       || target instanceof HTMLSelectElement

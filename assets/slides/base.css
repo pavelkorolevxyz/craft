@@ -178,7 +178,7 @@ body {
 /* ---------- справка по управлению ---------- */
 
 .help-panel {
-  --control-size: 2rem;
+  --control-size: 2.5rem;
   --control-icon-size: 1rem;
   position: fixed;
   left: .75rem;
@@ -295,7 +295,7 @@ body {
 }
 .help-reveal {
   position: relative;
-  width: 2rem; height: 2rem;
+  width: 2.5rem; height: 2.5rem;
   padding: 0;
   display: grid; place-items: center;
   border: 1px solid var(--line);
@@ -329,6 +329,11 @@ body {
   transform: translate(-50%, -100%);
   opacity: 1;
   visibility: visible;
+}
+@media (hover: none), (pointer: coarse) {
+  .help-reveal-zone { pointer-events: auto; }
+  .help-reveal { opacity: 1; pointer-events: auto; }
+  .help-reveal .shortcut-key { display: none; }
 }
 .help-reveal-zone:has(.help-reveal[hidden]) { display: none; }
 

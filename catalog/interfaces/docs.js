@@ -126,6 +126,12 @@
     return output;
   };
 
+  const currentNavigation = document.querySelector(".docs-nav .system-links [aria-current='true']");
+  if (currentNavigation && matchMedia("(max-width: 900px)").matches) {
+    const links = currentNavigation.parentElement;
+    links.scrollLeft = currentNavigation.offsetLeft - (links.clientWidth - currentNavigation.clientWidth) / 2;
+  }
+
   document.querySelectorAll("[data-component-doc], [data-recipe-doc]").forEach((article) => {
     const preview = article.querySelector("[data-preview]");
     const output = article.querySelector("[data-preview-code]");

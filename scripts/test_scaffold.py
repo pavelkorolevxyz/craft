@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 from html.parser import HTMLParser
@@ -67,6 +68,32 @@ def print_pdf(source: Path, target: Path, width: int, height: int, minimum: int 
     if pdftotext:
         text = run(pdftotext, target, "-").stdout
         assert "file://" not in text, f"в PDF попал адрес браузера: {source}"
+
+
+def test_scaffold_inputs(root: Path) -> None:
+    title = 'A & B <em>X</em> "Q"'
+    escaped = "A &amp; B &lt;em&gt;X&lt;/em&gt; &quot;Q&quot;"
+    for surface in ("interface", "slides"):
+        target = root / f"safe-{surface}"
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "scripts/scaffold.py"), str(target), "--surface", surface, "--title", title, "--lang", "en-US"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        assert result.returncode == 0, result.stderr
+        document = target.joinpath("index.html").read_text(encoding="utf-8")
+        assert escaped in document and '<html lang="en-US"' in document, f"{surface}: title или lang вставлены небезопасно"
+        assert "<em>X</em>" not in document, f"{surface}: title превратился в HTML"
+
+    invalid = root / "invalid-lang"
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "scripts/scaffold.py"), str(invalid), "--lang", 'ru" data-test="x'],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+    )
+    assert result.returncode != 0 and not invalid.exists(), "невалидный --lang создал проект"
 
 
 def test_interface_starter(output: Path, work: Path) -> None:
@@ -141,7 +168,7 @@ def test_interface_docs() -> None:
     pages["recipes"] = []
     for page, expected in pages.items():
         source = CATALOG / "interfaces" / f"{page}.html"
-        widths = (1440, 320) if page in {"layout", "forms"} else (1440,)
+        widths = (1440, 320) if page in {"layout", "forms", "recipes"} else (1440,)
         for width in widths:
             dumped = dump_probe(
                 source,
@@ -152,19 +179,21 @@ def test_interface_docs() -> None:
                 "const tabs=document.querySelector('[data-tabs]');if(tabs){const first=tabs.querySelector('[role=tab]');first.focus();first.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))}"
                 "const opener=document.querySelector('[data-dialog-open]');if(opener)opener.click();"
                 "const codePanel=document.querySelector('.component-code');codePanel.open=true;const codeBlock=codePanel.querySelector('pre');const codeFits=codeBlock.scrollWidth<=codeBlock.clientWidth;"
+                "const currentLink=document.querySelector('.docs-nav .system-links [aria-current=true]');const links=currentLink.parentElement.getBoundingClientRect();const currentBox=currentLink.getBoundingClientRect();const currentVisible=currentBox.left>=links.left&&currentBox.right<=links.right;"
                 "const mechanics=(!tabs||tabs.querySelectorAll('[aria-selected=true]').length===1)&&(!opener||document.querySelector('dialog').open)&&codeFits;"
-                "document.title=`docs:${document.documentElement.scrollWidth}:${innerWidth}:${ids}:${generated}:${document.querySelectorAll('.docs-nav [aria-current=true]').length}:${before!==document.documentElement.dataset.theme}:${mechanics}`});",
+                "document.title=`docs:${document.documentElement.scrollWidth}:${innerWidth}:${ids}:${generated}:${document.querySelectorAll('.docs-nav [aria-current=true]').length}:${before!==document.documentElement.dataset.theme}:${mechanics}:${currentVisible}`});",
                 width,
                 900,
             )
-            match = re.search(r"<title>docs:(\d+):(\d+):([^<]*):(true|false):(\d+):(true|false):(true|false)</title>", dumped)
+            match = re.search(r"<title>docs:(\d+):(\d+):([^<]*):(true|false):(\d+):(true|false):(true|false):(true|false)</title>", dumped)
             assert match, f"{page}: браузерная проверка документации не выполнена при {width}px"
             scroll_width, viewport = map(int, match.groups()[:2])
-            ids, generated, current, theme, mechanics = match.groups()[2:]
+            ids, generated, current, theme, mechanics, current_visible = match.groups()[2:]
             assert scroll_width <= viewport, f"{page}: переполнение документации при {width}px"
             assert (ids.split(",") if ids else []) == expected, f"{page}: браузер видит неполный набор компонентов"
             assert generated == "true" and int(current) == 1, f"{page}: код или навигация документации не работают"
             assert theme == "true" and mechanics == "true", f"{page}: тема или механика примера не работает"
+            assert current_visible == "true", f"{page}: текущий раздел навигации не виден при {width}px"
 
 
 def test_slide_source(name: str, source: Path, work: Path, minimum_pages: int) -> None:
@@ -172,25 +201,31 @@ def test_slide_source(name: str, source: Path, work: Path, minimum_pages: int) -
         source,
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight'}));"
         "const afterArrow=document.querySelector('.slide[data-active]')?.dataset.index;"
+        "const interactionStart=afterArrow;const link=document.createElement('a');link.href='#test-link';document.body.append(link);const button=document.createElement('button');document.body.append(button);"
+        "const enterEvent=new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true});link.dispatchEvent(enterEvent);const spaceEvent=new KeyboardEvent('keydown',{key:' ',bubbles:true,cancelable:true});button.dispatchEvent(spaceEvent);"
+        "const interactiveKeys=!enterEvent.defaultPrevented&&!spaceEvent.defaultPrevented&&document.querySelector('.slide[data-active]')?.dataset.index===interactionStart;link.remove();button.remove();"
+        "const toolbar=document.querySelector('.help-panel');const controlSize=parseFloat(getComputedStyle(toolbar.querySelector('button')).width);const revealSize=parseFloat(getComputedStyle(document.querySelector('.help-reveal')).width);const accessibleControls=toolbar.getAttribute('role')==='toolbar'&&Boolean(toolbar.getAttribute('aria-label'))&&controlSize>=40&&revealSize>=40;"
         "const pageInput=document.querySelector('.help-page-input');pageInput.value='0';pageInput.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));"
         "const afterClamp=document.querySelector('.slide[data-active]')?.dataset.index;"
         "const deck=document.querySelector('.deck');const center=()=>{const a=document.querySelector('.slide[data-active]').getBoundingClientRect();const d=deck.getBoundingClientRect();return Math.round(Math.max(Math.abs(a.left+a.width/2-(d.left+deck.clientWidth/2)),Math.abs(a.top+a.height/2-(d.top+deck.clientHeight/2))))};"
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));const stripError=center();document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
         "const before=document.documentElement.dataset.theme;document.dispatchEvent(new KeyboardEvent('keydown',{key:'T'}));"
-        "document.title=`slides:${document.querySelectorAll('.slide').length}:${document.querySelectorAll('.slide[data-active]').length}:${afterArrow}:${afterClamp}:${stripError}:${deck.dataset.stripDirection}:${before}:${document.documentElement.dataset.theme}:${document.querySelectorAll('.slide:not([data-slide-layout])').length}`",
+        "document.title=`slides:${document.querySelectorAll('.slide').length}:${document.querySelectorAll('.slide[data-active]').length}:${afterArrow}:${afterClamp}:${stripError}:${deck.dataset.stripDirection}:${before}:${document.documentElement.dataset.theme}:${document.querySelectorAll('.slide:not([data-slide-layout])').length}:${interactiveKeys}:${accessibleControls}`",
         1280,
         720,
     )
-    match = re.search(r"<title>slides:(\d+):(\d+):(\d+):(\d+):(\d+):(\w+):(light|dark):(light|dark):(\d+)</title>", dumped)
+    match = re.search(r"<title>slides:(\d+):(\d+):(\d+):(\d+):(\d+):(\w+):(light|dark):(light|dark):(\d+):(true|false):(true|false)</title>", dumped)
     assert match, f"{name}: проверка механики колоды не выполнена"
     pages, active, after_arrow, after_clamp, strip_error = map(int, match.groups()[:5])
-    direction, before, after, undeclared = match.groups()[5:]
+    direction, before, after, undeclared, interactive_keys, accessible_controls = match.groups()[5:]
     assert pages >= minimum_pages and active == 1 and after_clamp == 1, f"{name}: недопустимое состояние колоды"
     if name == "slides-catalog":
         assert pages == MANIFEST["surfaces"]["slides"]["catalogPages"], f"{name}: ожидалось 58 страниц, получено {pages}"
     assert after_arrow == min(2, pages), f"{name}: навигация стрелкой не работает"
     assert direction == "vertical" and strip_error <= 1, f"{name}: активный слайд ленты не по центру"
     assert before != after and undeclared == "0", f"{name}: тема или объявления раскладок не работают"
+    assert interactive_keys == "true", f"{name}: Enter или Space перехватываются у ссылок и кнопок"
+    assert accessible_controls == "true", f"{name}: панель управления не имеет toolbar-семантики или цели меньше 40 px"
 
     pdf = work / f"{name}.pdf"
     print_pdf(source, pdf, 1280, 720, 20_000 if minimum_pages > 1 else 10_000)
@@ -215,6 +250,7 @@ def main() -> None:
         for key, output in outputs.items():
             validate_output(key, output)
             print(f"✓ {key}")
+        test_scaffold_inputs(root)
         test_interface_starter(outputs["interface-blank"], root)
         test_interface_catalog(root)
         test_interface_docs()

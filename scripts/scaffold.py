@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import html
+import re
 import shutil
 from pathlib import Path
 
@@ -11,6 +13,11 @@ ROOT = Path(__file__).resolve().parent.parent
 SHARED = ROOT / "assets" / "shared"
 INTERFACES = ROOT / "assets" / "interfaces"
 SLIDES = ROOT / "assets" / "slides"
+LANGUAGE_TAG = re.compile(r"[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*")
+
+
+def escaped_title(value: str) -> str:
+    return html.escape(value, quote=True)
 
 
 def copy_shared(target: Path) -> None:
@@ -26,7 +33,7 @@ def scaffold_interface(target: Path, title: str, lang: str) -> None:
 
     html = (INTERFACES / "starter-index.html").read_text(encoding="utf-8")
     html = html.replace('href="../shared/tokens.css"', 'href="tokens.css"', 1)
-    html = html.replace("{{TITLE}}", title)
+    html = html.replace("{{TITLE}}", escaped_title(title))
     html = html.replace('lang="ru"', f'lang="{lang}"', 1)
     (target / "index.html").write_text(html, encoding="utf-8")
 
@@ -49,7 +56,7 @@ def scaffold_slides(target: Path, title: str, lang: str) -> None:
     }
     for source, output in replacements.items():
         html = html.replace(source, output, 1)
-    html = html.replace("{{TITLE}}", title)
+    html = html.replace("{{TITLE}}", escaped_title(title))
     html = html.replace('lang="ru"', f'lang="{lang}"', 1)
     (target / "index.html").write_text(html, encoding="utf-8")
 
@@ -72,6 +79,8 @@ def main() -> None:
         parser.error("формат slides поддерживает шаблон deck")
 
     title = args.title or ("Новая презентация" if args.surface == "slides" else "Новый материал")
+    if not LANGUAGE_TAG.fullmatch(args.lang):
+        parser.error("--lang должен быть языковым тегом, например ru или en-US")
     target = args.target.expanduser().resolve()
     if target.exists() and any(target.iterdir()):
         raise SystemExit(f"Непустая папка не будет перезаписана: {target}")
