@@ -70,9 +70,34 @@
 
   slides.forEach((slide, index) => {
     slide.dataset.index = index + 1;
+    slide.setAttribute('role', 'group');
+    slide.setAttribute('aria-roledescription', 'слайд');
     const page = pad(index + 1);
+    const heading = slide.querySelector('h1, h2, h3, .slide-title');
+    const title = heading?.textContent.trim();
+    slide.setAttribute('aria-label', title
+      ? `Слайд ${index + 1} из ${total}: ${title}`
+      : `Слайд ${index + 1} из ${total}`);
+
+    slide.querySelectorAll('table').forEach((table, tableIndex) => {
+      const caption = table.querySelector('caption');
+      const labels = [];
+      if (heading) {
+        heading.id ||= `slide-${index + 1}-title`;
+        labels.push(heading.id);
+      }
+      if (caption) {
+        caption.id ||= `slide-${index + 1}-table-${tableIndex + 1}-caption`;
+        labels.push(caption.id);
+      }
+      if (labels.length) table.setAttribute('aria-labelledby', labels.join(' '));
+    });
+
     const number = slide.querySelector('.slide-number');
-    if (number) number.innerHTML = `${page}<span>/ ${total}</span>`;
+    if (number) {
+      number.innerHTML = `${page}<span>/ ${total}</span>`;
+      number.setAttribute('aria-hidden', 'true');
+    }
   });
 
   const clamp = (n) => Math.max(0, Math.min(total - 1, n));
@@ -225,7 +250,10 @@
     previous = current;
 
     slides.forEach((slide, index) => {
-      slide.toggleAttribute('data-active', index === current);
+      const active = index === current;
+      slide.toggleAttribute('data-active', active);
+      if (active) slide.setAttribute('aria-current', 'page');
+      else slide.removeAttribute('aria-current');
     });
 
     revealed?.removeAttribute('data-reveal');

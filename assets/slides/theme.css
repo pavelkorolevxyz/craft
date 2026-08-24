@@ -207,8 +207,8 @@
   opacity: .92;
 }
 .slide-number span {
-  font: 500 .4em/1 var(--font-text); letter-spacing: .04em;
-  opacity: .5; margin-left: .4em;
+  font: 500 .5em/1 var(--font-text); letter-spacing: .04em;
+  opacity: .72; margin-left: .4em;
 }
 
 /* --- типографика --- */
