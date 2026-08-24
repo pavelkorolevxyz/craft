@@ -245,19 +245,21 @@ def test_slide_source(name: str, source: Path, work: Path, minimum_pages: int) -
         "const enterEvent=new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true});link.dispatchEvent(enterEvent);const spaceEvent=new KeyboardEvent('keydown',{key:' ',bubbles:true,cancelable:true});button.dispatchEvent(spaceEvent);"
         "const interactiveKeys=!enterEvent.defaultPrevented&&!spaceEvent.defaultPrevented&&document.querySelector('.slide[data-active]')?.dataset.index===interactionStart;link.remove();button.remove();"
         "const toolbar=document.querySelector('.help-panel');const controlSize=parseFloat(getComputedStyle(toolbar.querySelector('button')).width);const revealSize=parseFloat(getComputedStyle(document.querySelector('.help-reveal')).width);const accessibleControls=toolbar.getAttribute('role')==='toolbar'&&Boolean(toolbar.getAttribute('aria-label'))&&controlSize>=40&&revealSize>=40;"
+        "const slideSemantics=[...document.querySelectorAll('.slide')].every(slide=>slide.getAttribute('role')==='group'&&slide.getAttribute('aria-roledescription')==='слайд'&&slide.getAttribute('aria-label')?.startsWith('Слайд '))&&document.querySelectorAll('.slide[aria-current=page]').length===1&&[...document.querySelectorAll('.slide-number')].every(number=>number.getAttribute('aria-hidden')==='true');"
+        "const tablesLabeled=[...document.querySelectorAll('.slide table')].every(table=>{const ids=(table.getAttribute('aria-labelledby')||'').split(/\\s+/).filter(Boolean);return ids.length>0&&ids.every(id=>document.getElementById(id))});"
         "const pageInput=document.querySelector('.help-page-input');pageInput.value='0';pageInput.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));"
         "const afterClamp=document.querySelector('.slide[data-active]')?.dataset.index;"
         "const deck=document.querySelector('.deck');const center=()=>{const a=document.querySelector('.slide[data-active]').getBoundingClientRect();const d=deck.getBoundingClientRect();return Math.round(Math.max(Math.abs(a.left+a.width/2-(d.left+deck.clientWidth/2)),Math.abs(a.top+a.height/2-(d.top+deck.clientHeight/2))))};"
         "document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));const stripError=center();document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));document.dispatchEvent(new KeyboardEvent('keydown',{key:'L'}));"
         "const before=document.documentElement.dataset.theme;document.dispatchEvent(new KeyboardEvent('keydown',{key:'T'}));"
-        "document.title=`slides:${document.querySelectorAll('.slide').length}:${document.querySelectorAll('.slide[data-active]').length}:${afterArrow}:${afterClamp}:${stripError}:${deck.dataset.stripDirection}:${before}:${document.documentElement.dataset.theme}:${document.querySelectorAll('.slide:not([data-slide-layout])').length}:${interactiveKeys}:${accessibleControls}`",
+        "document.title=`slides:${document.querySelectorAll('.slide').length}:${document.querySelectorAll('.slide[data-active]').length}:${afterArrow}:${afterClamp}:${stripError}:${deck.dataset.stripDirection}:${before}:${document.documentElement.dataset.theme}:${document.querySelectorAll('.slide:not([data-slide-layout])').length}:${interactiveKeys}:${accessibleControls}:${slideSemantics}:${tablesLabeled}`",
         1280,
         720,
     )
-    match = re.search(r"<title>slides:(\d+):(\d+):(\d+):(\d+):(\d+):(\w+):(light|dark):(light|dark):(\d+):(true|false):(true|false)</title>", dumped)
+    match = re.search(r"<title>slides:(\d+):(\d+):(\d+):(\d+):(\d+):(\w+):(light|dark):(light|dark):(\d+):(true|false):(true|false):(true|false):(true|false)</title>", dumped)
     assert match, f"{name}: проверка механики колоды не выполнена"
     pages, active, after_arrow, after_clamp, strip_error = map(int, match.groups()[:5])
-    direction, before, after, undeclared, interactive_keys, accessible_controls = match.groups()[5:]
+    direction, before, after, undeclared, interactive_keys, accessible_controls, slide_semantics, tables_labeled = match.groups()[5:]
     assert pages >= minimum_pages and active == 1 and after_clamp == 1, f"{name}: недопустимое состояние колоды"
     if name == "slides-catalog":
         assert pages == MANIFEST["surfaces"]["slides"]["catalogPages"], f"{name}: ожидалось 58 страниц, получено {pages}"
@@ -266,6 +268,8 @@ def test_slide_source(name: str, source: Path, work: Path, minimum_pages: int) -
     assert before != after and undeclared == "0", f"{name}: тема или объявления раскладок не работают"
     assert interactive_keys == "true", f"{name}: Enter или Space перехватываются у ссылок и кнопок"
     assert accessible_controls == "true", f"{name}: панель управления не имеет toolbar-семантики или цели меньше 40 px"
+    assert slide_semantics == "true", f"{name}: слайды не имеют доступных имён или aria-current"
+    assert tables_labeled == "true", f"{name}: таблица не связана с заголовком или подписью"
 
     pdf = work / f"{name}.pdf"
     print_pdf(source, pdf, 1280, 720, 20_000 if minimum_pages > 1 else 10_000)
