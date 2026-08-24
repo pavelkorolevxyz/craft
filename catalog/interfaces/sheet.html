@@ -16,37 +16,7 @@
   <script src="catalog.js" defer></script>
 </head>
 <body>
-  <svg class="icon-sprite" aria-hidden="true">
-    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
-    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol>
-  </svg>
-  <div class="system-layout">
-    <nav class="system-nav" aria-label="Разделы дизайн-системы">
-      <div class="system-brand">
-        <a class="system-name" href="#top">Craft</a>
-        <span class="system-version">0.5</span>
-      </div>
-      <div class="system-links" data-section-nav>
-        <a href="#foundation">Правила</a>
-        <a href="#layouts">Режимы</a>
-        <a href="#fragments">Фрагменты</a>
-        <a href="#color">Цвет</a>
-        <a href="#type">Типографика</a>
-        <a href="#spacing">Ритм</a>
-        <a href="#controls">Управление</a>
-        <a href="#forms">Формы</a>
-        <a href="#records">Записи</a>
-        <a href="#messages">Сообщения</a>
-        <a href="#navigation">Навигация</a>
-        <a href="#charts">Графики</a>
-        <a href="#composition">Композиция</a>
-        <a href="#data">Данные</a>
-      </div>
-      <button class="button button--stable button--icon theme-switch system-theme" type="button" data-theme-toggle aria-pressed="false">
-        <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
-        <span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span>
-      </button>
-    </nav>
+  <div class="sheet-layout">
 
     <main class="system-main" id="top" data-craft-layout="interface">
       <header class="system-intro">
@@ -510,8 +480,8 @@
                 <th>Состояние</th>
               </tr></thead>
               <tbody>
-                <tr><td>Сохранение параметров поиска</td><td>18 мс</td><td><span class="state-label state-label--ok">пройдено</span></td></tr>
-                <tr><td>Управление доступом</td><td>64 мс</td><td><span class="state-label state-label--warn">на проверке</span></td></tr>
+                <tr data-interactive tabindex="0" aria-selected="false"><td>Сохранение параметров поиска</td><td>18 мс</td><td><span class="state-label state-label--ok">пройдено</span></td></tr>
+                <tr data-interactive tabindex="0" aria-selected="true"><td>Управление доступом</td><td>64 мс</td><td><span class="state-label state-label--warn">на проверке</span></td></tr>
                 <tr class="data-table__detail"><td colspan="3">Проверка ждёт второго одобрения от владельца потока.</td></tr>
               </tbody>
             </table>

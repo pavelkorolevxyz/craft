@@ -97,25 +97,26 @@ def test_interface_catalog(work: Path) -> None:
         dumped = dump_probe(
             source,
             "addEventListener('load',()=>{"
-            "const button=document.querySelector('[data-theme-toggle]');const before=document.documentElement.dataset.theme;button.click();"
+            "const theme=document.documentElement.dataset.theme;"
             "const rows=Object.values([...document.querySelectorAll('.equal-panel')].reduce((all,panel)=>{const top=Math.round(panel.getBoundingClientRect().top);(all[top]??=[]).push(panel);return all},{}));"
             "const aligned=rows.every(row=>row.length<2||row.every(panel=>Math.abs(panel.getBoundingClientRect().height-row[0].getBoundingClientRect().height)<1));"
             "const first=document.querySelector('[role=tab]');first.focus();first.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));"
             "const tabsWork=document.querySelector('#catalog-tab-done').getAttribute('aria-selected')==='true'&&!document.querySelector('#catalog-panel-done').hidden;"
             "const opener=document.querySelector('[data-dialog-open]');opener.click();const dialog=document.querySelector('dialog');const dialogOpened=dialog.open;dialog.querySelector('[data-dialog-close]').click();"
-            "const mechanics=tabsWork&&dialogOpened&&!dialog.open&&document.querySelector('[data-catalog-mixed]').indeterminate;"
-            "document.title=`catalog:${document.documentElement.scrollWidth}:${innerWidth}:${document.querySelectorAll('main').length}:${before}:${document.documentElement.dataset.theme}:${aligned}:${document.querySelectorAll('[data-section-nav]').length}:${mechanics}:${button.getAttribute('aria-label')}`});", 
+            "const selectedRow=document.querySelector('tr[data-interactive][aria-selected=true]');const idleRow=document.querySelector('tr[data-interactive][aria-selected=false]');const rowSelection=getComputedStyle(selectedRow).backgroundColor!==getComputedStyle(idleRow).backgroundColor;"
+            "const mechanics=tabsWork&&dialogOpened&&!dialog.open&&document.querySelector('[data-catalog-mixed]').indeterminate&&rowSelection;"
+            "document.title=`catalog:${document.documentElement.scrollWidth}:${innerWidth}:${document.querySelectorAll('main').length}:${theme}:${aligned}:${document.querySelectorAll('.system-nav').length}:${document.querySelectorAll('[data-section-nav]').length}:${mechanics}`});",
             width,
             height,
         )
-        match = re.search(r"<title>catalog:(\d+):(\d+):(\d+):(light|dark):(light|dark):(true|false):(\d+):(true|false):([^<]+)</title>", dumped)
+        match = re.search(r"<title>catalog:(\d+):(\d+):(\d+):(light|dark):(true|false):(\d+):(\d+):(true|false)</title>", dumped)
         assert match, f"interface-catalog: браузерная проверка не выполнена при {width}px"
         scroll_width, viewport, mains = map(int, match.groups()[:3])
-        before, after, aligned, navs, mechanics, label = match.groups()[3:]
+        theme, aligned, sidebars, navs, mechanics = match.groups()[3:]
         assert scroll_width <= viewport, f"interface-catalog: переполнение при {width}px"
         assert mains == 1 and aligned == "true" and int(navs) > 0, "interface-catalog: сломан контракт компонентов"
+        assert theme in {"light", "dark"} and int(sidebars) == 0, "interface-catalog: проверочный лист не автономен"
         assert mechanics == "true", "interface-catalog: вкладки, диалог или составной флажок не работают"
-        assert before != after and "тему" in label, "interface-catalog: тема не работает"
     print_pdf(source, work / "interface-catalog.pdf", 1440, 900, 20_000)
 
 
@@ -147,11 +148,12 @@ def test_interface_docs() -> None:
                 "addEventListener('load',()=>{"
                 "const toggle=document.querySelector('[data-theme-toggle]');const before=document.documentElement.dataset.theme;toggle.click();"
                 "const ids=[...document.querySelectorAll('[data-component-doc]')].map(node=>node.dataset.componentDoc).join(',');"
-                "const code=[...document.querySelectorAll('[data-preview-code]')];const generated=code.length>0&&code.every(node=>node.textContent.trim().length>0);"
+                "const code=[...document.querySelectorAll('[data-preview-code]')];const generated=code.length>0&&code.every(node=>node.textContent.trim().length>0&&node.querySelector('.syntax-tag'));"
                 "const tabs=document.querySelector('[data-tabs]');if(tabs){const first=tabs.querySelector('[role=tab]');first.focus();first.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))}"
                 "const opener=document.querySelector('[data-dialog-open]');if(opener)opener.click();"
-                "const mechanics=(!tabs||tabs.querySelectorAll('[aria-selected=true]').length===1)&&(!opener||document.querySelector('dialog').open);"
-                "document.title=`docs:${document.documentElement.scrollWidth}:${innerWidth}:${ids}:${generated}:${document.querySelectorAll('.system-links [aria-current=true]').length}:${before!==document.documentElement.dataset.theme}:${mechanics}`});",
+                "const codePanel=document.querySelector('.component-code');codePanel.open=true;const codeBlock=codePanel.querySelector('pre');const codeFits=codeBlock.scrollWidth<=codeBlock.clientWidth;"
+                "const mechanics=(!tabs||tabs.querySelectorAll('[aria-selected=true]').length===1)&&(!opener||document.querySelector('dialog').open)&&codeFits;"
+                "document.title=`docs:${document.documentElement.scrollWidth}:${innerWidth}:${ids}:${generated}:${document.querySelectorAll('.docs-nav [aria-current=true]').length}:${before!==document.documentElement.dataset.theme}:${mechanics}`});",
                 width,
                 900,
             )

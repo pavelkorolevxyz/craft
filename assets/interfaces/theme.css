@@ -196,7 +196,9 @@ h3 { font-size: var(--type-local); line-height: 1.25; }
 .data-table th, .data-table td { padding: var(--space-3); text-align: left; border-bottom: 1px solid var(--line); }
 .data-table th { color: var(--muted); font-size: var(--type-service); font-weight: 500; }
 .data-table td:last-child, .data-table th:last-child { text-align: right; }
-.data-table tbody tr:hover { background: var(--surface); }
+.data-table tbody tr[data-interactive] { cursor: pointer; }
+.data-table tbody tr[data-interactive]:hover { background: var(--surface); }
+.data-table tbody tr[data-interactive][aria-selected="true"] { background: var(--accent-tint); }
 .data-table .total td { color: var(--on-accent); background: var(--accent-fill); border-color: var(--accent-fill); font-weight: 600; }
 
 .bar-list { display: grid; gap: var(--space-5); }
@@ -249,7 +251,8 @@ input::placeholder, textarea::placeholder { color: var(--craft-disabled); }
 .button--stable .button__label { grid-area: 1 / 1; }
 .button--stable[aria-pressed="false"] .button__label--pressed,
 .button--stable[aria-pressed="true"] .button__label--rest { visibility: hidden; }
-.button:hover { color: var(--accent); border-color: var(--accent); }
+.button:not(:disabled):hover { color: var(--accent); border-color: var(--accent); }
+.button:not(:disabled)[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: var(--accent-tint); }
 .button--icon { width: 44px; min-width: 44px; padding: 0; }
 .theme-switch .button__label { place-self: center; }
 .select-control { position: relative; display: block; }
@@ -262,7 +265,7 @@ input::placeholder, textarea::placeholder { color: var(--craft-disabled); }
 .select-control select:disabled { color: var(--craft-disabled); cursor: not-allowed; }
 .select-control:has(select:disabled) .select-control__icon { color: var(--craft-disabled); }
 .button--primary { color: var(--on-accent); background: var(--accent-fill); border-color: var(--accent-fill); }
-.button--primary:hover { color: var(--on-accent); background: var(--craft-accent-fill-hover); border-color: var(--craft-accent-fill-hover); }
+.button--primary:not(:disabled):hover { color: var(--on-accent); background: var(--craft-accent-fill-hover); border-color: var(--craft-accent-fill-hover); }
 
 /* Формы. Поле собирает подпись, управление, подсказку и ошибку в одну
    колонку: подсказка объясняет правило заранее, ошибка появляется под тем
@@ -336,6 +339,8 @@ input[type="checkbox"]:disabled, input[type="radio"]:disabled { border-color: va
 .range::-webkit-slider-thumb { appearance: none; width: 3px; height: 1.15rem; margin-top: calc(-.575rem + 1.5px); background: var(--accent-mark); }
 .range::-moz-range-track { height: 3px; background: var(--surface); }
 .range::-moz-range-thumb { width: 3px; height: 1.15rem; border: 0; border-radius: 0; background: var(--accent-mark); }
+.range:not(:disabled):hover::-webkit-slider-thumb { background: var(--accent-fill); }
+.range:not(:disabled):hover::-moz-range-thumb { background: var(--accent-fill); }
 .range:disabled { cursor: not-allowed; }
 .range:disabled::-webkit-slider-thumb { background: var(--craft-disabled); }
 .range:disabled::-moz-range-thumb { background: var(--craft-disabled); }
@@ -343,7 +348,7 @@ input[type="checkbox"]:disabled, input[type="radio"]:disabled { border-color: va
 /* Тихая кнопка для третьестепенного действия рядом с содержимым. Занятая
    кнопка меняет только цвет подписи: размер и координаты сохраняются. */
 .button--quiet { border-color: transparent; color: var(--muted); }
-.button--quiet:hover { color: var(--accent); border-color: var(--accent); }
+.button--quiet:not(:disabled):hover { color: var(--accent); border-color: var(--accent); }
 .button[aria-busy="true"] { color: var(--muted); cursor: progress; }
 
 /* Метка категории. Она называет принадлежность, а не состояние, поэтому
@@ -351,6 +356,7 @@ input[type="checkbox"]:disabled, input[type="radio"]:disabled { border-color: va
 .tag-list { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .tag { display: inline-flex; align-items: center; gap: var(--space-2); padding: 2px var(--space-2); border: 1px solid var(--line); color: var(--muted); font-size: var(--type-service); white-space: nowrap; }
 .tag--accent { color: var(--accent); border-color: var(--accent); }
+a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent); }
 
 /* Лейбл состояния для статусной колонки: одинаковая высота, цветная рамка,
    явный текст. Заливку он не берёт, чтобы в колонке не горел ряд плашек. */

@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="../../assets/shared/tokens.css">
   <link rel="stylesheet" href="../../assets/interfaces/theme.css">
   <link rel="stylesheet" href="catalog.css">
-  <script src="../../assets/interfaces/section-nav.js" defer></script>
 </head>
 <body>
   <svg class="icon-sprite" aria-hidden="true">
@@ -20,22 +19,22 @@
   <div class="system-layout docs-layout">
     <nav class="system-nav docs-nav" aria-label="Документация компонентов">
       <div class="system-brand">
-        <a class="system-name" href="index.html" aria-current="page">Craft</a>
+        <a class="system-name" href="index.html">Craft</a>
         <span class="system-version">0.5</span>
       </div>
-      <p class="docs-nav__label">Компоненты</p>
-      <div class="system-links" data-section-nav>
-        <a href="#foundations">Основы</a>
-        <a href="#layout">Каркасы</a>
-        <a href="#actions">Действия</a>
-        <a href="#forms">Формы</a>
-        <a href="#navigation">Навигация</a>
-        <a href="#data">Данные</a>
-        <a href="#feedback">Состояния</a>
-        <a href="#overlays">Оверлеи</a>
-        <a href="recipes.html">Рецепты</a>
-      </div>
-      <a class="docs-sheet-link" href="sheet.html">Проверочный лист · 42</a>
+
+      <div class="system-links"><a href="index.html" aria-current="true">Компоненты</a>
+        <a href="foundations.html">Основы</a>
+        <a href="layout.html">Каркасы</a>
+        <a href="actions.html">Действия</a>
+        <a href="forms.html">Формы</a>
+        <a href="navigation.html">Навигация</a>
+        <a href="data.html">Данные</a>
+        <a href="feedback.html">Состояния</a>
+        <a href="overlays.html">Оверлеи</a>
+
+      <a href="recipes.html">Рецепты</a></div>
+
       <button class="button button--stable button--icon theme-switch system-theme" type="button" data-theme-toggle aria-pressed="false">
         <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
         <span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span>
@@ -45,7 +44,6 @@
     <main class="docs-main" id="top" data-craft-layout="interface">
       <div class="docs-content">
         <header class="docs-intro">
-          <p class="docs-kicker">Интерфейсная система</p>
           <h1>Компоненты</h1>
           <p>Канонические конструкции Craft для локальных отчётов, рабочих инструментов и поверхностей данных. Каждый компонент работает без сборки и внешних зависимостей.</p>
           <dl class="docs-facts">
@@ -97,11 +95,6 @@
           <div class="component-index"><a href="overlays.html#dialog">Диалог<code>dialog</code></a></div>
         </section>
       </div>
-
-      <aside class="docs-toc" aria-label="На этой странице">
-        <p>На этой странице</p>
-        <a href="#foundations">Основы</a><a href="#layout">Каркасы</a><a href="#actions">Действия</a><a href="#forms">Формы</a><a href="#navigation">Навигация</a><a href="#data">Данные</a><a href="#feedback">Состояния</a><a href="#overlays">Оверлеи</a>
-      </aside>
     </main>
   </div>
 </body>

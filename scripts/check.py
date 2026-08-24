@@ -183,33 +183,37 @@ def check_state_marks() -> None:
 
 
 def check_control_states() -> None:
-    """У каждого элемента управления различимы наведение и недоступность.
+    """Интерактивные элементы различают наведение и постоянный выбор.
 
-    Видимый фокус даёт общее правило страницы, поэтому здесь проверяются те
-    состояния, которые компонент описывает сам. Список закрыт: новый элемент
-    управления добавляется в него вместе с правилами темы."""
+    Видимый фокус даёт общее правило страницы. Постоянное состояние нельзя
+    заменять наведением: оно должно переживать уход указателя и читаться с
+    клавиатуры и сенсорного экрана. Статические компоненты в список не входят."""
     theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
     selectors = [match.group(1).strip() for match in re.finditer(r"([^{}]+)\{[^{}]*\}", theme)]
     marks = {
         "hover": (":hover",),
         "disabled": (":disabled", "[disabled]", ":has(input:disabled)"),
+        "persistent": (":checked", ":indeterminate", "[aria-pressed", "[aria-selected", "[aria-current", "[aria-sort", "[open]"),
     }
     controls = {
-        ".button": ("hover", "disabled"),
+        ".button": ("hover", "disabled", "persistent"),
         ".button--quiet": ("hover",),
+        'input:not([type="checkbox"]': ("hover",),
         "textarea": ("hover", "disabled"),
         ".select-control select": ("hover", "disabled"),
-        'input[type="checkbox"]': ("hover", "disabled"),
-        'input[type="radio"]': ("hover", "disabled"),
-        ".switch input": ("hover", "disabled"),
-        ".range": ("disabled",),
-        ".segmented span": ("hover",),
-        ".tablist button": ("hover", "disabled"),
-        ".pagination__page": ("hover",),
-        ".breadcrumbs a": ("hover",),
-        ".disclosure > summary": ("hover",),
-        ".data-table__sort": ("hover",),
-        ".section-nav__links a": ("hover",),
+        'input[type="checkbox"]': ("hover", "disabled", "persistent"),
+        'input[type="radio"]': ("hover", "disabled", "persistent"),
+        ".switch": ("hover", "disabled", "persistent"),
+        ".range": ("hover", "disabled"),
+        ".segmented": ("hover", "persistent"),
+        ".tablist button": ("hover", "disabled", "persistent"),
+        ".pagination__page": ("hover", "persistent"),
+        ".breadcrumbs": ("hover", "persistent"),
+        ".disclosure": ("hover", "persistent"),
+        ".data-table__sort": ("hover", "persistent"),
+        ".data-table tbody tr[data-interactive]": ("hover", "persistent"),
+        ".section-nav__links a": ("hover", "persistent"),
+        ".tag": ("hover",),
     }
     for control, required in controls.items():
         for state in required:
@@ -218,6 +222,8 @@ def check_control_states() -> None:
                 for selector in selectors
             )
             assert found, f"у элемента управления {control} нет состояния «{state}»"
+
+    assert ".data-table tbody tr:hover" not in theme, "статическая строка таблицы не должна притворяться интерактивной"
 
 
 def check_accessibility_contract() -> None:
@@ -319,7 +325,7 @@ def check_interface_documentation() -> None:
     documented: set[str] = set()
     index = (directory / "index.html").read_text(encoding="utf-8")
 
-    expected_navigation = ["foundations.html", "layout.html", "actions.html", "forms.html", "navigation.html", "data.html", "feedback.html", "overlays.html", "recipes.html"]
+    expected_navigation = ["index.html", "foundations.html", "layout.html", "actions.html", "forms.html", "navigation.html", "data.html", "feedback.html", "overlays.html", "recipes.html"]
     for category, path in category_pages.items():
         assert path.is_file(), f"нет страницы категории {path.relative_to(ROOT)}"
         text = path.read_text(encoding="utf-8")
@@ -342,6 +348,16 @@ def check_interface_documentation() -> None:
     recipes = (directory / "recipes.html").read_text(encoding="utf-8")
     recipe_ids = re.findall(r'data-recipe-doc="([a-z-]+)"', recipes)
     assert len(recipe_ids) == 3 and len(recipe_ids) == recipes.count("data-preview-code"), "рецепты не имеют живого примера и кода"
+
+    human_pages = [directory / "index.html", *category_pages.values(), directory / "recipes.html"]
+    for path in human_pages:
+        text = path.read_text(encoding="utf-8")
+        primary = re.search(r'<div class="system-links">(.*?)</div>', text, re.DOTALL)
+        assert primary and re.findall(r'href="([a-z-]+\.html)"', primary.group(1)) == expected_navigation, f"основная навигация расходится в {path.name}"
+        current = re.findall(r'<a\b[^>]*aria-current="true"[^>]*>([^<]+)</a>', primary.group(1))
+        heading = re.search(r'<h1>([^<]+)</h1>', text)
+        assert heading and current == [heading.group(1)], f"заголовок страницы не совпадает с навигацией в {path.name}"
+        assert 'href="sheet.html"' not in text, f"проверочный лист попал в пользовательскую навигацию {path.name}"
 
     short_version = ".".join(MANIFEST["version"].split(".")[:2])
     for path in sorted(directory.glob("*.html")):
