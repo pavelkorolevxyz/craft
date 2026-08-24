@@ -196,6 +196,12 @@
 .fragment-stage .data-table caption { padding: var(--space-4); color: var(--muted); font-size: 12px; text-align: left; }
 .catalog-empty-state { min-height: 14rem; display: grid; }
 .catalog-section-nav .section-nav__links { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.recipe-start { min-width: 0; }
+.recipe-start > .steps { border-inline: 0; }
+.recipe-command-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); padding: var(--space-5); border-bottom: 1px solid var(--line); }
+.recipe-command-grid .code-block { min-width: 0; }
+.recipe-command-grid .code-block pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.recipe-start > .notice { margin: var(--space-5); }
 /* Документация компонентов. Оболочка использует язык Craft: плотная
    типографика, плоские секции и линии вместо карточек. */
 .docs-main { min-width: 0; }
@@ -284,6 +290,8 @@
   .docs-intro { padding-block: var(--space-7); }
   .docs-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
   .component-notes, .docs-preview-columns { grid-template-columns: 1fr; }
+  .recipe-command-grid { grid-template-columns: 1fr; padding: var(--space-4); }
+  .recipe-start > .notice { margin: var(--space-4); }
   .component-preview { min-height: 140px; padding: var(--space-5); }
   .component-preview--flush { padding: 0; }
   .docs-icon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

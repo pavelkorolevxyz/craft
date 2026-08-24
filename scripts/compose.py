@@ -91,11 +91,11 @@ def container_bounds(document: str, selector: str) -> tuple[int, int]:
     raise ComposeError(f"контейнер {selector} не закрыт")
 
 
-def ensure_dependencies(document: str, project: Path, dependencies: list[str]) -> str:
+def ensure_dependencies(document: str, project: Path, dependencies: list[str], copy_files: bool = True) -> str:
     for dependency in dependencies:
         source = ROOT / dependency
         target = project / source.name
-        if not target.exists():
+        if copy_files and not target.exists():
             shutil.copy2(source, target)
         escaped = re.escape(target.name)
         if target.suffix == ".js" and not re.search(rf'<script\b[^>]*src=["\'][^"\']*{escaped}["\']', document):
@@ -160,7 +160,7 @@ def compose(index: Path, fragment_id: str, text_values: dict[str, str], html_val
         if re.search(rf'\bid\s*=\s*["\']{re.escape(value)}["\']', document):
             raise ComposeError(f"id уже существует в проекте: {value}")
 
-    document = ensure_dependencies(document, index.parent, fragment["dependencies"])
+    document = ensure_dependencies(document, index.parent, fragment["dependencies"], copy_files=not dry_run)
     _, close = container_bounds(document, surface["fragmentTarget"])
     separator = "" if document[:close].endswith("\n") else "\n"
     result = document[:close] + separator + rendered.rstrip() + "\n" + document[close:]

@@ -347,7 +347,8 @@ def check_interface_documentation() -> None:
 
     recipes = (directory / "recipes.html").read_text(encoding="utf-8")
     recipe_ids = re.findall(r'data-recipe-doc="([a-z-]+)"', recipes)
-    assert len(recipe_ids) == 3 and len(recipe_ids) == recipes.count("data-preview-code"), "рецепты не имеют живого примера и кода"
+    assert recipe_ids == ["first-page", "filtered-table", "master-detail", "validated-form"], "рецепты расходятся с ожидаемым порядком"
+    assert len(recipe_ids) == recipes.count("data-preview-code"), "рецепты не имеют живого примера и кода"
 
     human_pages = [directory / "index.html", *category_pages.values(), directory / "recipes.html"]
     for path in human_pages:

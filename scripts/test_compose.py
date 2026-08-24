@@ -72,6 +72,17 @@ def test_interface(root: Path) -> None:
     )
 
     (project / "section-nav.js").unlink()
+    before_dry_run = {path.name: path.read_bytes() for path in project.iterdir() if path.is_file()}
+    command(
+        project,
+        "--fragment", "section-nav",
+        "--set", "NAV_LABEL=Разделы",
+        "--html", 'NAV_LINKS=<a href="#alpha">Первый</a>',
+        "--dry-run",
+    )
+    after_dry_run = {path.name: path.read_bytes() for path in project.iterdir() if path.is_file()}
+    assert after_dry_run == before_dry_run, "--dry-run изменил файлы проекта"
+
     command(
         project,
         "--fragment", "section-nav",
