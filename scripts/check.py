@@ -109,6 +109,16 @@ def check_required() -> None:
     expected = MANIFEST["requirements"]["fontFiles"]
     assert len(fonts) == expected, f"ожидалось локальных файлов шрифтов: {expected}, найдено: {len(fonts)}"
 
+    skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+    description = re.search(r'^description:\s*"([^"]+)"', skill, re.MULTILINE)
+    assert description and len(description.group(1)) <= 57, "description навыка обрезается в индексе"
+    extending = (ROOT / "references/extending.md").read_text(encoding="utf-8")
+    assert "## Разовая композиция" in extending and "## Поддерживаемая поверхность" in extending, "сценарии расширения Craft не разделены"
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    for package in ("craft-interface.zip", "craft-slides.zip", "craft-complete.zip"):
+        assert package in readme, f"не описано назначение {package}"
+    assert "sha256sum -c SHA256SUMS" in readme, "не описана проверка релизных архивов"
+
 
 def check_assets() -> None:
     for path in CHECKED_HTML:
