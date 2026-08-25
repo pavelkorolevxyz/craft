@@ -68,8 +68,8 @@ def main() -> None:
         interface_docs = {f"catalog/interfaces/{name}" for name in INTERFACE_DOCS}
         expected_catalogs = {
             "craft-interface": interface_docs,
-            "craft-slides": {"catalog/slides/index.html"},
-            "craft-complete": interface_docs | {"catalog/slides/index.html"},
+            "craft-slides": {"catalog/slides/index.html", "catalog/slides/case-study.html"},
+            "craft-complete": interface_docs | {"catalog/slides/index.html", "catalog/slides/case-study.html"},
         }[package]
         relative_names = {"/".join(PurePosixPath(name).parts[1:]) for name in names}
         assert expected_catalogs <= relative_names, f"{package}: не включён публичный каталог"
@@ -80,7 +80,8 @@ def main() -> None:
             archive = dist / expected[package]["file"]
             with zipfile.ZipFile(archive) as bundle:
                 bundle.extractall(temporary)
-            execute(ROOT, sys.executable, ROOT / "scripts/check_project.py", temporary / package / f"catalog/{surface}", "--static-only")
+            package_root = temporary / package
+            execute(ROOT, sys.executable, ROOT / "scripts/check_project.py", package_root / f"catalog/{surface}", "--static-only", "--resource-root", package_root)
 
         complete = dist / expected["craft-complete"]["file"]
         with zipfile.ZipFile(complete) as package:
@@ -88,8 +89,8 @@ def main() -> None:
         root = temporary / "craft-complete"
         scripts = root / "scripts"
         assert {path.name for path in scripts.glob("*.py")} == RUNTIME_SCRIPTS
-        execute(root, sys.executable, scripts / "check_project.py", root / "catalog/interfaces")
-        execute(root, sys.executable, scripts / "check_project.py", root / "catalog/slides")
+        execute(root, sys.executable, scripts / "check_project.py", root / "catalog/interfaces", "--resource-root", root)
+        execute(root, sys.executable, scripts / "check_project.py", root / "catalog/slides", "--resource-root", root)
         for page in ("index.html", "forms.html", "overlays.html", "recipes.html"):
             source = root / "catalog/interfaces" / page
             dumped = execute(root, *chromium_args(390 if page == "forms.html" else 1440, 900), "--dump-dom", source.as_uri()).stdout

@@ -80,8 +80,10 @@ def validate_reference(root: Path, base: Path, value: str, origin: Path) -> None
     assert target.is_file(), f"сломанный локальный ресурс в {origin.relative_to(root)}: {reference}"
 
 
-def check_static(index: Path) -> str:
+def check_static(index: Path, resource_root: Path | None = None) -> str:
     root = index.parent
+    resources = resource_root.expanduser().resolve() if resource_root else root
+    assert resources == root or resources in root.parents, "папка ресурсов должна содержать проверяемый проект"
     project_files = [path for path in root.rglob("*") if path.is_file() and path.suffix in {".html", ".css", ".js"}]
     html_parsers: dict[Path, ProjectParser] = {}
     for path in project_files:
@@ -93,10 +95,10 @@ def check_static(index: Path) -> str:
             parser.feed(text)
             html_parsers[path] = parser
             for value in parser.assets:
-                validate_reference(root, path.parent, value, path)
+                validate_reference(resources, path.parent, value, path)
         elif path.suffix == ".css":
             for value in css_references(text):
-                validate_reference(root, path.parent, value, path)
+                validate_reference(resources, path.parent, value, path)
 
     parser = html_parsers[index]
     assert parser.h1_count == 1, f"ожидался один h1, найдено: {parser.h1_count}"
@@ -151,10 +153,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("project", type=Path, help="Папка проекта или путь к index.html")
     parser.add_argument("--static-only", action="store_true", help="Не запускать Chromium и печать PDF")
+    parser.add_argument("--resource-root", type=Path, help="Корень автономного пакета, если каталог вложен глубже ресурсов")
     args = parser.parse_args()
 
     index = project_index(args.project)
-    surface = check_static(index)
+    surface = check_static(index, args.resource_root)
     print(f"✓ статические контракты: {surface}")
     if args.static_only:
         print(f"Готово: статическая проверка завершена, Chromium и PDF не запускались — {index}")

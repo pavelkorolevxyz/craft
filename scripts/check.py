@@ -118,6 +118,12 @@ def check_required() -> None:
     for package in ("craft-interface.zip", "craft-slides.zip", "craft-complete.zip"):
         assert package in readme, f"не описано назначение {package}"
     assert "sha256sum -c SHA256SUMS" in readme, "не описана проверка релизных архивов"
+    case_study = ROOT / "catalog/slides/case-study.html"
+    assert case_study.is_file() and "catalog/slides/case-study.html" in readme, "мини-колода не связана с README"
+    case_html = case_study.read_text(encoding="utf-8")
+    assert len(re.findall(r'<section class="slide\b', case_html)) == 8, "мини-колода должна содержать восемь исходных слайдов"
+    for value in ("42", "19", "11", "58", MANIFEST["version"]):
+        assert value in case_html, f"в мини-колоде отсутствует факт из реестра: {value}"
 
 
 def check_assets() -> None:

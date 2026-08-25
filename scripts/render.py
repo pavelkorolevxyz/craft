@@ -32,6 +32,9 @@ SHOT_LABELS = {
     "slides-catalog-content": "Каталог слайдов · содержимое",
     "slides-catalog-recording": "Каталог слайдов · мобильная запись",
     "slides-catalog-grid": "Каталог слайдов · обзор сеткой",
+    "slides-case-study-cover": "Мини-колода Craft · обложка",
+    "slides-case-study-grid": "Мини-колода Craft · связный обзор",
+    "slides-case-study-recording": "Мини-колода Craft · мобильная запись",
 }
 
 SHOTS = (
@@ -44,6 +47,9 @@ SHOTS = (
     Shot("slides-catalog", "slides-catalog-content", 1280, 720, "#5"),
     Shot("slides-catalog", "slides-catalog-recording", 390, 844, "#1"),
     Shot("slides-catalog", "slides-catalog-grid", 1440, 900, "?view=grid#1"),
+    Shot("slides-case-study", "slides-case-study-cover", 1280, 720, "#1"),
+    Shot("slides-case-study", "slides-case-study-grid", 1440, 900, "?view=grid#1"),
+    Shot("slides-case-study", "slides-case-study-recording", 390, 844, "#4"),
 )
 
 
@@ -94,6 +100,7 @@ def main() -> None:
             **{key: path / "index.html" for key, path in projects.items()},
             "interface-catalog": ROOT / "catalog/interfaces/sheet.html",
             "slides-catalog": ROOT / "catalog/slides/index.html",
+            "slides-case-study": ROOT / "catalog/slides/case-study.html",
         }
         rendered: list[tuple[Shot, Path]] = []
         for shot in SHOTS:

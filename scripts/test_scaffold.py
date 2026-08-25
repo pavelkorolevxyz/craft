@@ -301,6 +301,7 @@ def main() -> None:
         test_interface_docs()
         test_slide_source("slides-deck", outputs["slides-deck"] / "index.html", root, 1)
         test_slide_source("slides-catalog", CATALOG / "slides" / "index.html", root, MANIFEST["surfaces"]["slides"]["catalogPages"])
+        test_slide_source("slides-case-study", CATALOG / "slides" / "case-study.html", root, 8)
         for output in outputs.values():
             run(sys.executable, ROOT / "scripts/check_project.py", output)
         print("Готово: стартеры, публичные каталоги и валидатор проектов проверены в Chromium и PDF")
