@@ -4,11 +4,12 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
+from urllib.parse import quote, unquote, urlsplit
 
 from lib import chromium_args, run
 
@@ -106,36 +107,76 @@ def check_static(index: Path, resource_root: Path | None = None) -> str:
     return "interface" if parser.interface else "slides"
 
 
-def probe(index: Path, surface: str, width: int, height: int) -> tuple[int, ...]:
-    probe_path = index.with_name("__craft_check__.html")
-    html = index.read_text(encoding="utf-8")
+def browser_probe_script(surface: str) -> str:
     action = (
-        "document.dispatchEvent(new Event('DOMContentLoaded'));const toggle=document.querySelector('[data-theme-toggle]');"
+        "const toggle=document.querySelector('[data-theme-toggle]');"
         "const before=document.documentElement.dataset.theme;toggle?.click();const changed=before!==document.documentElement.dataset.theme;"
         if surface == "interface"
         else "const before=document.documentElement.dataset.theme;document.dispatchEvent(new KeyboardEvent('keydown',{key:'T'}));const changed=before!==document.documentElement.dataset.theme;"
     )
-    script = (
+    return (
         action
         + "const controls=[...document.querySelectorAll('button,input,select,textarea,a[href]')];"
         + "const unnamed=controls.filter(el=>{const id=el.id;const label=el.closest('label')||(id&&document.querySelector(`label[for=\"${CSS.escape(id)}\"]`));return !(el.getAttribute('aria-label')||el.getAttribute('title')||el.textContent.trim()||label)}).length;"
         + "const ranks=[...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(el=>Number(el.tagName[1]));const jumps=ranks.slice(1).filter((rank,i)=>rank>ranks[i]+1).length;"
         + "const slides=[...document.querySelectorAll('.slide')];const undeclared=slides.filter(el=>!el.dataset.slideLayout).length;const active=document.querySelectorAll('.slide[data-active]').length;"
-        + "document.title=`craft-check:${document.documentElement.scrollWidth}:${innerWidth}:${unnamed}:${jumps}:${changed?1:0}:${slides.length}:${undeclared}:${active}`;"
+        + "return `${document.documentElement.scrollWidth}:${innerWidth}:${unnamed}:${jumps}:${changed?1:0}:${slides.length}:${undeclared}:${active}`;"
     )
-    probe_path.write_text(html.replace("</body>", f"<script>{script}</script></body>"), encoding="utf-8")
+
+
+def probe_all(index: Path, surface: str) -> list[tuple[int, ...]]:
+    """Проверяет все контрольные размеры за один запуск Chromium."""
+    probe_path = index.with_name("__craft_check__.html")
+    inspect = browser_probe_script(surface)
+    initialized = (
+        "const toggle=document.querySelector('[data-theme-toggle]');return !toggle||Boolean(toggle.getAttribute('aria-label'));"
+        if surface == "interface"
+        else "return document.querySelectorAll('.slide[data-active]').length===1;"
+    )
+    harness = f"""<!doctype html>
+<html><head><meta charset="utf-8"><title>craft-check:pending</title>
+<style>iframe {{ position: absolute; inset: 0 auto auto 0; border: 0; }}</style></head>
+<body><script>
+const frames = {json.dumps(VIEWPORTS)}.map(([width, height]) => {{
+  const frame = document.createElement('iframe');
+  frame.width = width;
+  frame.height = height;
+  frame.src = {json.dumps(quote(index.name))};
+  document.body.append(frame);
+  return frame;
+}});
+const inspectWhenReady = () => {{
+  const loaded = frames.every(frame => {{
+    const document = frame.contentDocument;
+    if (frame.contentWindow.location.href === 'about:blank' || document.readyState === 'loading') return false;
+    {initialized}
+  }});
+  if (!loaded) {{ setTimeout(inspectWhenReady, 10); return; }}
+  const results = frames.map(frame => {{
+    const document = frame.contentDocument;
+    const innerWidth = frame.contentWindow.innerWidth;
+    {inspect}
+  }});
+  document.title = `craft-check:${{results.join('|')}}`;
+}};
+inspectWhenReady();
+</script></body></html>"""
+    probe_path.write_text(harness, encoding="utf-8")
     try:
-        dumped = run(*chromium_args(width, height), "--dump-dom", probe_path.as_uri()).stdout
+        dumped = run(*chromium_args(1500, 1000), "--allow-file-access-from-files", "--dump-dom", probe_path.as_uri()).stdout
+        match = re.search(r"<title>craft-check:([^<]+)</title>", dumped)
+        assert match and match.group(1) != "pending", "браузерная проверка не выполнилась"
+        results = [tuple(map(int, result.split(":"))) for result in match.group(1).split("|")]
+        assert len(results) == len(VIEWPORTS) and all(len(result) == 8 for result in results), "Chromium вернул неполный результат проверки"
+        return results
     finally:
         probe_path.unlink(missing_ok=True)
-    match = re.search(r"<title>craft-check:(\d+):(\d+):(\d+):(\d+):([01]):(\d+):(\d+):(\d+)</title>", dumped)
-    assert match, f"браузерная проверка не выполнилась при ширине {width}px"
-    return tuple(map(int, match.groups()))
 
 
 def check_browser(index: Path, surface: str) -> None:
-    for width, height in VIEWPORTS:
-        scroll, viewport, unnamed, jumps, theme_changed, slides, undeclared, active = probe(index, surface, width, height)
+    for (width, _), result in zip(VIEWPORTS, probe_all(index, surface)):
+        scroll, viewport, unnamed, jumps, theme_changed, slides, undeclared, active = result
+        assert viewport == width, f"Chromium открыл контрольный экран {width}px с шириной {viewport}px"
         assert scroll <= viewport, f"горизонтальное переполнение при ширине {width}px: {scroll}px > {viewport}px"
         assert unnamed == 0, f"элементы управления без доступного имени: {unnamed}"
         assert jumps == 0, f"найдены пропуски уровней заголовков: {jumps}"

@@ -11,7 +11,10 @@ import sys
 import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
+import check_project as check_project_module
 from lib import MANIFEST, ROOT, chromium_args, run, scaffold, scaffold_matrix
 
 CATALOG = ROOT / "catalog"
@@ -132,6 +135,35 @@ def test_static_resources(root: Path) -> None:
     index = escaped / "index.html"
     index.write_text(index.read_text(encoding="utf-8").replace("</head>", '<link rel="stylesheet" href="../outside.css"></head>'), encoding="utf-8")
     assert_static_failure(escaped, "ресурс выходит за папку проекта")
+
+
+def test_project_check_batches_browser(root: Path) -> None:
+    project = root / "batched-browser-check"
+    scaffold(project, "interface", "blank")
+    index = project / "проверка #1?.html"
+    (project / "index.html").rename(index)
+    calls: list[tuple[str, ...]] = []
+
+    def fake_run(*args: str | Path, **_: object) -> SimpleNamespace:
+        command = tuple(map(str, args))
+        calls.append(command)
+        if "--dump-dom" in command:
+            probe = index.with_name("__craft_check__.html")
+            document = probe.read_text(encoding="utf-8")
+            assert "document.createElement('iframe')" in document, "контрольные размеры не собраны в один прогон"
+            assert all(str(width) in document and str(height) in document for width, height in VIEWPORTS)
+            assert "%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0%20%231%3F.html" in document
+            results = "|".join(f"{width}:{width}:0:0:1:0:0:0" for width, _ in VIEWPORTS)
+            return SimpleNamespace(stdout=f"<title>craft-check:{results}</title>")
+        pdf_argument = next(value for value in command if value.startswith("--print-to-pdf="))
+        Path(pdf_argument.split("=", 1)[1]).write_bytes(b"%PDF" + b"x" * 6_000)
+        return SimpleNamespace(stdout="")
+
+    with patch.object(check_project_module, "run", side_effect=fake_run), patch.object(
+        check_project_module, "chromium_args", return_value=["chromium"]
+    ):
+        check_project_module.check_browser(index, "interface")
+    assert len(calls) == 2, f"ожидалось два запуска Chromium, получено: {len(calls)}"
 
 
 def test_interface_starter(output: Path, work: Path) -> None:
@@ -296,6 +328,7 @@ def main() -> None:
             print(f"✓ {key}")
         test_scaffold_inputs(root)
         test_static_resources(root)
+        test_project_check_batches_browser(root)
         test_interface_starter(outputs["interface-blank"], root)
         test_interface_catalog(root)
         test_interface_docs()
