@@ -56,13 +56,25 @@ def validate_output(key: str, output: Path) -> None:
 
 
 def dump_probe(source: Path, script: str, width: int, height: int) -> str:
-    probe = source.with_name("__probe.html")
     html = source.read_text(encoding="utf-8")
-    probe.write_text(html.replace("</body>", f"<script>{script}</script></body>"), encoding="utf-8")
+    with tempfile.NamedTemporaryFile(
+        "w", encoding="utf-8", dir=source.parent, prefix="__probe-", suffix=".html", delete=False
+    ) as handle:
+        handle.write(html.replace("</body>", f"<script>{script}</script></body>"))
+        probe = Path(handle.name)
     try:
         return run(*chromium_args(width, height), "--dump-dom", probe.as_uri()).stdout
     finally:
         probe.unlink(missing_ok=True)
+
+
+def after_stable_layout(script: str) -> str:
+    """Запускает probe после загрузки шрифтов и обновления раскладки."""
+    return (
+        "addEventListener('load',()=>{document.fonts.ready.then(()=>setTimeout(()=>{"
+        + script
+        + "},0))},{once:true});"
+    )
 
 
 def print_pdf(source: Path, target: Path, width: int, height: int, minimum: int = 10_000) -> None:
@@ -166,6 +178,27 @@ def test_project_check_batches_browser(root: Path) -> None:
     assert len(calls) == 2, f"ожидалось два запуска Chromium, получено: {len(calls)}"
 
 
+def test_dump_probe_isolated(root: Path) -> None:
+    source = root / "probe-source.html"
+    source.write_text("<!doctype html><title>probe</title><body></body>", encoding="utf-8")
+    browser_urls: list[str] = []
+
+    def fake_run(*args: str | Path, **_: object) -> SimpleNamespace:
+        browser_urls.append(str(args[-1]))
+        probes = list(root.glob("__probe-*.html"))
+        assert len(probes) == 1 and probes[0].is_file(), "probe не изолирован во временном файле"
+        return SimpleNamespace(stdout="<title>probe-ready</title>")
+
+    module = sys.modules[__name__]
+    with patch.object(module, "run", side_effect=fake_run), patch.object(
+        module, "chromium_args", return_value=["chromium"]
+    ):
+        dump_probe(source, "document.title='probe-ready'", 320, 720)
+        dump_probe(source, "document.title='probe-ready'", 320, 720)
+    assert len(set(browser_urls)) == 2, "последовательные probe используют один временный путь"
+    assert not list(root.glob("__probe-*.html")), "временный probe остался после проверки"
+
+
 def test_interface_starter(output: Path, work: Path) -> None:
     source = output / "index.html"
     for width, height in VIEWPORTS:
@@ -224,7 +257,9 @@ def test_interface_docs() -> None:
     for width in (1440, 320):
         dumped = dump_probe(
             index,
-            "addEventListener('load',()=>{const toggle=document.querySelector('[data-theme-toggle]');const before=document.documentElement.dataset.theme;toggle.click();document.title=`docs-index:${document.documentElement.scrollWidth}:${innerWidth}:${document.querySelectorAll('.component-index a').length}:${document.querySelectorAll('.component-group').length}:${before!==document.documentElement.dataset.theme}`});",
+            after_stable_layout(
+                "const toggle=document.querySelector('[data-theme-toggle]');const before=document.documentElement.dataset.theme;toggle.click();document.title=`docs-index:${document.documentElement.scrollWidth}:${innerWidth}:${document.querySelectorAll('.component-index a').length}:${document.querySelectorAll('.component-group').length}:${before!==document.documentElement.dataset.theme}`"
+            ),
             width,
             900,
         )
@@ -243,7 +278,7 @@ def test_interface_docs() -> None:
         for width in widths:
             dumped = dump_probe(
                 source,
-                "addEventListener('load',()=>{"
+                after_stable_layout(
                 "const toggle=document.querySelector('[data-theme-toggle]');const before=document.documentElement.dataset.theme;toggle.click();"
                 "const ids=[...document.querySelectorAll('[data-component-doc]')].map(node=>node.dataset.componentDoc).join(',');"
                 "const code=[...document.querySelectorAll('[data-preview-code]')];const generated=code.length>0&&code.every(node=>node.textContent.trim().length>0&&node.querySelector('.syntax-tag'));"
@@ -253,7 +288,8 @@ def test_interface_docs() -> None:
                 "const currentLink=document.querySelector('.docs-nav .system-links [aria-current=true]');const links=currentLink.parentElement.getBoundingClientRect();const currentBox=currentLink.getBoundingClientRect();const currentVisible=currentBox.left>=links.left&&currentBox.right<=links.right;"
                 "const records=document.querySelector('.data-table--records');const recordCells=records?[...records.querySelectorAll('td')]:[];const recordsReady=!records||innerWidth>520||(getComputedStyle(records.querySelector('tbody')).display==='grid'&&recordCells.every(cell=>cell.dataset.label&&getComputedStyle(cell,'::before').content!=='none'));"
                 "const mechanics=(!tabs||tabs.querySelectorAll('[aria-selected=true]').length===1)&&(!opener||document.querySelector('dialog').open)&&codeFits&&recordsReady;"
-                "document.title=`docs:${document.documentElement.scrollWidth}:${innerWidth}:${ids}:${generated}:${document.querySelectorAll('.docs-nav [aria-current=true]').length}:${before!==document.documentElement.dataset.theme}:${mechanics}:${currentVisible}`});",
+                "document.title=`docs:${document.documentElement.scrollWidth}:${innerWidth}:${ids}:${generated}:${document.querySelectorAll('.docs-nav [aria-current=true]').length}:${before!==document.documentElement.dataset.theme}:${mechanics}:${currentVisible}`"
+                ),
                 width,
                 900,
             )
@@ -329,6 +365,7 @@ def main() -> None:
         test_scaffold_inputs(root)
         test_static_resources(root)
         test_project_check_batches_browser(root)
+        test_dump_probe_isolated(root)
         test_interface_starter(outputs["interface-blank"], root)
         test_interface_catalog(root)
         test_interface_docs()
