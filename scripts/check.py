@@ -486,6 +486,14 @@ def check_slide_layouts() -> None:
         assert len(re.findall(r'data-slide-layout="[a-z-]+"', html)) == 1, f"{path.relative_to(ROOT)} не объявляет раскладку"
     starter = (ASSETS / "slides/starter/index.html").read_text(encoding="utf-8")
     assert re.findall(r'data-slide-layout="([a-z-]+)"', starter) == ["title"], "стартовая колода должна содержать только титульный слайд"
+    theme = (ASSETS / "slides/theme.css").read_text(encoding="utf-8")
+    syntax_roles = {
+        ".code .hljs-type { color: var(--accent)": "управляющие слова не используют акцент",
+        ".code .hljs-template-variable { color: var(--craft-code-gold)": "строки не используют золотой",
+        ".code .hljs-bullet { color: var(--craft-code-blue)": "числа не используют синий",
+    }
+    for rule, message in syntax_roles.items():
+        assert rule in theme, message
 
     catalog_definition = MANIFEST["surfaces"]["slides"]
     catalog = (ROOT / catalog_definition["catalog"]).read_text(encoding="utf-8")
