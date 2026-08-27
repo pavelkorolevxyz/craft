@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
-  <title>Craft · Компоненты интерфейсов</title>
+  <title>Craft · Система интерфейсов</title>
   <script src="../../assets/interfaces/theme.js"></script>
   <link rel="stylesheet" href="../../assets/shared/tokens.css">
   <link rel="stylesheet" href="../../assets/interfaces/theme.css">
@@ -19,21 +19,17 @@
   <div class="system-layout docs-layout">
     <nav class="system-nav docs-nav" aria-label="Документация компонентов">
       <div class="system-brand">
-        <a class="system-name" href="index.html">Craft</a>
+        <a class="system-name" href="index.html" aria-current="page">Craft</a>
         <span class="system-version">0.5</span>
       </div>
 
-      <div class="system-links"><a href="index.html" aria-current="true">Компоненты</a>
-        <a href="foundations.html">Основы</a>
-        <a href="layout.html">Каркасы</a>
-        <a href="actions.html">Действия</a>
-        <a href="forms.html">Формы</a>
-        <a href="navigation.html">Навигация</a>
-        <a href="data.html">Данные</a>
-        <a href="feedback.html">Состояния</a>
-        <a href="overlays.html">Оверлеи</a>
-
-      <a href="recipes.html">Рецепты</a></div>
+      <div class="system-links"><a href="foundations.html">Foundation</a>
+        <a href="atoms.html">Атомы</a>
+        <a href="molecules.html">Молекулы</a>
+        <a href="organisms.html">Организмы</a>
+        <a href="templates.html">Шаблоны</a>
+        <a href="pages.html">Страницы</a>
+      </div>
 
       <button class="button button--stable button--icon theme-switch system-theme" type="button" data-theme-toggle aria-pressed="false">
         <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
@@ -44,55 +40,55 @@
     <main class="docs-main" id="top" data-craft-layout="interface">
       <div class="docs-content">
         <header class="docs-intro">
-          <h1>Компоненты</h1>
-          <p>Канонические конструкции Craft для локальных отчётов, рабочих инструментов и поверхностей данных. Каждый компонент работает без сборки и внешних зависимостей.</p>
+          <h1>Система интерфейсов</h1>
+          <p>Каталог собран от неделимых элементов к страницам с реальными данными. Категории слева помогают искать по задаче, уровни ниже показывают состав и границы компонентов.</p>
           <dl class="docs-facts">
             <div><dt>Компонентов</dt><dd>42</dd></div>
             <div><dt>HTML-фрагментов</dt><dd>19</dd></div>
-            <div><dt>Минимальная ширина</dt><dd>320 px</dd></div>
+            <div><dt>Разделов</dt><dd>6</dd></div>
           </dl>
         </header>
 
-        <section class="component-group" id="foundations">
-          <header><h2>Основы</h2><p>Шрифт и пиктограммы, на которых строятся остальные компоненты.</p></header>
-          <div class="component-index"><a href="foundations.html#typography">Типографика<span>Шкала текста и заголовков</span></a><a href="foundations.html#icon">Иконка<span>Линейная служебная пиктограмма</span></a></div>
-        </section>
-
-        <section class="component-group" id="layout">
-          <header><h2>Каркасы</h2><p>Структура страницы, секций и связанных рабочих областей.</p></header>
+        <section class="component-group atomic-level" id="foundation">
+          <header><h2>Foundation</h2><p>Токены, шрифтовая шкала и правила раскладки. Они задают свойства компонентов, но сами не решают пользовательскую задачу.</p></header>
           <div class="component-index">
-            <a href="layout.html#page-head">Заголовок страницы<code>page-head</code></a><a href="layout.html#workspace-head">Рабочая шапка<code>workspace-head</code></a><a href="layout.html#metric-strip">Полоса метрик<code>metric-strip</code></a><a href="layout.html#section">Секция<code>section</code></a><a href="layout.html#split-workspace">Рабочая область<code>split-workspace</code></a><a href="layout.html#section-nav">Навигация по секциям<code>section-nav</code></a><a href="layout.html#stack">Вертикальный поток<code>stack</code></a><a href="layout.html#equal-panels">Равные панели<code>equal-panels</code></a><a href="layout.html#callout">Акцентная врезка<code>callout</code></a><a href="layout.html#prose">Длинный текст<code>prose</code></a>
+            <a href="foundations.html#colors">Цветовые роли<code>tokens</code></a><a href="foundations.html#typography">Типографика<code>typography</code></a><a href="foundations.html#spacing">Интервалы<code>spacing</code></a><a href="foundations.html#stack">Вертикальный поток<code>stack</code></a>
           </div>
         </section>
 
-        <section class="component-group" id="actions">
-          <header><h2>Действия</h2><p>Запуск команд и выбор короткого режима.</p></header>
-          <div class="component-index"><a href="actions.html#button">Кнопка<code>button</code></a><a href="actions.html#segmented">Сегментированный выбор<code>segmented</code></a><a href="actions.html#disclosure">Раскрываемый блок<code>disclosure</code></a></div>
+        <section class="component-group atomic-level" id="atoms">
+          <header><h2>Атомы</h2><p>Неделимый элемент с одной ролью. Атом хранит собственные состояния, но не задаёт структуру соседних элементов.</p></header>
+          <div class="component-index">
+            <a href="atoms.html#icon">Иконка<code>icon</code></a><a href="atoms.html#button">Кнопка<code>button</code></a><a href="atoms.html#input">Однострочный ввод<code>input</code></a><a href="atoms.html#textarea">Многострочный ввод<code>textarea</code></a><a href="atoms.html#select">Выбор из списка<code>select</code></a><a href="atoms.html#checkbox">Флажок<code>checkbox</code></a><a href="atoms.html#switch">Переключатель<code>switch</code></a><a href="atoms.html#range">Шкала значения<code>range</code></a><a href="atoms.html#status">Статус<code>status</code></a><a href="atoms.html#state-label">Лейбл состояния<code>state-label</code></a><a href="atoms.html#tag">Метка<code>tag</code></a><a href="atoms.html#skeleton">Заглушка загрузки<code>skeleton</code></a><a href="atoms.html#series-key">Ключ ряда<code>series-key</code></a>
+          </div>
         </section>
 
-        <section class="component-group" id="forms">
-          <header><h2>Формы</h2><p>Ввод, выбор и фильтрация значений.</p></header>
-          <div class="component-index"><a href="forms.html#field">Поле<code>field</code></a><a href="forms.html#input">Однострочный ввод<code>input</code></a><a href="forms.html#textarea">Многострочный ввод<code>textarea</code></a><a href="forms.html#select">Выбор из списка<code>select</code></a><a href="forms.html#checkbox">Флажок<code>checkbox</code></a><a href="forms.html#radio">Радиогруппа<code>radio</code></a><a href="forms.html#switch">Переключатель<code>switch</code></a><a href="forms.html#range">Шкала значения<code>range</code></a><a href="forms.html#filter-bar">Панель фильтров<code>filter-bar</code></a></div>
+        <section class="component-group atomic-level" id="molecules">
+          <header><h2>Молекулы</h2><p>Небольшая группа атомов решает одну локальную задачу и переносится между разными частями интерфейса.</p></header>
+          <div class="component-index">
+            <a href="molecules.html#field">Поле<code>field</code></a><a href="molecules.html#radio">Радиогруппа<code>radio</code></a><a href="molecules.html#segmented">Сегментированный выбор<code>segmented</code></a><a href="molecules.html#disclosure">Раскрываемый блок<code>disclosure</code></a><a href="molecules.html#breadcrumbs">Хлебные крошки<code>breadcrumbs</code></a><a href="molecules.html#tabs">Вкладки<code>tabs</code></a><a href="molecules.html#pagination">Пагинация<code>pagination</code></a><a href="molecules.html#steps">Шаги<code>steps</code></a><a href="molecules.html#kv-list">Поле и значение<code>kv-list</code></a><a href="molecules.html#code-block">Блок кода<code>code-block</code></a><a href="molecules.html#bar-chart">Полосовой график<code>bar-chart</code></a><a href="molecules.html#notice">Уведомление<code>notice</code></a><a href="molecules.html#progress">Прогресс<code>progress</code></a>
+          </div>
         </section>
 
-        <section class="component-group" id="navigation">
-          <header><h2>Навигация</h2><p>Положение, выбор раздела и переход между частями набора.</p></header>
-          <div class="component-index"><a href="navigation.html#breadcrumbs">Хлебные крошки<code>breadcrumbs</code></a><a href="navigation.html#tabs">Вкладки<code>tabs</code></a><a href="navigation.html#pagination">Пагинация<code>pagination</code></a><a href="navigation.html#steps">Шаги<code>steps</code></a></div>
+        <section class="component-group atomic-level" id="organisms">
+          <header><h2>Организмы</h2><p>Самостоятельная область интерфейса. Организм объединяет атомы и молекулы, владеет их раскладкой и отвечает за одну часть страницы.</p></header>
+          <div class="component-index">
+            <a href="organisms.html#page-head">Заголовок страницы<code>page-head</code></a><a href="organisms.html#workspace-head">Рабочая шапка<code>workspace-head</code></a><a href="organisms.html#metric-strip">Полоса метрик<code>metric-strip</code></a><a href="organisms.html#section">Секция<code>section</code></a><a href="organisms.html#split-workspace">Рабочая область<code>split-workspace</code></a><a href="organisms.html#section-nav">Навигация по секциям<code>section-nav</code></a><a href="organisms.html#equal-panels">Равные панели<code>equal-panels</code></a><a href="organisms.html#callout">Акцентная врезка<code>callout</code></a><a href="organisms.html#prose">Длинный текст<code>prose</code></a><a href="organisms.html#filter-bar">Панель фильтров<code>filter-bar</code></a><a href="organisms.html#data-table">Таблица<code>data-table</code></a><a href="organisms.html#timeline">Хронология<code>timeline</code></a><a href="organisms.html#empty-state">Пустое состояние<code>empty-state</code></a><a href="organisms.html#dialog">Диалог<code>dialog</code></a>
+          </div>
         </section>
 
-        <section class="component-group" id="data">
-          <header><h2>Данные</h2><p>Сравнение записей, значений, событий и кода.</p></header>
-          <div class="component-index"><a href="data.html#data-table">Таблица<code>data-table</code></a><a href="data.html#kv-list">Поле и значение<code>kv-list</code></a><a href="data.html#timeline">Хронология<code>timeline</code></a><a href="data.html#code-block">Блок кода<code>code-block</code></a><a href="data.html#bar-chart">Полосовой график<code>bar-chart</code></a><a href="data.html#series-key">Ключ ряда<code>series-key</code></a></div>
+        <section class="component-group atomic-level" id="templates">
+          <header><h2>Шаблоны</h2><p>Шаблон задаёт геометрию страницы без предметных данных. В Craft это режимы, а не жёсткие макеты.</p></header>
+          <div class="component-index">
+            <a href="templates.html#document">Документ<span>Последовательное чтение и ограниченная строка</span></a><a href="templates.html#data-surface">Поверхность данных<span>Таблицы, графики и сравнение по колонкам</span></a><a href="templates.html#workspace">Рабочая поверхность<span>Основная область и связанные детали</span></a>
+          </div>
         </section>
 
-        <section class="component-group" id="feedback">
-          <header><h2>Состояния</h2><p>Результат, ход работы, отсутствие данных и загрузка.</p></header>
-          <div class="component-index"><a href="feedback.html#empty-state">Пустое состояние<code>empty-state</code></a><a href="feedback.html#notice">Уведомление<code>notice</code></a><a href="feedback.html#status">Статус<code>status</code></a><a href="feedback.html#state-label">Лейбл состояния<code>state-label</code></a><a href="feedback.html#tag">Метка<code>tag</code></a><a href="feedback.html#progress">Прогресс<code>progress</code></a><a href="feedback.html#skeleton">Заглушка загрузки<code>skeleton</code></a></div>
-        </section>
-
-        <section class="component-group" id="overlays">
-          <header><h2>Оверлеи</h2><p>Короткое действие, которое требует отдельного верхнего слоя.</p></header>
-          <div class="component-index"><a href="overlays.html#dialog">Диалог<code>dialog</code></a></div>
+        <section class="component-group atomic-level" id="pages">
+          <header><h2>Страницы</h2><p>Страница наполняет шаблон содержимым и проверяет, как компоненты работают вместе. В каталоге эту роль выполняют рецепты.</p></header>
+          <div class="component-index">
+            <a href="pages.html#first-page">Первая страница<span>Путь от пустой папки до проверки</span></a><a href="pages.html#filtered-table">Таблица с фильтрами<span>Отбор, данные и пагинация</span></a><a href="pages.html#master-detail">Список и детали<span>Выбор записи и связанная область</span></a><a href="pages.html#validated-form">Форма с проверкой<span>Ошибки полей и итог формы</span></a>
+          </div>
         </section>
       </div>
     </main>

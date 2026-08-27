@@ -93,10 +93,14 @@
   --craft-scrim: rgb(0 0 0 / .64);
 
   /* Код и только код. Подсветка синтаксиса живёт отдельно от палитры
-     интерфейса, чтобы яркие статусы не попадали в листинг. */
+     интерфейса, чтобы яркие статусы не попадали в листинг. Красного здесь
+     нет намеренно: им в Craft помечено кликабельное, и в листинге он читался
+     бы как ссылка. Четыре роли закрывают разбор: имя, значение, строка,
+     остальное. */
   --craft-code-text: #d4d0cc;
   --craft-code-gold: #c9a96e;
   --craft-code-blue: #7a9ab5;
+  --craft-code-green: #93b08a;
 
   /* Статусы. Три состояния и больше никаких: норма, предупреждение, ошибка.
      Ошибка — тот же красный, что и любая метка, отдельного оттенка нет.
@@ -136,6 +140,7 @@
   --craft-print-code-text: #2d2a27;
   --craft-print-code-gold: #73521f;
   --craft-print-code-blue: #365f7d;
+  --craft-print-code-green: #1f5c33;
 
   /* Светлая тема Craft: тёплые бумажные нейтрали снижают блики,
      но сохраняют контраст текста, таблиц и графиков. */
@@ -191,6 +196,7 @@
   --craft-code-text: #383532;
   --craft-code-gold: #73521f;
   --craft-code-blue: #365f7d;
+  --craft-code-green: #3f6b3a;
   --craft-data-red: var(--craft-light-accent-mark);
   --craft-data-neutral: var(--craft-light-text);
   --craft-data-blue: var(--craft-light-data-blue);

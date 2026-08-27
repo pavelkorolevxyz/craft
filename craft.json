@@ -244,7 +244,7 @@
       "componentCategories": [
         {
           "id": "foundations",
-          "title": "Основы"
+          "title": "Foundation"
         },
         {
           "id": "layout",
@@ -904,6 +904,10 @@
     "--column-ratio",
     "--columns",
     "--metrics",
+    "--nav-marker-h",
+    "--nav-marker-w",
+    "--nav-marker-x",
+    "--nav-marker-y",
     "--space",
     "--stack-gap",
     "--swatch",

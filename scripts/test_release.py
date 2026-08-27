@@ -17,7 +17,7 @@ from lib import ROOT, chromium_args
 
 FORBIDDEN_PARTS = {"tests", "docs", "examples", "output", "artifacts"}
 RUNTIME_SCRIPTS = {"lib.py", "scaffold.py", "compose.py", "check_project.py"}
-INTERFACE_DOCS = {"index.html", "sheet.html", "foundations.html", "layout.html", "actions.html", "forms.html", "navigation.html", "data.html", "feedback.html", "overlays.html", "recipes.html"}
+INTERFACE_DOCS = {"index.html", "sheet.html", "foundations.html", "atoms.html", "molecules.html", "organisms.html", "templates.html", "pages.html"}
 
 
 def digest(path: Path) -> str:
@@ -91,9 +91,9 @@ def main() -> None:
         assert {path.name for path in scripts.glob("*.py")} == RUNTIME_SCRIPTS
         execute(root, sys.executable, scripts / "check_project.py", root / "catalog/interfaces", "--resource-root", root)
         execute(root, sys.executable, scripts / "check_project.py", root / "catalog/slides", "--resource-root", root)
-        for page in ("index.html", "forms.html", "overlays.html", "recipes.html"):
+        for page in ("index.html", "atoms.html", "organisms.html", "pages.html"):
             source = root / "catalog/interfaces" / page
-            dumped = execute(root, *chromium_args(390 if page == "forms.html" else 1440, 900), "--dump-dom", source.as_uri()).stdout
+            dumped = execute(root, *chromium_args(390 if page == "atoms.html" else 1440, 900), "--dump-dom", source.as_uri()).stdout
             assert "<main" in dumped and "Craft" in dumped, f"{page}: документация не открывается из архива"
             if page != "index.html":
                 assert "data-preview-code=\"\"" in dumped and "&lt;" in dumped, f"{page}: код примера не создан из архива"

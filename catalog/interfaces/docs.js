@@ -135,6 +135,25 @@
   revealCurrentNavigation();
   document.fonts?.ready.then(revealCurrentNavigation);
 
+  /* Витрине навигации нечего наблюдать: страницы примера не существует.
+     Клик по ссылке переносит отметку и метку, чтобы поведение читалось
+     прямо в каталоге. Разметка примера остаётся боевой. */
+  document.querySelectorAll("[data-preview] [data-section-nav]").forEach((container) => {
+    const links = [...container.querySelectorAll("a")];
+    for (const link of links) {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        for (const other of links) other.removeAttribute("aria-current");
+        link.setAttribute("aria-current", "true");
+        container.style.setProperty("--nav-marker-y", `${link.offsetTop}px`);
+        container.style.setProperty("--nav-marker-h", `${link.offsetHeight}px`);
+        container.style.setProperty("--nav-marker-x", `${link.offsetLeft}px`);
+        container.style.setProperty("--nav-marker-w", `${link.offsetWidth}px`);
+        container.setAttribute("data-nav-marker", "");
+      });
+    }
+  });
+
   document.querySelectorAll("[data-component-doc], [data-recipe-doc]").forEach((article) => {
     const preview = article.querySelector("[data-preview]");
     const output = article.querySelector("[data-preview-code]");

@@ -359,20 +359,21 @@
   opacity: .18;
 }
 
-/* Палитра синтаксиса согласована с Craft и имеет запас контраста для проектора. */
+/* Палитра синтаксиса согласована с Craft и имеет запас контраста для проектора.
+   Красный сюда не входит: в Craft им помечено кликабельное. */
 .code .hljs-comment,
 .code .hljs-quote { color: var(--muted); }
 .code .hljs-keyword,
 .code .hljs-selector-tag,
 .code .hljs-literal,
-.code .hljs-type { color: var(--accent); font-weight: 650; }
+.code .hljs-type { color: var(--craft-code-blue); font-weight: 650; }
 .code .hljs-string,
 .code .hljs-regexp,
 .code .hljs-template-tag,
-.code .hljs-template-variable { color: var(--craft-code-gold); }
+.code .hljs-template-variable { color: var(--craft-code-green); }
 .code .hljs-number,
 .code .hljs-symbol,
-.code .hljs-bullet { color: var(--craft-code-blue); }
+.code .hljs-bullet { color: var(--craft-code-gold); }
 .code .hljs-title,
 .code .hljs-title.function_,
 .code .hljs-title.class_ { color: var(--text); font-weight: 650; }

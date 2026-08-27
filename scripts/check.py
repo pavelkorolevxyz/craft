@@ -16,6 +16,12 @@ TEXT_SUFFIXES = {".css", ".html", ".js", ".json", ".md", ".py"}
 # output/ — черновая песочница вне репозитория, её содержимое не проверяется.
 IGNORED_DIRS = {".git", ".ralph", "output", "dist", "artifacts", "__pycache__"}
 CATALOG_HTML = sorted((ROOT / "catalog").rglob("*.html"))
+CANONICAL_INTERFACE_PAGES = [
+    ROOT / "catalog/interfaces/foundations.html",
+    ROOT / "catalog/interfaces/atoms.html",
+    ROOT / "catalog/interfaces/molecules.html",
+    ROOT / "catalog/interfaces/organisms.html",
+]
 CSS_FILES = [*ASSETS.rglob("*.css"), ROOT / "catalog/interfaces/catalog.css"]
 HTML_FILES = [ROOT / path for surface in MANIFEST["surfaces"].values() for path in surface["entrypoints"]]
 FRAGMENT_DEFINITIONS = [fragment for surface in MANIFEST["surfaces"].values() for fragment in surface.get("fragments", [])]
@@ -81,6 +87,7 @@ def check_required() -> None:
         ROOT / "references/extending.md",
         ROOT / "references/interfaces/design-language.md",
         ROOT / "references/interfaces/components.md",
+        ROOT / "references/interfaces/atomic-design.md",
         ROOT / "references/interfaces/patterns.md",
         ROOT / "references/slides/design-language.md",
         ROOT / "references/slides/authoring.md",
@@ -102,6 +109,18 @@ def check_required() -> None:
     ]
     for path in required:
         assert path.is_file(), f"отсутствует {path.relative_to(ROOT)}"
+
+    component_tags: list[tuple[Path, str]] = []
+    for path in CANONICAL_INTERFACE_PAGES:
+        html = path.read_text(encoding="utf-8")
+        component_tags.extend((path, tag) for tag in re.findall(r'<section[^>]+data-component-doc="[^"]+"[^>]*>', html))
+    assert len(component_tags) == 42, f"в атомарном реестре ожидалось 42 компонента, найдено: {len(component_tags)}"
+    for path, tag in component_tags:
+        level = re.search(r'data-atomic-level="([^"]+)"', tag)
+        assert level and level.group(1) in {"foundation", "atom", "molecule", "organism"}, (
+            f"у компонента в {path.relative_to(ROOT)} нет корректного data-atomic-level"
+        )
+
     forbidden = [ROOT / "docs/cases", ROOT / "examples", ASSETS / "interfaces/specimen.html", ASSETS / "slides/specimen.html"]
     for path in forbidden:
         assert not path.exists(), f"публичные примеры и каталоги не входят в репозиторий: {path.relative_to(ROOT)}"
@@ -184,6 +203,18 @@ def check_borders() -> None:
             assert not any(pair <= directions for pair in opposite), f"две направленные границы могут слипнуться в {path.relative_to(ROOT)}: {selector}"
 
 
+def check_catalog_grid() -> None:
+    """Сетка каталога рисует рамки только вокруг существующих элементов."""
+    css = (ROOT / "catalog/interfaces/catalog.css").read_text(encoding="utf-8")
+    container = re.search(r"\.component-index\s*\{([^{}]+)\}", css)
+    item = re.search(r"\.component-index a\s*\{([^{}]+)\}", css)
+    assert container and item, "не найдены правила сетки каталога"
+    assert not re.search(r"\bborder\s*:", container.group(1)), "контейнер component-index создаёт рамку вокруг пустых ячеек"
+    assert "outline: 1px solid var(--line)" in item.group(1), "реальные ячейки component-index не владеют своей рамкой"
+    assert not re.search(r"\.component-index(?:::[\w-]+|[^,{]*::[\w-]+)", css), "псевдоэлемент component-index имитирует пустые ячейки"
+    assert not re.search(r"\.component-index[^{}]*\{[^{}]*(?:linear|radial)-gradient", css), "градиент component-index имитирует линии таблицы"
+
+
 def check_state_marks() -> None:
     """Сигнальный цвет живёт в графической метке, а не в тексте состояния."""
     signal = re.compile(r"(?<![\w-])color\s*:\s*var\(--(ok|warn|error|data-[a-z]+)\)")
@@ -259,11 +290,11 @@ def check_accessibility_contract() -> None:
         assert "@media print" in css, f"у формата {surface} нет правил печати"
 
     interface_theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
-    assert ".select-control select:not(:disabled):hover" in interface_theme, "у select нет состояния наведения"
+    assert re.search(r"\.select-control select[^,{]*:not\(:disabled\)[^,{]*:hover", interface_theme), "у select нет состояния наведения"
     assert ".select-control:has(select:focus-visible)" in interface_theme, "стрелка select не реагирует на фокус"
     assert ".sr-only" in interface_theme, "не определена утилита визуально скрытого текста"
     assert ".data-table--records td::before" in interface_theme, "у текстовой таблицы нет мобильных подписей"
-    data_catalog = (ROOT / "catalog/interfaces/data.html").read_text(encoding="utf-8")
+    data_catalog = (ROOT / "catalog/interfaces/organisms.html").read_text(encoding="utf-8")
     record_table = re.search(r'<table class="data-table data-table--records">(.*?)</table>', data_catalog, re.DOTALL)
     assert record_table and all("data-label=" in tag for tag in re.findall(r"<td[^>]*>", record_table.group(1))), "ячейки мобильной таблицы не повторяют заголовки в data-label"
 
@@ -345,45 +376,61 @@ def check_interface_components() -> None:
 
 def check_interface_documentation() -> None:
     directory = ROOT / "catalog/interfaces"
-    surface = MANIFEST["surfaces"]["interface"]
-    category_pages = {category["id"]: directory / f"{category['id']}.html" for category in surface["componentCategories"]}
-    expected_ids = {component["id"] for component in surface["components"]}
+    expected_ids = {component["id"] for component in MANIFEST["surfaces"]["interface"]["components"]}
+    level_pages = {
+        "foundations.html": ("Foundation", "foundation"),
+        "atoms.html": ("Атомы", "atom"),
+        "molecules.html": ("Молекулы", "molecule"),
+        "organisms.html": ("Организмы", "organism"),
+        "templates.html": ("Шаблоны", None),
+        "pages.html": ("Страницы", None),
+    }
+    expected_navigation = list(level_pages)
     documented: set[str] = set()
-    index = (directory / "index.html").read_text(encoding="utf-8")
 
-    expected_navigation = ["index.html", "foundations.html", "layout.html", "actions.html", "forms.html", "navigation.html", "data.html", "feedback.html", "overlays.html", "recipes.html"]
-    for category, path in category_pages.items():
-        assert path.is_file(), f"нет страницы категории {path.relative_to(ROOT)}"
+    for filename, (_, expected_level) in level_pages.items():
+        path = directory / filename
+        assert path.is_file(), f"нет страницы уровня {path.relative_to(ROOT)}"
         text = path.read_text(encoding="utf-8")
-        actual = re.findall(r'data-component-doc="([a-z-]+)"', text)
-        expected = [component["id"] for component in surface["components"] if component["category"] == category]
-        assert actual == expected, f"страница {path.name} расходится с реестром компонентов"
-        assert len(actual) == text.count('data-preview>'), f"не у каждого компонента {path.name} есть preview"
-        assert len(actual) == text.count("data-preview-code"), f"не у каждого компонента {path.name} есть код"
-        assert len(actual) == text.count('class="component-notes"'), f"не у каждого компонента {path.name} описано применение"
-        assert len(actual) == text.count('class="component-api"'), f"не у каждого компонента {path.name} есть API-справочник"
-        navigation = re.search(r'<div class="system-links">(.*?)</div>', text, re.DOTALL)
-        assert navigation, f"в {path.name} нет общей навигации"
-        links = re.findall(r'href="([a-z-]+\.html)"', navigation.group(1))
-        assert links == expected_navigation, f"навигация расходится в {path.name}"
-        for component_id in actual:
-            assert f'href="{path.name}#{component_id}"' in index, f"индекс не ведёт к {component_id}"
+        primary = re.search(r'<div class="system-links">(.*?)</div>', text, re.DOTALL)
+        assert primary and re.findall(r'href="([^"]+)"', primary.group(1)) == expected_navigation, f"навигация расходится в {path.name}"
+        current = re.findall(r'<a\b[^>]*aria-current="true"[^>]*>([^<]+)</a>', primary.group(1))
+        assert current == [level_pages[filename][0]], f"неверно отмечен уровень каталога в {path.name}"
+        tags = re.findall(r'<section[^>]+data-component-doc="[^"]+"[^>]*>', text)
+        actual = [re.search(r'data-component-doc="([^"]+)"', tag).group(1) for tag in tags]
+        if expected_level:
+            for tag in tags:
+                level = re.search(r'data-atomic-level="([^"]+)"', tag)
+                assert level and level.group(1) == expected_level, f"чужой уровень на странице {path.name}"
+            assert len(actual) == text.count('data-preview>'), f"не у каждого компонента {path.name} есть preview"
+            assert len(actual) == text.count("data-preview-code"), f"не у каждого компонента {path.name} есть код"
+            assert len(actual) == text.count('class="component-api"'), f"не у каждого компонента {path.name} есть API-справочник"
+        duplicates = documented & set(actual)
+        assert not duplicates, f"компоненты описаны на нескольких уровнях: {', '.join(sorted(duplicates))}"
         documented.update(actual)
-    assert documented == expected_ids, "документация не покрывает реестр компонентов"
 
-    recipes = (directory / "recipes.html").read_text(encoding="utf-8")
-    recipe_ids = re.findall(r'data-recipe-doc="([a-z-]+)"', recipes)
-    assert recipe_ids == ["first-page", "filtered-table", "master-detail", "validated-form"], "рецепты расходятся с ожидаемым порядком"
-    assert len(recipe_ids) == recipes.count("data-preview-code"), "рецепты не имеют живого примера и кода"
+    assert documented == expected_ids, "страницы уровней не покрывают реестр компонентов"
 
-    human_pages = [directory / "index.html", *category_pages.values(), directory / "recipes.html"]
+    pages = (directory / "pages.html").read_text(encoding="utf-8")
+    recipe_ids = re.findall(r'data-recipe-doc="([a-z-]+)"', pages)
+    assert recipe_ids == ["first-page", "filtered-table", "master-detail", "validated-form"], "страницы расходятся с ожидаемым порядком"
+    assert len(recipe_ids) == pages.count("data-preview-code"), "страницы не имеют живого примера и кода"
+
+    index = (directory / "index.html").read_text(encoding="utf-8")
+    for href, label in re.findall(r'<a href="((?:foundations|atoms|molecules|organisms|templates|pages)\.html#[a-z-]+)">([^<]+)', index):
+        filename, fragment = href.split("#", 1)
+        target = (directory / filename).read_text(encoding="utf-8")
+        heading = re.search(rf'<section[^>]*\bid="{re.escape(fragment)}"[^>]*>.*?<h2>([^<]+)</h2>', target, re.DOTALL)
+        assert heading, f"главная ведёт на отсутствующий раздел {href}"
+        assert heading.group(1) == label, f"название {label} на главной не совпадает с {heading.group(1)} в {href}"
+
+    human_pages = [directory / "index.html", *(directory / name for name in level_pages)]
     for path in human_pages:
         text = path.read_text(encoding="utf-8")
         primary = re.search(r'<div class="system-links">(.*?)</div>', text, re.DOTALL)
-        assert primary and re.findall(r'href="([a-z-]+\.html)"', primary.group(1)) == expected_navigation, f"основная навигация расходится в {path.name}"
-        current = re.findall(r'<a\b[^>]*aria-current="true"[^>]*>([^<]+)</a>', primary.group(1))
-        heading = re.search(r'<h1>([^<]+)</h1>', text)
-        assert heading and current == [heading.group(1)], f"заголовок страницы не совпадает с навигацией в {path.name}"
+        assert primary and re.findall(r'href="([^"]+)"', primary.group(1)) == expected_navigation, f"основная навигация расходится в {path.name}"
+        if path.name == "index.html":
+            assert re.search(r'<a class="system-name" href="index.html" aria-current="page">Craft</a>', text), "главная не отмечена в заголовке Craft"
         assert 'href="sheet.html"' not in text, f"проверочный лист попал в пользовательскую навигацию {path.name}"
 
     short_version = ".".join(MANIFEST["version"].split(".")[:2])
@@ -469,7 +516,7 @@ def check_language() -> None:
     assert MANIFEST.get("language") == "ru", "в craft.json должен быть указан русский язык"
     allowed_latin = {
         "aa", "api", "cdn", "chromium", "ci", "cli", "craft", "css", "esc", "example.com",
-        "geologica", "highlight.js", "html", "imagemagick", "javascript", "json", "markdown", "node.js", "onest",
+        "foundation", "geologica", "highlight.js", "html", "imagemagick", "javascript", "json", "markdown", "node.js", "onest",
         "pdf", "px", "python", "qr", "svg", "url", "wcag",
     }
 
@@ -537,6 +584,7 @@ def main() -> None:
         check_tokens,
         check_css_api,
         check_borders,
+        check_catalog_grid,
         check_state_marks,
         check_control_states,
         check_accessibility_contract,
@@ -557,6 +605,7 @@ def main() -> None:
         check_tokens: "токены",
         check_css_api: "публичный CSS API",
         check_borders: "рамки",
+        check_catalog_grid: "сетка каталога",
         check_state_marks: "метки состояний",
         check_control_states: "состояния управления",
         check_accessibility_contract: "контракт доступности",

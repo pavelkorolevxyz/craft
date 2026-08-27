@@ -17,6 +17,20 @@
       container.scrollTo({ left, behavior: 'auto' });
     };
 
+    // Метка текущего раздела живёт в CSS: скрипт отдаёт только координаты
+    // ссылки, а ориентацию и анимацию выбирает тема.
+    const placeMarker = (link) => {
+      const style = container.style;
+      style.setProperty('--nav-marker-y', `${link.offsetTop}px`);
+      style.setProperty('--nav-marker-h', `${link.offsetHeight}px`);
+      style.setProperty('--nav-marker-x', `${link.offsetLeft}px`);
+      style.setProperty('--nav-marker-w', `${link.offsetWidth}px`);
+      if (!container.hasAttribute('data-nav-marker')) {
+        container.getBoundingClientRect();
+        container.setAttribute('data-nav-marker', '');
+      }
+    };
+
     const setCurrent = (id) => {
       if (id === currentId) return;
       currentId = id;
@@ -29,7 +43,10 @@
           pair.link.removeAttribute('aria-current');
         }
       }
-      if (currentLink) revealCurrent(currentLink);
+      if (currentLink) {
+        placeMarker(currentLink);
+        revealCurrent(currentLink);
+      }
     };
 
     const updateCurrent = () => {
@@ -71,7 +88,11 @@
       });
     }
     addEventListener('scroll', scheduleUpdate, { passive: true });
-    addEventListener('resize', scheduleUpdate);
+    addEventListener('resize', () => {
+      const currentLink = pairs.find((pair) => pair.section.id === currentId)?.link;
+      if (currentLink) placeMarker(currentLink);
+      scheduleUpdate();
+    });
     updateCurrent();
   };
 

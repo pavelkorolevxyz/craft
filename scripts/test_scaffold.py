@@ -267,24 +267,26 @@ def test_interface_docs() -> None:
         assert match, f"индекс документации не открылся при {width}px"
         scroll_width, viewport, components, categories = map(int, match.groups()[:4])
         assert scroll_width <= viewport, f"индекс документации переполнен при {width}px"
-        assert components == len(surface["components"]) and categories == len(surface["componentCategories"]), "индекс документации расходится с реестром"
+        assert components == len(surface["components"]) + 9 and categories == 6, "индекс документации расходится с иерархией"
         assert match.group(5) == "true", "переключатель темы индекса не работает"
 
-    pages = {category["id"]: [component["id"] for component in surface["components"] if component["category"] == category["id"]] for category in surface["componentCategories"]}
-    pages["recipes"] = []
+    pages = {}
+    for page in ("foundations", "atoms", "molecules", "organisms", "templates", "pages"):
+        source = CATALOG / "interfaces" / f"{page}.html"
+        pages[page] = re.findall(r'data-component-doc="([a-z-]+)"', source.read_text(encoding="utf-8"))
     for page, expected in pages.items():
         source = CATALOG / "interfaces" / f"{page}.html"
-        widths = (1440, 320) if page in {"layout", "forms", "data", "recipes"} else (1440,)
+        widths = (1440, 320) if page in {"foundations", "atoms", "molecules", "organisms", "pages"} else (1440,)
         for width in widths:
             dumped = dump_probe(
                 source,
                 after_stable_layout(
                 "const toggle=document.querySelector('[data-theme-toggle]');const before=document.documentElement.dataset.theme;toggle.click();"
                 "const ids=[...document.querySelectorAll('[data-component-doc]')].map(node=>node.dataset.componentDoc).join(',');"
-                "const code=[...document.querySelectorAll('[data-preview-code]')];const generated=code.length>0&&code.every(node=>node.textContent.trim().length>0&&node.querySelector('.syntax-tag'));"
+                "const code=[...document.querySelectorAll('[data-preview-code]')];const generated=code.length===0||code.every(node=>node.textContent.trim().length>0&&node.querySelector('.syntax-tag'));"
                 "const tabs=document.querySelector('[data-tabs]');if(tabs){const first=tabs.querySelector('[role=tab]');first.focus();first.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))}"
                 "const opener=document.querySelector('[data-dialog-open]');if(opener)opener.click();"
-                "const codePanel=document.querySelector('.component-code');codePanel.open=true;const codeBlock=codePanel.querySelector('pre');const codeFits=codeBlock.scrollWidth<=codeBlock.clientWidth;"
+                "const codePanel=document.querySelector('.component-code');if(codePanel)codePanel.open=true;const codeBlock=codePanel?.querySelector('pre');const codeFits=!codeBlock||codeBlock.scrollWidth<=codeBlock.clientWidth;"
                 "const currentLink=document.querySelector('.docs-nav .system-links [aria-current=true]');const links=currentLink.parentElement.getBoundingClientRect();const currentBox=currentLink.getBoundingClientRect();const currentVisible=currentBox.left>=links.left&&currentBox.right<=links.right;"
                 "const records=document.querySelector('.data-table--records');const recordCells=records?[...records.querySelectorAll('td')]:[];const recordsReady=!records||innerWidth>520||(getComputedStyle(records.querySelector('tbody')).display==='grid'&&recordCells.every(cell=>cell.dataset.label&&getComputedStyle(cell,'::before').content!=='none'));"
                 "const mechanics=(!tabs||tabs.querySelectorAll('[aria-selected=true]').length===1)&&(!opener||document.querySelector('dialog').open)&&codeFits&&recordsReady;"

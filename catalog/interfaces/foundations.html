@@ -1,39 +1,25 @@
 <!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark light">
-  <title>Craft · Основы интерфейсов</title>
-  <script src="../../assets/interfaces/theme.js"></script>
-  <link rel="stylesheet" href="../../assets/shared/tokens.css">
-  <link rel="stylesheet" href="../../assets/interfaces/theme.css">
-  <link rel="stylesheet" href="catalog.css">
-  <script src="docs.js" defer></script>
-</head>
-<body>
-  <svg class="icon-sprite" aria-hidden="true">
-    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
-    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol>
-    <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
-    <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11"/><path d="M16 8V5H5v11h3"/></symbol>
-    <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
-  </svg>
-  <div class="system-layout docs-layout">
-    <nav class="system-nav docs-nav" aria-label="Документация компонентов">
-      <div class="system-brand"><a class="system-name" href="index.html">Craft</a><span class="system-version">0.5</span></div>
-
-      <div class="system-links"><a href="index.html">Компоненты</a>
-        <a href="foundations.html" aria-current="true">Основы</a><a href="layout.html">Каркасы</a><a href="actions.html">Действия</a><a href="forms.html">Формы</a><a href="navigation.html">Навигация</a><a href="data.html">Данные</a><a href="feedback.html">Состояния</a><a href="overlays.html">Оверлеи</a>
-      <a href="recipes.html">Рецепты</a></div>
-
-      <button class="button button--stable button--icon theme-switch system-theme" type="button" data-theme-toggle aria-pressed="false"><span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span><span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span></button>
-    </nav>
-    <main class="docs-main" data-craft-layout="interface">
-      <article class="docs-article">
-        <header class="docs-page-head"><h1>Основы</h1><p>Шкала текста и единый способ подключения служебных пиктограмм.</p></header>
-
-        <section class="component-doc" id="typography" data-component-doc="typography">
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark light"><title>Craft · Foundation</title><script src="../../assets/interfaces/theme.js"></script><link rel="stylesheet" href="../../assets/shared/tokens.css"><link rel="stylesheet" href="../../assets/interfaces/theme.css"><link rel="stylesheet" href="catalog.css"><script src="catalog.js" defer></script><script src="docs.js" defer></script></head>
+<body><svg class="icon-sprite" aria-hidden="true"><symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol><symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol><symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol><symbol id="icon-down" viewBox="0 0 12 8"><path d="m1 1 5 5 5-5"/></symbol><symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol><symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11"/><path d="M16 8V5H5v11h3"/></symbol></svg>
+<div class="system-layout docs-layout"><nav class="system-nav docs-nav" aria-label="Уровни интерфейсной системы"><div class="system-brand"><a class="system-name" href="index.html">Craft</a><span class="system-version">0.5</span></div><div class="system-links"><a href="foundations.html" aria-current="true">Foundation</a><a href="atoms.html">Атомы</a><a href="molecules.html">Молекулы</a><a href="organisms.html">Организмы</a><a href="templates.html">Шаблоны</a><a href="pages.html">Страницы</a></div><button class="button button--stable button--icon theme-switch system-theme" type="button" data-theme-toggle aria-pressed="false"><span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span><span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span></button></nav>
+<main class="docs-main" data-craft-layout="interface"><article class="docs-article"><header class="docs-page-head"><h1>Foundation</h1><p>Токены, шрифтовая шкала и правила, на которых строятся компоненты.</p></header><section class="component-doc" id="colors" data-foundation-doc="colors">
+          <header class="component-doc__head"><div><h2>Цветовые роли</h2><p class="component-doc__summary">Компоненты используют семантические роли вместо собственных оттенков.</p></div></header>
+          <div class="component-preview component-preview--start">
+            <div class="token-table">
+              <div class="token-row"><i style="--swatch:var(--bg)"></i><strong>Фон</strong><code>--bg</code><em>Основная плоскость</em><span data-token-value="--bg"></span></div>
+              <div class="token-row"><i style="--swatch:var(--surface)"></i><strong>Поверхность</strong><code>--surface</code><em>Смысловая группа</em><span data-token-value="--surface"></span></div>
+              <div class="token-row"><i style="--swatch:var(--line)"></i><strong>Линия</strong><code>--line</code><em>Рамка и разделитель</em><span data-token-value="--line"></span></div>
+              <div class="token-row"><i style="--swatch:var(--text)"></i><strong>Текст</strong><code>--text</code><em>Заголовок и значение</em><span data-token-value="--text"></span></div>
+              <div class="token-row"><i style="--swatch:var(--muted)"></i><strong>Приглушённый</strong><code>--muted</code><em>Служебная подпись</em><span data-token-value="--muted"></span></div>
+              <div class="token-row"><i style="--swatch:var(--accent)"></i><strong>Акцент</strong><code>--accent</code><em>Ссылка и приоритет</em><span data-token-value="--accent"></span></div>
+              <div class="token-row"><i style="--swatch:var(--ok)"></i><strong>Норма</strong><code>--ok</code><em>Успешное состояние</em><span data-token-value="--ok"></span></div>
+              <div class="token-row"><i style="--swatch:var(--warn)"></i><strong>Предупреждение</strong><code>--warn</code><em>Требует внимания</em><span data-token-value="--warn"></span></div>
+              <div class="token-row"><i style="--swatch:var(--error)"></i><strong>Ошибка</strong><code>--error</code><em>Требует решения</em><span data-token-value="--error"></span></div>
+            </div>
+          </div>
+          <div class="component-notes foundation-notes"><section><h3>Применение</h3><p>Выбирай роль по смыслу. Не копируй вычисленное значение цвета в локальный класс.</p></section><section><h3>Темы</h3><p>Тёмная, светлая и печатная темы меняют значения ролей, а компоненты сохраняют те же имена.</p></section></div>
+        </section>
+<section class="component-doc" id="typography" data-component-doc="typography" data-atomic-level="foundation">
           <header class="component-doc__head"><div><h2>Типографика</h2><p class="component-doc__summary">Фиксированная шкала отделяет служебную подпись, основной текст и три уровня заголовков.</p></div></header>
           <div class="component-preview component-preview--start" data-preview>
             <div class="type-specimens">
@@ -48,23 +34,13 @@
           <div class="component-notes"><section><h3>Правило</h3><p>Onest используется в тексте и управлении. Geologica остаётся в коротких заголовках и числах. Размер не меняется плавно между контрольными ширинами.</p></section><section><h3>Доступность</h3><p>Уровень заголовка задаёт структуру документа, а не внешний размер. На странице остаётся один <code>h1</code>.</p></section></div>
           <table class="component-api"><caption>Шкала</caption><tbody><tr><th>Служебный</th><td><code>--type-service</code> · 12 px</td></tr><tr><th>Основной</th><td><code>--type-body</code> · 14 px</td></tr><tr><th>Вводный</th><td><code>--type-lede</code> · 16 px</td></tr><tr><th>Локальный</th><td><code>--type-local</code> · 18 px</td></tr><tr><th>Секция</th><td><code>--type-section</code> · 24 px</td></tr><tr><th>Страница</th><td><code>--type-page</code> · 32 px</td></tr></tbody></table>
         </section>
-
-        <section class="component-doc" id="icon" data-component-doc="icon">
-          <header class="component-doc__head"><div><h2>Иконка</h2><p class="component-doc__summary">Линейная пиктограмма сопровождает знакомое действие и не заменяет доступное имя.</p></div></header>
-          <div class="component-preview" data-preview>
-            <div class="docs-icon-grid">
-              <div><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg><span>Светлая тема</span></div>
-              <div><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg><span>Тёмная тема</span></div>
-              <div><svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg><span>Готово</span></div>
-              <div><svg class="icon" aria-hidden="true"><use href="#icon-copy"/></svg><span>Копировать</span></div>
+<section class="component-doc" id="spacing" data-foundation-doc="spacing">
+          <header class="component-doc__head"><div><h2>Интервалы</h2><p class="component-doc__summary">Плотная шкала задаёт расстояния внутри групп и между самостоятельными областями.</p></div></header>
+          <div class="component-preview component-preview--start">
+            <div class="space-scale">
+              <div><span>4</span><i style="--space:var(--space-1)"></i></div><div><span>8</span><i style="--space:var(--space-2)"></i></div><div><span>12</span><i style="--space:var(--space-3)"></i></div><div><span>16</span><i style="--space:var(--space-4)"></i></div><div><span>20</span><i style="--space:var(--space-5)"></i></div><div><span>24</span><i style="--space:var(--space-6)"></i></div><div><span>32</span><i style="--space:var(--space-7)"></i></div>
             </div>
           </div>
-          <details class="disclosure component-code"><summary><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg>Разметка примера</summary><pre><code data-preview-code></code></pre></details>
-          <div class="component-notes"><section><h3>Применение</h3><p>Символ хранится один раз в скрытом SVG-спрайте. Экземпляр подключается через <code>use</code> и наследует текущий цвет.</p></section><section><h3>Доступность</h3><p>Декоративная иконка получает <code>aria-hidden="true"</code>. Кнопка только с иконкой обязана иметь <code>aria-label</code>.</p></section></div>
-          <table class="component-api"><caption>Публичный контракт</caption><tbody><tr><th>Класс</th><td><code>.icon</code></td></tr><tr><th>Геометрия</th><td>18 × 18 px, линия 1.7 px</td></tr><tr><th>Цвет</th><td><code>currentColor</code></td></tr></tbody></table>
+          <div class="component-notes foundation-notes"><section><h3>Ритм</h3><p>Внутри смысловой группы расстояние меньше, чем между соседними группами.</p></section><section><h3>Границы</h3><p>Размеры шрифта, линий и иконок не подгоняются под шкалу интервалов.</p></section></div>
         </section>
-      </article>
-    </main>
-  </div>
-</body>
-</html>
+<section class="component-doc" id="stack" data-component-doc="stack" data-atomic-level="foundation"><header class="component-doc__head"><div><h2>Вертикальный поток</h2><p class="component-doc__summary">Одинаковый зазор между последовательными блоками без управления их внутренними полями.</p></div></header><div class="component-preview" data-preview><div class="stack" style="--stack-gap: var(--space-3)"><h3>Последовательность</h3><p>Первый абзац не получает внешнего верхнего поля.</p><p>Расстояние добавляется только между соседними элементами.</p><button class="button" type="button">Действие</button></div></div><details class="disclosure component-code"><summary><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg>Разметка примера</summary><pre><code data-preview-code></code></pre></details><div class="component-notes"><section><h3>Применение</h3><p>Используй для вертикальной группы разнородных элементов. Для однородного списка выбирай семантический список.</p></section><section><h3>Настройка</h3><p>Локальный зазор задаётся переменной <code>--stack-gap</code> из шкалы отступов.</p></section></div><table class="component-api"><caption>Публичный контракт</caption><tbody><tr><th>Корень</th><td><code>.stack</code></td></tr><tr><th>Зазор</th><td><code>--stack-gap</code></td></tr></tbody></table></section></article></main></div></body></html>
