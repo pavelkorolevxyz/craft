@@ -144,27 +144,29 @@
 
   /* Светлая тема Craft: тёплые бумажные нейтрали снижают блики,
      но сохраняют контраст текста, таблиц и графиков. */
-  --craft-light-bg: #f3f2ef;
-  --craft-light-surface: #e8e6e1;
-  --craft-light-surface-muted: #eeece8;
-  --craft-light-sunken: #dfdcd6;
-  --craft-light-line: #d1cec7;
+  --craft-light-bg: #f7f6f3;
+  --craft-light-surface: #eae8e3;
+  --craft-light-surface-muted: #f1efea;
+  --craft-light-sunken: #dedbd4;
+  --craft-light-line: #c7c3ba;
   --craft-light-line-strong: #3b3a37;
   --craft-light-text: #20201e;
   --craft-light-text-body: rgb(32 32 30 / .82);
-  --craft-light-muted: #65635d;
-  --craft-light-accent: #b22938;
-  --craft-light-accent-mark: #d52f40;
-  --craft-light-accent-fill: #b42b39;
-  --craft-light-accent-fill-hover: #992331;
-  --craft-light-accent-tint: rgb(213 47 64 / .09);
-  --craft-light-selection: rgb(178 41 56 / .24);
+  --craft-light-muted: #5c5a54;
+  --craft-light-accent: #bf1f2e;
+  --craft-light-accent-mark: #e12b3a;
+  --craft-light-accent-fill: #c5303d;
+  --craft-light-accent-fill-hover: #a81f2c;
+  --craft-light-accent-tint: rgb(225 43 58 / .1);
+  --craft-light-selection: rgb(225 43 58 / .22);
   --craft-light-overlay-line: rgb(32 32 30 / .16);
   --craft-light-disabled: #8a8780;
   --craft-light-scrim: rgb(32 32 30 / .48);
-  --craft-light-data-blue: #1e659f;
-  --craft-light-data-amber: #8a5a00;
-  --craft-light-data-green: #237447;
+  --craft-light-ok: #159c54;
+  --craft-light-warn: #cc7a00;
+  --craft-light-data-blue: #0b62ad;
+  --craft-light-data-amber: #a35f00;
+  --craft-light-data-green: #157a41;
 
   /* Шрифты. Geologica — короткие заголовки и значимые числа, Onest — текст
      и элементы управления, моноширинный — только настоящий код. */
@@ -199,6 +201,8 @@
   --craft-code-green: #3f6b3a;
   --craft-data-red: var(--craft-light-accent-mark);
   --craft-data-neutral: var(--craft-light-text);
+  --craft-ok: var(--craft-light-ok);
+  --craft-warn: var(--craft-light-warn);
   --craft-data-blue: var(--craft-light-data-blue);
   --craft-data-amber: var(--craft-light-data-amber);
   --craft-data-green: var(--craft-light-data-green);

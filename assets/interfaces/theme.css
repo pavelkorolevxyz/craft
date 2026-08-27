@@ -241,8 +241,10 @@ h3 { font-size: var(--type-local); line-height: 1.25; }
 .status--ok { --status: var(--ok); }
 .status--warn { --status: var(--warn); }
 .status--error { --status: var(--error); }
+.status--label { justify-content: center; min-height: 1.7rem; padding: 0 var(--space-2); border: 1px solid var(--status, var(--line)); background: var(--surface); white-space: nowrap; }
+.status--label::before { display: none; }
 
-.section--accent, .callout, .button--primary, .data-table .total td {
+.section--accent, .notice--action, .button--primary, .data-table .total td {
   --selection: var(--craft-selection-on-accent);
 }
 .segmented { display: inline-flex; border: 1px solid var(--line); }
@@ -254,10 +256,6 @@ h3 { font-size: var(--type-local); line-height: 1.25; }
 .segmented input:checked + span { color: var(--on-accent); background: var(--accent-fill); }
 .segmented input:focus-visible + span { outline: 2px solid var(--accent-mark); outline-offset: -3px; }
 .segmented input:disabled + span { color: var(--craft-disabled); cursor: default; }
-
-.callout { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-5); align-items: center; padding: var(--space-7) var(--gutter); background: var(--accent-fill); color: var(--on-accent); }
-.callout strong { max-width: 22ch; font: 700 var(--type-section)/1.08 var(--font-display); letter-spacing: -.03em; }
-.callout p { max-width: 38ch; margin: 0; }
 
 /* Инлайновый код в тексте, списке и ячейке таблицы. Имя токена, класса или
    атрибута ничего не открывает по нажатию, поэтому берёт тихую плашку, а не
@@ -415,13 +413,6 @@ input[type="checkbox"]:disabled, input[type="radio"]:disabled { border-color: va
 .tag--accent { color: var(--accent); border-color: var(--accent); }
 a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent); }
 
-/* Лейбл состояния для статусной колонки: одинаковая высота, цветная рамка,
-   явный текст. Заливку он не берёт, чтобы в колонке не горел ряд плашек. */
-.state-label { display: inline-flex; justify-content: center; align-items: center; min-height: 1.7rem; padding: 0 var(--space-2); border: 1px solid var(--status, var(--line)); color: var(--text); background: var(--surface); font-size: var(--type-service); white-space: nowrap; }
-.state-label--ok { --status: var(--ok); }
-.state-label--warn { --status: var(--warn); }
-.state-label--error { --status: var(--error); }
-
 /* Пары «поле — значение». Подпись и значение стоят на одной строке, пока
    хватает ширины, и разворачиваются в две строки на узком экране. */
 .kv-block { display: grid; gap: var(--space-3); min-width: 0; }
@@ -442,13 +433,19 @@ a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent
 
 /* Лента событий. Линия соединяет метки, а не подписи, поэтому запись любой
    высоты не разрывает вертикаль. */
+/* Лента событий. Точка стоит в своей узкой колонке и держит вертикаль,
+   всё остальное содержимое записи идёт одной колонкой справа независимо от
+   того, лежит оно плоско или собрано в блок. Раньше абзац проваливался в
+   первую колонку и растягивал её, из-за чего время и заголовок уезжали к
+   середине строки. */
 .timeline { display: grid; margin: 0; padding: 0; list-style: none; }
-.timeline li { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-2) var(--space-4); padding-bottom: var(--space-5); }
+.timeline li { position: relative; display: grid; grid-template-columns: .625rem minmax(0, 1fr); column-gap: var(--space-4); row-gap: var(--space-1); padding-bottom: var(--space-5); }
 .timeline li:last-child { padding-bottom: 0; }
-.timeline li:not(:last-child)::before { content: ""; position: absolute; top: 1rem; bottom: 0; left: calc(.325rem - .5px); width: 1px; background: var(--line); }
-.timeline__mark { grid-row: 1 / span 2; width: .65rem; height: .65rem; margin-top: .42rem; background: var(--status, var(--muted)); }
+.timeline li > *:not(.timeline__mark) { grid-column: 2; }
+.timeline li:not(:last-child)::before { content: ""; position: absolute; top: 1.2rem; bottom: 0; left: calc(.3125rem - .5px); width: 1px; background: var(--line); }
+.timeline__mark { grid-column: 1; grid-row: 1 / -1; align-self: start; width: .625rem; height: .625rem; margin-top: .3rem; border-radius: 50%; background: var(--status, var(--muted)); }
 .timeline__time { color: var(--muted); font-size: var(--type-service); font-variant-numeric: tabular-nums; }
-.timeline__title { color: var(--text); font-weight: 600; }
+.timeline__title { display: block; color: var(--text); font-weight: 600; }
 .timeline p { margin: var(--space-1) 0 0; }
 
 /* Блок кода с копированием. Подпись называет источник, кнопка держит обе
@@ -468,11 +465,9 @@ a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent
 .notice--ok { --status: var(--ok); }
 .notice--warn { --status: var(--warn); }
 .notice--error { --status: var(--error); border-color: var(--accent-mark); background: var(--error-tint); }
-
-/* Заглушка на время загрузки. Это плоскость без движения: мерцание рядом с
-   данными читается как изменение значения. */
-.skeleton { display: block; min-width: 2rem; height: .9rem; background: var(--surface); }
-.skeleton--block { height: 6rem; }
+.notice--action { --status: var(--on-accent); border-color: var(--accent-fill); color: var(--on-accent); background: var(--accent-fill); }
+.notice--action .notice__title { color: var(--on-accent); }
+.notice--action code { color: var(--on-accent); background: var(--craft-on-accent-line); }
 
 /* Раскрываемый блок. Нативный details даёт клавиатуру и печать, стрелка
    заменяет системный маркер и поворачивается при раскрытии. */
@@ -516,11 +511,16 @@ a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent
 
 /* Постраничная навигация. Текущая страница выделена плоскостью, соседние
    страницы держат размер поля касания. */
-.pagination { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
-.pagination__page { display: inline-flex; justify-content: center; align-items: center; min-width: 2.5rem; min-height: 2.5rem; padding: 0 var(--space-2); border: 1px solid var(--line); color: var(--text); text-decoration: none; font-variant-numeric: tabular-nums; }
+/* Постраничная навигация. Одинаковые квадратные ячейки по центру полосы.
+   Номер в покое приглушён: набор цифр не должен спорить с содержимым,
+   которое листают. Длинный ряд сокращает многоточие, а не мелкий шрифт. */
+.pagination { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: var(--space-2); }
+.pagination__page { display: inline-flex; justify-content: center; align-items: center; width: 2.5rem; min-width: 2.5rem; height: 2.5rem; padding: 0; border: 1px solid var(--line); color: var(--muted); text-decoration: none; font-variant-numeric: tabular-nums; transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out); }
 .pagination__page:hover { color: var(--accent); border-color: var(--accent); }
-.pagination__page[aria-current="page"] { color: var(--on-accent); background: var(--accent-fill); border-color: var(--accent-fill); }
-.pagination__status { margin: 0 0 0 auto; color: var(--muted); font-size: var(--type-service); font-variant-numeric: tabular-nums; }
+.pagination__page[aria-current="page"] { color: var(--on-accent); background: var(--accent-fill); border-color: var(--accent-fill); cursor: default; pointer-events: none; }
+.pagination__page[aria-disabled="true"] { color: var(--craft-disabled); pointer-events: none; }
+.pagination__gap { display: inline-flex; justify-content: center; align-items: center; width: 1.5rem; height: 2.5rem; color: var(--muted); }
+.pagination__page .icon { width: 14px; height: 14px; }
 
 /* Панель параметров над областью данных. Она стоит рядом с тем, что меняет,
    и заканчивается числом отобранных записей. */
@@ -563,7 +563,6 @@ a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent
   .workbench { grid-template-columns: 1fr; }
   .workbench__aside { border: 0; border-top: 1px solid var(--line); }
   .section-head p { max-width: 60ch; }
-  .callout { grid-template-columns: 1fr; }
   .section-nav__links { display: flex; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; border-inline-start: 0; border-bottom: 1px solid var(--line); }
   .section-nav__links::-webkit-scrollbar { display: none; }
   .section-nav__links a { flex: 0 0 auto; }
@@ -576,7 +575,6 @@ a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent
   h1 { font-size: 28px; }
   h2 { font-size: 22px; }
   .metric__value { font-size: 28px; }
-  .callout strong { font-size: 24px; }
   .workspace-head { position: relative; padding: var(--space-5) var(--gutter); }
   .workspace-head h1 { padding-right: calc(44px + var(--space-4)); font-size: var(--type-section); }
   .workspace-head__tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; width: 100%; }
@@ -627,7 +625,7 @@ a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent
   .shell { min-height: 0; }
   .page-head { position: static; }
   .section { break-inside: auto; }
-  .metric, .scoreboard, .callout, pre, blockquote, tr { break-inside: avoid; }
+  .metric, .scoreboard, .notice, pre, blockquote, tr { break-inside: avoid; }
   .section-head, h2, h3 { break-after: avoid; }
   thead { display: table-header-group; }
   .theme-switch, .section-nav, .tablist, .pagination, .code-block__copy { display: none; }

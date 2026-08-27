@@ -46,10 +46,10 @@ SHOTS = (
     Shot("interface-catalog", "interface-catalog-dark", 1440, 900, "?theme=dark"),
     Shot("interface-catalog", "interface-catalog-mobile", 390, 844, "?theme=dark"),
     Shot("interface-catalog", "interface-catalog-light", 1440, 900, "?theme=light"),
-    Shot("catalog-hierarchy", "catalog-atoms-dark", 1200, 1200, "?theme=dark#atoms"),
-    Shot("catalog-hierarchy", "catalog-atoms-light", 1200, 1200, "?theme=light#atoms"),
-    Shot("catalog-hierarchy", "catalog-atoms-mobile", 390, 844, "?theme=dark#atoms"),
-    Shot("catalog-hierarchy", "catalog-organisms-dark", 1200, 1200, "?theme=dark#organisms"),
+    Shot("catalog-grid", "catalog-atoms-dark", 1200, 1200, "?theme=dark"),
+    Shot("catalog-grid", "catalog-atoms-light", 1200, 1200, "?theme=light"),
+    Shot("catalog-grid", "catalog-atoms-mobile", 390, 844, "?theme=dark"),
+    Shot("catalog-grid", "catalog-organisms-dark", 900, 1200, "?theme=dark"),
     Shot("slides-deck", "slides-starter", 1280, 720, "#1"),
     Shot("slides-catalog", "slides-catalog-cover", 1280, 720, "#1"),
     Shot("slides-catalog", "slides-catalog-content", 1280, 720, "#5"),
@@ -107,7 +107,7 @@ def main() -> None:
         sources = {
             **{key: path / "index.html" for key, path in projects.items()},
             "interface-catalog": ROOT / "catalog/interfaces/sheet.html",
-            "catalog-hierarchy": ROOT / "catalog/interfaces/index.html",
+            "catalog-grid": ROOT / "tests/fixtures/interface-catalog-grid.html",
             "slides-catalog": ROOT / "catalog/slides/index.html",
             "slides-case-study": ROOT / "catalog/slides/case-study.html",
         }

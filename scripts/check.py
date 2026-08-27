@@ -114,10 +114,11 @@ def check_required() -> None:
     for path in CANONICAL_INTERFACE_PAGES:
         html = path.read_text(encoding="utf-8")
         component_tags.extend((path, tag) for tag in re.findall(r'<section[^>]+data-component-doc="[^"]+"[^>]*>', html))
-    assert len(component_tags) == 42, f"в атомарном реестре ожидалось 42 компонента, найдено: {len(component_tags)}"
+    expected_components = len(MANIFEST["surfaces"]["interface"]["components"])
+    assert len(component_tags) == expected_components, f"в атомарном реестре ожидалось {expected_components} компонента, найдено: {len(component_tags)}"
     for path, tag in component_tags:
         level = re.search(r'data-atomic-level="([^"]+)"', tag)
-        assert level and level.group(1) in {"foundation", "atom", "molecule", "organism"}, (
+        assert level and level.group(1) in {"atom", "molecule", "organism"}, (
             f"у компонента в {path.relative_to(ROOT)} нет корректного data-atomic-level"
         )
 
@@ -141,7 +142,7 @@ def check_required() -> None:
     assert case_study.is_file() and "catalog/slides/case-study.html" in readme, "мини-колода не связана с README"
     case_html = case_study.read_text(encoding="utf-8")
     assert len(re.findall(r'<section class="slide\b', case_html)) == 8, "мини-колода должна содержать восемь исходных слайдов"
-    for value in ("42", "19", "11", "58", MANIFEST["version"]):
+    for value in ("34", "19", "11", "58", MANIFEST["version"]):
         assert value in case_html, f"в мини-колоде отсутствует факт из реестра: {value}"
 
 
@@ -347,38 +348,39 @@ def check_fragment_manifest() -> None:
 
 def check_interface_components() -> None:
     surface = MANIFEST["surfaces"]["interface"]
-    categories = surface.get("componentCategories", [])
-    category_ids = [category.get("id") for category in categories]
-    assert category_ids and len(category_ids) == len(set(category_ids)), "категории компонентов не уникальны"
-    assert all(set(category) == {"id", "title"} and category["title"].strip() for category in categories), "неполная категория компонентов"
-
+    assert "componentCategories" not in surface, "старая иерархия категорий осталась в реестре"
     components = surface.get("components", [])
-    component_ids = [component.get("id") for component in components]
-    assert component_ids and len(component_ids) == len(set(component_ids)), "компоненты интерфейса не уникальны"
-    fields = {"id", "title", "category", "kind", "source", "rootClass", "dependencies", "summary"}
+    foundations = surface.get("foundations", [])
+    ids = [item.get("id") for item in [*foundations, *components]]
+    assert ids and len(ids) == len(set(ids)), "элементы интерфейсной системы не уникальны"
+    component_fields = {"id", "title", "level", "kind", "source", "rootClass", "dependencies", "summary"}
+    foundation_fields = component_fields - {"level"}
     theme = (ASSETS / "interfaces/theme.css").read_text(encoding="utf-8")
-    for component in components:
-        assert set(component) == fields, f"неполная запись компонента {component.get('id')}"
-        assert component["category"] in category_ids, f"неизвестная категория у {component['id']}"
-        assert component["kind"] in {"foundation", "primitive", "fragment"}, f"неизвестный вид компонента {component['id']}"
-        assert component["title"].strip() and component["summary"].strip(), f"не описан компонент {component['id']}"
-        assert (ROOT / component["source"]).is_file(), f"не найден источник {component['source']}"
-        for dependency in component["dependencies"]:
-            assert (ROOT / dependency).is_file(), f"не найдена зависимость {dependency} для {component['id']}"
-        root_class = component["rootClass"]
-        if root_class:
-            assert re.search(rf"\.{re.escape(root_class)}(?![\w-])", theme), f"не определён корневой класс {root_class}"
-
+    for item in foundations:
+        assert set(item) == foundation_fields and item["kind"] in {"foundation", "primitive", "fragment"}, f"неполная запись Foundation {item.get('id')}"
+    for item in components:
+        assert set(item) == component_fields, f"неполная запись компонента {item.get('id')}"
+        assert item["level"] in {"atom", "molecule", "organism"}, f"неизвестный уровень у {item['id']}"
+        assert item["kind"] in {"primitive", "fragment"}, f"неизвестный вид компонента {item['id']}"
+    for item in [*foundations, *components]:
+        assert item["title"].strip() and item["summary"].strip(), f"не описан элемент {item['id']}"
+        assert (ROOT / item["source"]).is_file(), f"не найден источник {item['source']}"
+        for dependency in item["dependencies"]:
+            assert (ROOT / dependency).is_file(), f"не найдена зависимость {dependency} для {item['id']}"
+        if item["rootClass"]:
+            assert re.search(rf"\.{re.escape(item['rootClass'])}(?![\w-])", theme), f"не определён корневой класс {item['rootClass']}"
     fragment_ids = {fragment["id"] for fragment in surface["fragments"]}
-    registered_fragments = {component["id"] for component in components if component["kind"] == "fragment"}
-    assert registered_fragments == fragment_ids, "реестр компонентов не покрывает интерфейсные фрагменты"
+    registered_fragments = {item["id"] for item in [*foundations, *components] if item["kind"] == "fragment"}
+    assert registered_fragments == fragment_ids, "реестр не покрывает интерфейсные фрагменты"
 
 
 def check_interface_documentation() -> None:
     directory = ROOT / "catalog/interfaces"
-    expected_ids = {component["id"] for component in MANIFEST["surfaces"]["interface"]["components"]}
+    surface = MANIFEST["surfaces"]["interface"]
+    expected_ids = {component["id"] for component in surface["components"]}
+    expected_foundations = {item["id"] for item in surface["foundations"]}
     level_pages = {
-        "foundations.html": ("Foundation", "foundation"),
+        "foundations.html": ("Foundation", None),
         "atoms.html": ("Атомы", "atom"),
         "molecules.html": ("Молекулы", "molecule"),
         "organisms.html": ("Организмы", "organism"),
@@ -410,21 +412,22 @@ def check_interface_documentation() -> None:
         documented.update(actual)
 
     assert documented == expected_ids, "страницы уровней не покрывают реестр компонентов"
+    foundation_page = (directory / "foundations.html").read_text(encoding="utf-8")
+    actual_foundations = set(re.findall(r'data-foundation-doc="([a-z-]+)"', foundation_page))
+    assert actual_foundations == expected_foundations, "Foundation не совпадает с реестром"
 
     pages = (directory / "pages.html").read_text(encoding="utf-8")
     recipe_ids = re.findall(r'data-recipe-doc="([a-z-]+)"', pages)
-    assert recipe_ids == ["first-page", "filtered-table", "master-detail", "validated-form"], "страницы расходятся с ожидаемым порядком"
+    assert recipe_ids == ["filtered-table", "master-detail", "validated-form"], "страницы расходятся с ожидаемым порядком"
     assert len(recipe_ids) == pages.count("data-preview-code"), "страницы не имеют живого примера и кода"
+    getting_started = (directory / "getting-started.html").read_text(encoding="utf-8")
+    assert re.findall(r'data-recipe-doc="([a-z-]+)"', getting_started) == ["first-page"], "начало работы не содержит первую сборку"
 
     index = (directory / "index.html").read_text(encoding="utf-8")
-    for href, label in re.findall(r'<a href="((?:foundations|atoms|molecules|organisms|templates|pages)\.html#[a-z-]+)">([^<]+)', index):
-        filename, fragment = href.split("#", 1)
-        target = (directory / filename).read_text(encoding="utf-8")
-        heading = re.search(rf'<section[^>]*\bid="{re.escape(fragment)}"[^>]*>.*?<h2>([^<]+)</h2>', target, re.DOTALL)
-        assert heading, f"главная ведёт на отсутствующий раздел {href}"
-        assert heading.group(1) == label, f"название {label} на главной не совпадает с {heading.group(1)} в {href}"
+    index_levels = re.findall(r'<div class="component-index[^"]*">(.*?)</div>', index, re.DOTALL)
+    assert len(index_levels) == 1 and re.findall(r'href="([a-z-]+\.html)"', index_levels[0]) == list(level_pages), "главная дублирует содержимое страниц уровней"
 
-    human_pages = [directory / "index.html", *(directory / name for name in level_pages)]
+    human_pages = [directory / "index.html", directory / "getting-started.html", *(directory / name for name in level_pages)]
     for path in human_pages:
         text = path.read_text(encoding="utf-8")
         primary = re.search(r'<div class="system-links">(.*?)</div>', text, re.DOTALL)

@@ -154,7 +154,7 @@
     }
   });
 
-  document.querySelectorAll("[data-component-doc], [data-recipe-doc]").forEach((article) => {
+  document.querySelectorAll("[data-foundation-doc], [data-component-doc], [data-recipe-doc]").forEach((article) => {
     const preview = article.querySelector("[data-preview]");
     const output = article.querySelector("[data-preview-code]");
     if (!preview || !output) return;

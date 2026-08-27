@@ -267,7 +267,7 @@ def test_interface_docs() -> None:
         assert match, f"индекс документации не открылся при {width}px"
         scroll_width, viewport, components, categories = map(int, match.groups()[:4])
         assert scroll_width <= viewport, f"индекс документации переполнен при {width}px"
-        assert components == len(surface["components"]) + 9 and categories == 6, "индекс документации расходится с иерархией"
+        assert components == 6 and categories == 1, "главная должна показывать только шесть уровней"
         assert match.group(5) == "true", "переключатель темы индекса не работает"
 
     pages = {}

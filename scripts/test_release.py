@@ -17,7 +17,7 @@ from lib import ROOT, chromium_args
 
 FORBIDDEN_PARTS = {"tests", "docs", "examples", "output", "artifacts"}
 RUNTIME_SCRIPTS = {"lib.py", "scaffold.py", "compose.py", "check_project.py"}
-INTERFACE_DOCS = {"index.html", "sheet.html", "foundations.html", "atoms.html", "molecules.html", "organisms.html", "templates.html", "pages.html"}
+INTERFACE_DOCS = {"index.html", "sheet.html", "getting-started.html", "foundations.html", "atoms.html", "molecules.html", "organisms.html", "templates.html", "pages.html"}
 
 
 def digest(path: Path) -> str:

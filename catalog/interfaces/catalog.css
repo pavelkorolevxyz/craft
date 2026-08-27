@@ -222,6 +222,7 @@
 .component-index a { min-width: 0; min-height: 72px; display: flex; flex-direction: column; gap: var(--space-1); justify-content: center; padding: var(--space-3) var(--space-4); outline: 1px solid var(--line); color: var(--text); background: var(--bg); text-decoration: none; }
 .component-index a:hover, .component-index a:focus-visible { color: var(--accent); background: var(--surface); }
 .component-index span, .component-index code { overflow: hidden; color: var(--muted); font: var(--type-service)/1.5 var(--font-mono); text-overflow: ellipsis; white-space: nowrap; }
+.level-index span { font-family: var(--font-text); }
 /* Страница категории и блок отдельного компонента. */
 .docs-article { min-width: 0; }
 .docs-page-head { padding: var(--space-7); border-bottom: 1px solid var(--line); }
