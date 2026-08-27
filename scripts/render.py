@@ -55,9 +55,9 @@ SHOTS = (
     Shot("slides-catalog", "slides-catalog-content", 1280, 720, "#5"),
     Shot("slides-catalog", "slides-catalog-recording", 390, 844, "#1"),
     Shot("slides-catalog", "slides-catalog-grid", 1440, 900, "?view=grid#1"),
-    Shot("slides-case-study", "slides-case-study-cover", 1280, 720, "#1"),
-    Shot("slides-case-study", "slides-case-study-grid", 1440, 900, "?view=grid#1"),
-    Shot("slides-case-study", "slides-case-study-recording", 390, 844, "#4"),
+    Shot("slides-case-study", "slides-case-study-cover", 1280, 720, "?theme=light#1"),
+    Shot("slides-case-study", "slides-case-study-grid", 1440, 900, "?theme=light&view=grid#1"),
+    Shot("slides-case-study", "slides-case-study-recording", 390, 844, "?theme=light#4"),
 )
 
 

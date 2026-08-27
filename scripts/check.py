@@ -83,6 +83,7 @@ def check_required() -> None:
         ROOT / "README.md",
         ROOT / "craft.json",
         ROOT / "references/identity.md",
+        ROOT / "references/workflow.md",
         ROOT / "references/surfaces.md",
         ROOT / "references/extending.md",
         ROOT / "references/interfaces/design-language.md",
@@ -132,6 +133,8 @@ def check_required() -> None:
     skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
     description = re.search(r'^description:\s*"([^"]+)"', skill, re.MULTILINE)
     assert description and len(description.group(1)) <= 57, "description навыка обрезается в индексе"
+    assert len(skill.splitlines()) <= 60, "SKILL.md должен оставаться кратким роутером"
+    assert "references/workflow.md" in skill and "## Обязательные требования" not in skill, "процесс и требования должны жить в справочниках"
     extending = (ROOT / "references/extending.md").read_text(encoding="utf-8")
     assert "## Разовая композиция" in extending and "## Поддерживаемая поверхность" in extending, "сценарии расширения Craft не разделены"
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
