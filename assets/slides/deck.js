@@ -192,13 +192,23 @@
     if (finalWidth) {
       element.style.display = 'inline-block';
       element.style.inlineSize = `${finalWidth}px`;
-      // Опорный край числа берём от того, как показатель поставлен.
-      // Прижатый к краю держит правый край, а значение над столбцом
-      // графика стоит по середине столбца и середину же держит: иначе
-      // на отсчёте оно съезжает вбок и возвращается только в конце.
-      const placement = getComputedStyle(element).justifySelf;
-      if (placement === 'center') {
+      // Опорный край числа берём от того, как показатель выровнен: на
+      // отсчёте он держит именно этот край, иначе число съезжает вбок и
+      // возвращается на место только в конце. Значение над столбцом
+      // графика стоит по середине столбца и держит середину, значение
+      // в строке и в таблице прижато вправо и держит правый край,
+      // крупный показатель и число сравнения стоят от левого поля и
+      // растут вправо.
+      const styles = getComputedStyle(element);
+      const placement = styles.justifySelf;
+      const alignment = styles.textAlign;
+      if (placement === 'center' || alignment === 'center') {
         element.style.textAlign = 'center';
+      } else if (alignment === 'left' || alignment === 'start') {
+        element.style.textAlign = 'start';
+        if (placement === 'auto' || placement === 'normal' || placement === 'stretch') {
+          element.style.justifySelf = 'start';
+        }
       } else {
         element.style.textAlign = 'end';
         if (placement === 'auto' || placement === 'normal' || placement === 'stretch') {

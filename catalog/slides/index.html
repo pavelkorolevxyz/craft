@@ -104,7 +104,7 @@
         <p class="comparison-title">Было</p>
         <div class="comparison-body">
           <p class="comparison-label">Среднее время проверки</p>
-          <p class="comparison-value">0 000</p>
+          <p class="comparison-value" data-count>1 240</p>
           <ul class="comparison-points plain-list">
             <li><span>Ручная проверка</span></li>
             <li><span>Долгое согласование изменений</span></li>
@@ -116,7 +116,7 @@
         <p class="comparison-title">Стало</p>
         <div class="comparison-body">
           <p class="comparison-label">Среднее время проверки</p>
-          <p class="comparison-value">000</p>
+          <p class="comparison-value" data-count>180</p>
           <ul class="comparison-points plain-list">
             <li><span>Автопроверка</span></li>
             <li><span>Изменения видны сразу</span></li>
@@ -203,10 +203,10 @@ function example(input) {
       <table class="data-table">
         <thead><tr><th>Название</th><th>Категория</th><th class="num">Количество</th><th class="num">Доля</th></tr></thead>
         <tbody>
-          <tr><td>Короткое название</td><td>Основная</td><td class="num">0 000</td><td class="num">00%</td></tr>
-          <tr><td>Параметр средней длины</td><td>Дополнительная</td><td class="num">000</td><td class="num">00%</td></tr>
-          <tr><td>Более длинное название параметра</td><td>Редкая категория</td><td class="num">0 000</td><td class="num">00%</td></tr>
-          <tr data-total><td>Итого</td><td>Все категории</td><td class="num">0 000</td><td class="num">00%</td></tr>
+          <tr><td>Короткое название</td><td>Основная</td><td class="num"><span data-count>1 240</span></td><td class="num"><span data-count>46%</span></td></tr>
+          <tr><td>Параметр средней длины</td><td>Дополнительная</td><td class="num"><span data-count>620</span></td><td class="num"><span data-count>23%</span></td></tr>
+          <tr><td>Более длинное название параметра</td><td>Редкая категория</td><td class="num"><span data-count>840</span></td><td class="num"><span data-count>31%</span></td></tr>
+          <tr data-total><td>Итого</td><td>Все категории</td><td class="num"><span data-count>2 700</span></td><td class="num"><span data-count>100%</span></td></tr>
         </tbody>
       </table>
       <p class="type-note">Укажите источник, период и единицу измерения.</p>
@@ -376,10 +376,10 @@ function example(input) {
     <div class="pad">
       <p class="slide-title">Медленнее всего изменился поиск</p>
       <div class="range-chart place-fill" role="img" aria-label="Пример графика изменения: список 1 200 → 320 мс, карточка 940 → 260 мс, поиск 1 500 → 1 180 мс, экспорт 380 → 640 мс">
-        <div class="range-row is-down"><span>Список</span><strong>1 200 → 320</strong><div class="range-track"><i style="--from:80%;--to:21%"></i></div></div>
-        <div class="range-row is-down"><span>Карточка</span><strong>940 → 260</strong><div class="range-track"><i style="--from:63%;--to:17%"></i></div></div>
-        <div class="range-row is-focus is-down"><span>Поиск</span><strong>1 500 → 1 180</strong><div class="range-track"><i style="--from:100%;--to:79%"></i></div></div>
-        <div class="range-row"><span>Экспорт</span><strong>380 → 640</strong><div class="range-track"><i style="--from:25%;--to:43%"></i></div></div>
+        <div class="range-row is-down"><span>Список</span><strong><span data-count>1 200</span><i aria-hidden="true"></i><span data-count>320</span></strong><div class="range-track"><i style="--from:80%;--to:21%"></i></div></div>
+        <div class="range-row is-down"><span>Карточка</span><strong><span data-count>940</span><i aria-hidden="true"></i><span data-count>260</span></strong><div class="range-track"><i style="--from:63%;--to:17%"></i></div></div>
+        <div class="range-row is-focus is-down"><span>Поиск</span><strong><span data-count>1 500</span><i aria-hidden="true"></i><span data-count>1 180</span></strong><div class="range-track"><i style="--from:100%;--to:79%"></i></div></div>
+        <div class="range-row"><span>Экспорт</span><strong><span data-count>380</span><i aria-hidden="true"></i><span data-count>640</span></strong><div class="range-track"><i style="--from:25%;--to:43%"></i></div></div>
       </div>
       <p class="type-note">Укажите источник, период и единицу измерения.</p>
     </div>
