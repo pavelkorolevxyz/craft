@@ -27,6 +27,14 @@
   // Автор пишет каждый смысловой слайд один раз. Для показа создаём
   // страницу с одним дополнительным раскрытым .frag на каждом шаге.
   sourceSlides.forEach((source, sourceIndex) => {
+    // Отделяем физическую страницу от внутренней области раскладки.
+    // В печати Firefox может дать странице пропорции выбранной бумаги,
+    // а вложенный size-container честно пересчитает cqw/cqh под неё.
+    const canvas = document.createElement('div');
+    canvas.className = 'slide-canvas';
+    canvas.append(...source.childNodes);
+    source.append(canvas);
+
     const fragmentCount = source.querySelectorAll('.frag').length;
     const pages = document.createDocumentFragment();
 
@@ -44,6 +52,9 @@
       page.dataset.source = sourceIndex + 1;
       page.dataset.step = step;
       page.dataset.steps = fragmentCount;
+      // Каждый экранный шаг становится отдельной страницей PDF. Текст и
+      // раскладка уже находятся в конечном состоянии, анимацию снимает CSS.
+      page.setAttribute('data-print-page', '');
 
       pages.append(page);
     }
@@ -643,6 +654,28 @@
     if (Math.abs(dx) > 45) go(dx < 0 ? 1 : -1);
     touchX = null;
   }, { passive: true });
+
+  const printSlides = slides.filter((slide) => slide.hasAttribute('data-print-page'));
+  let screenNumbers = null;
+
+  function preparePrint() {
+    finishCounters();
+    screenNumbers = new Map();
+    printSlides.forEach((slide, index) => {
+      const number = slide.querySelector('.slide-number');
+      if (!number) return;
+      screenNumbers.set(number, number.innerHTML);
+      number.innerHTML = `${pad(index + 1)}<span>/ ${printSlides.length}</span>`;
+    });
+  }
+
+  function finishPrint() {
+    screenNumbers?.forEach((html, number) => { number.innerHTML = html; });
+    screenNumbers = null;
+  }
+
+  addEventListener('beforeprint', preparePrint);
+  addEventListener('afterprint', finishPrint);
 
   systemTheme.addEventListener('change', (event) => {
     if (root.dataset.themeSource !== 'system') return;

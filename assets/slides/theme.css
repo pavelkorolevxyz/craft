@@ -86,6 +86,10 @@
   --line: var(--on-accent-line);
   --accent: var(--on-accent);
   --accent-mark: var(--on-accent);
+  /* Контур внутри заливки тоже белый: --edge собран из --muted в :root
+     и сам о смене окружения не узнает. */
+  --edge: var(--on-accent-muted);
+  --edge-strong: var(--on-accent);
   /* Красным по красному тонировать нечего — на заливке выделение белое. */
   --selection: var(--craft-selection-on-accent);
 }
@@ -229,9 +233,11 @@
 }
 /* На тёмном вторичный текст серый; на ярком это белый с прозрачностью. */
 .surface-accent .type-note, .surface-panel .type-note { line-height: 1.56; }
-.surface-accent .type-note { color: var(--muted); opacity: 1; }
+.surface-accent .type-note { color: var(--on-accent); opacity: .6; }
 .surface-panel .type-note { color: var(--muted); }
 .surface-accent .slide-title, .surface-accent .slide-number { color: var(--on-accent); }
+.surface-accent .slide-number { opacity: 1; }
+.surface-accent .slide-number span { opacity: .6; }
 /* Короткая подпись внутри блока: отметка времени, сторона сравнения,
    категория графика, пояснение к показателю. Одна роль — один кегль. */
 .timeline-key, .comparison-label, .scoreboard .k,
@@ -430,7 +436,7 @@
 .steps > div { padding: 0 1.8cqw; display: grid; gap: 1.1cqh; align-content: start; border-top: var(--rule-strong) solid var(--line); padding-top: 2cqh; }
 /* Последний раскрытый элемент и есть текущий шаг. */
 .steps > .frag[data-shown]:not(:has(~ .frag[data-shown])) {
-  border-top-color: var(--accent-mark);
+  border-top-color: var(--accent);
 }
 .steps .n {
   font: 700 2.5cqw/1 var(--font-display); letter-spacing: -.03em; color: var(--accent);
@@ -467,7 +473,7 @@
 .chart-track { grid-column: 1 / -1; height: var(--chart-bar); background: var(--surface); overflow: hidden; }
 .chart-track i { display: block; width: var(--value); height: 100%; background: var(--text); }
 .chart-row.is-focus > span, .chart-row.is-focus > strong { color: var(--accent); }
-.chart-row.is-focus .chart-track i { background: var(--accent-mark); }
+.chart-row.is-focus .chart-track i { background: var(--accent); }
 
 /* --- вертикальный график: та же величина, но по периодам --- */
 /* Периоды идут слева направо, поэтому столбцы стоят, а не лежат:
@@ -526,7 +532,7 @@
 }
 .column-track i { display: block; height: var(--value); background: var(--text); }
 .column.is-focus > span, .column.is-focus > strong { color: var(--accent); }
-.column.is-focus .column-track i { background: var(--accent-mark); }
+.column.is-focus .column-track i { background: var(--accent); }
 
 /* --- линейный график: величина, меняющаяся непрерывно --- */
 /* Линия читается формой, а не отдельными точками, поэтому маркеров на
@@ -570,7 +576,7 @@
 /* Стойка отмечает момент, а не значение: пунктир отличает её от линий
    самого графика — сплошная здесь читалась бы как ещё один ряд. */
 .line-mark {
-  stroke: var(--accent-mark);
+  stroke: var(--accent);
   stroke-width: var(--rule);
   stroke-dasharray: 4px 5px;
   vector-effect: non-scaling-stroke;
@@ -584,7 +590,7 @@
   stroke-linejoin: round;
 }
 .line-scale { grid-area: 2 / 1; display: flex; justify-content: space-between; gap: 1cqw; }
-.line-series.is-focus { stroke: var(--accent-mark); }
+.line-series.is-focus { stroke: var(--accent); }
 .line-scale > .is-focus { color: var(--accent); }
 
 /* --- таймлайн: непрерывная ось времени, событие отмечено точкой на ней --- */
@@ -616,7 +622,7 @@
 /* Акцент держит событие, о котором идёт речь: последнее раскрытое
    или явно отмеченное на нераскрывающемся таймлайне. */
 .timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) > i::after,
-.timeline .is-current > i::after { background: var(--accent-mark); }
+.timeline .is-current > i::after { background: var(--accent); }
 .timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) .timeline-key,
 .timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) h3,
 .timeline .is-current .timeline-key,
@@ -642,6 +648,7 @@
   --flow-gap: 5cqw;
   --flow-drop: 9cqh;
   --flow-return: 8cqh;
+  --flow-head: .9cqw;
   min-height: 0;
   flex: 1;
   display: grid;
@@ -667,7 +674,10 @@
   color: var(--text);
 }
 
-/* Связь занимает весь промежуток, наконечник упирается в следующий узел. */
+/* Связь занимает весь промежуток, наконечник упирается в следующий узел.
+   Отрезок обрывается у основания наконечника, а не идёт под ним: линия и
+   треугольник набраны полупрозрачным цветом, и в наложении просвечивали бы
+   друг сквозь друга тёмным пятном. */
 .flow-arrow {
   position: absolute;
   top: 50%;
@@ -675,6 +685,11 @@
   width: var(--flow-gap);
   height: var(--rule);
   transform: translateY(-50%);
+}
+.flow-arrow::before {
+  content: "";
+  position: absolute;
+  inset: 0 var(--flow-head) 0 0;
   background: var(--muted);
 }
 .flow-arrow::after {
@@ -682,8 +697,8 @@
   position: absolute;
   top: 50%;
   right: 0;
-  width: .9cqw;
-  height: .9cqw;
+  width: var(--flow-head);
+  height: var(--flow-head);
   transform: translateY(-50%);
   background: var(--muted);
   clip-path: polygon(0 0, 100% 50%, 0 100%);
@@ -698,10 +713,13 @@
   height: var(--flow-drop);
   transform: translateX(-50%);
 }
+/* Вниз наконечник стоит НА рамке узла, а не поверх неё: рамка тоже тихого
+   цвета, и общий пиксель читался бы как утолщение. */
+.flow-arrow--down::before { inset: 0 0 calc(var(--flow-head) + var(--rule)) 0; }
 .flow-arrow--down::after {
   top: auto;
   right: auto;
-  bottom: 0;
+  bottom: var(--rule);
   left: 50%;
   transform: translateX(-50%);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
@@ -738,15 +756,20 @@
   bottom: 0;
   left: 0;
   width: var(--rule);
+}
+.flow-return > i::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 calc(var(--flow-head) + var(--rule)) 0;
   background: var(--muted);
 }
 .flow-return > i::after {
   content: "";
   position: absolute;
-  bottom: 0;
+  bottom: var(--rule);
   left: 50%;
-  width: .9cqw;
-  height: .9cqw;
+  width: var(--flow-head);
+  height: var(--flow-head);
   transform: translateX(-50%);
   background: var(--muted);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
@@ -778,9 +801,8 @@
   overflow: hidden;
 }
 
-/* --- итоги: выводы одной строкой каждый --- */
-/* Разметка и плотность приходят из .plain-list; рецепт задаёт только кегль. */
-.takeaways { font: 500 2.9cqw/1.25 var(--font-display); letter-spacing: -.025em; }
+/* --- итоги: тот же наборный масштаб, что у пунктов основного списка --- */
+.takeaways { font: 600 2.25cqw/1.25 var(--font-display); letter-spacing: -.02em; }
 
 /* --- QR: один блок для ресурса внутри доклада и для финала ---
    Квадрат с акцентным контуром и адрес рядом — один элемент. --- */

@@ -44,7 +44,6 @@ body {
   position: relative;
   width: min(100%, calc((100dvh - var(--stage-pad, 0px) * 2) * 16 / 9));
   aspect-ratio: 16 / 9;
-  container-type: size;
   overflow: hidden;
   display: none;
   background: var(--bg);
@@ -52,6 +51,17 @@ body {
 }
 
 .slide[data-active] { display: block; }
+
+/* Отдельный контейнер нужен печати. Экранная сцена остаётся 16:9, а на
+   бумаге canvas получает фактические пропорции листа и пересчитывает
+   все cqw/cqh как обычная веб-страница. */
+.slide-canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: size;
+  overflow: hidden;
+}
 
 /* внутренняя сетка слайда: поля одинаковые, содержимое — грид */
 .pad {
@@ -144,11 +154,14 @@ body {
   flex: 0 0 auto;
 }
 
+/* Контур плитки принадлежит обзору, а не слайду, поэтому берёт общие
+   токены Craft: на акцентном слайде роли --line и --accent-mark
+   переопределены на белые, и чужой контур ушёл бы вслед за ними. */
 .deck[data-mode="grid"] .slide,
 .deck[data-mode="strip"] .slide {
   display: block;
   cursor: pointer;
-  outline: 1px solid var(--line, oklch(20% .02 60 / .18));
+  outline: 1px solid var(--craft-line, oklch(20% .02 60 / .18));
   outline-offset: 3px;
 }
 .deck[data-mode="grid"] .slide { width: 100%; }
@@ -158,12 +171,12 @@ body {
    перескакивает на чужой слайд и только потом встаёт на нужный. */
 .deck:not([data-input="keyboard"])[data-mode="grid"] .slide:hover,
 .deck:not([data-input="keyboard"])[data-mode="strip"] .slide:hover {
-  outline: 2px solid var(--accent-mark);
+  outline: 2px solid var(--craft-accent-mark, currentColor);
   outline-offset: 3px;
 }
 .deck[data-mode="grid"] .slide[data-active],
 .deck[data-mode="strip"] .slide[data-active] {
-  outline: 3px solid var(--accent-mark);
+  outline: 3px solid var(--craft-accent-mark, currentColor);
   outline-offset: 4px;
 }
 /* Наведение всегда добавляет вес, а не убавляет: иначе на текущем
@@ -372,6 +385,11 @@ body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+  html, body {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
   body { overflow: visible !important; background: oklch(99% .004 85); }
   /* Бумага и PDF — статические форматы: страница показывает конечный
      кадр. Анимации темы начинаются с пустого состояния, поэтому их
@@ -394,16 +412,46 @@ body {
     height: auto !important;
   }
   .slides::before, .slides::after { display: none !important; }
-  .slide {
+  /* Каждый экранный шаг раскрытия печатается отдельной страницей. CSS
+     снимает движение, но сохраняет состав и нумерацию веб-колоды. */
+  .slide { display: none !important; }
+  .slide[data-print-page] {
     display: block !important;
-    width: 320mm !important;
-    height: 180mm !important;
+    /* Это не масштабирование картинки. Страница занимает выбранный лист,
+       а вложенный .slide-canvas заново рассчитывает раскладку по его
+       ширине и высоте. */
+    width: 100% !important;
+    height: auto !important;
     max-width: none;
-    aspect-ratio: auto;
+    aspect-ratio: 16 / 9;
     flex: none !important;
     break-after: page;
     break-inside: avoid;
+    page-break-after: always;
+    page-break-inside: avoid;
     outline: none !important;
     transform: none !important;
+  }
+  /* Иначе Firefox добавляет 25-й пустой лист после последнего слайда. */
+  .slide[data-print-page]:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+}
+
+/* В Firefox и Zen физическая страница и print viewport имеют разные
+   размеры. Вложенный canvas изолирует контейнерные единицы, поэтому
+   можно дать самой странице высоту выбранного листа и пересобрать HTML
+   без масштабирования картинки. */
+@supports (-moz-appearance: none) {
+  @media print {
+    /* Проценты считаются от печатной области после пользовательских
+       полей и колонтитулов. 100vh в Firefox считает весь лист и даёт
+       тонкий хвост на второй странице. */
+    html, body, .deck, .slides { height: 100% !important; }
+    .slide[data-print-page] {
+      height: 100% !important;
+      aspect-ratio: auto;
+    }
   }
 }

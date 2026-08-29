@@ -28,6 +28,7 @@ FRAGMENT_DEFINITIONS = [fragment for surface in MANIFEST["surfaces"].values() fo
 FRAGMENT_FILES = [ROOT / fragment["path"] for fragment in FRAGMENT_DEFINITIONS]
 CHECKED_HTML = [*HTML_FILES, *CATALOG_HTML]
 MARK_SELECTOR = re.compile(r"\.icon\b|-mark\b|-dot\b|-status\b|::before|::after|\bsvg\b")
+LABEL_SELECTORS = {".tag"}
 RAW_COLOR = re.compile(r"(?<![\w-])(?:#[0-9a-fA-F]{3,8}\b|(?:rgb|hsl)a?\([^)]*\))")
 
 
@@ -220,15 +221,18 @@ def check_catalog_grid() -> None:
 
 
 def check_state_marks() -> None:
-    """Сигнальный цвет живёт в графической метке, а не в тексте состояния."""
-    signal = re.compile(r"(?<![\w-])color\s*:\s*var\(--(ok|warn|error|data-[a-z]+)\)")
+    """Сигнальный цвет живёт в графической метке, а не в тексте состояния.
+
+    Исключение одно: метка в рамке. Рамка и подпись внутри неё образуют одну
+    деталь, поэтому подпись красится вместе с рамкой."""
+    signal = re.compile(r"(?<![\w-])color\s*:\s*var\(--(ok|warn|error|status|data-[a-z]+)\b")
     for path in CSS_FILES:
         text = path.read_text(encoding="utf-8")
         for match in re.finditer(r"([^{}]+)\{([^{}]*)\}", text):
-            selector = match.group(1).strip()
+            selector = match.group(1).split("*/")[-1].strip()
             if not signal.search(match.group(2)):
                 continue
-            assert MARK_SELECTOR.search(selector), (
+            assert MARK_SELECTOR.search(selector) or selector in LABEL_SELECTORS, (
                 f"сигнальный цвет окрашивает текст, а не метку, в {path.relative_to(ROOT)}: {selector}"
             )
 
@@ -499,8 +503,24 @@ def check_slide_layouts() -> None:
     catalog = (ROOT / catalog_definition["catalog"]).read_text(encoding="utf-8")
     catalog_layouts = set(re.findall(r'data-slide-layout="([a-z-]+)"', catalog))
     assert catalog_layouts == set(catalog_definition["catalogLayouts"]), "реестр раскладок каталога расходится с HTML"
+    chart_rows = re.findall(r'<div class="chart-row[^"]*"><span>[^<]+</span><strong data-count>[^<]+</strong>', catalog)
+    assert len(chart_rows) == catalog.count('class="chart-row'), "не у каждой строки горизонтального графика подписано и анимировано значение"
     source_pages = len(re.findall(r'<section class="slide\b', catalog))
     assert catalog_definition["catalogPages"] > source_pages, "каталог не проверяет пошаговое раскрытие"
+    assert catalog_definition["catalogPrintPages"] == catalog_definition["catalogPages"], "PDF должен содержать все экранные страницы"
+
+    base = (ASSETS / "slides/base.css").read_text(encoding="utf-8")
+    deck = (ASSETS / "slides/deck.js").read_text(encoding="utf-8")
+    print_contracts = {
+        "@page { size: 320mm 180mm; margin: 0; }": "печать слайдов потеряла фиксированный лист 16:9",
+        ".slide-canvas {\n  position: relative;\n  width: 100%;\n  height: 100%;": "внутренняя область слайда снова может обрезаться в Zen",
+        "html, body, .deck, .slides { height: 100% !important; }": "Zen снова будет переносить хвост слайда на отдельный лист",
+        ".slide[data-print-page]:last-child": "Firefox снова добавит пустой последний лист",
+    }
+    for rule, message in print_contracts.items():
+        assert rule in base, message
+    assert "page.setAttribute('data-print-page', '');" in deck, "не все экранные шаги отмечены для печати"
+    assert "canvas.className = 'slide-canvas';" in deck, "колода не создаёт независимую область печатной раскладки"
 
 
 def check_content() -> None:

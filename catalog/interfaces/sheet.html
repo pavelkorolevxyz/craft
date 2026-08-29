@@ -156,13 +156,13 @@
         <div class="token-table" role="list" aria-label="Цветовые токены">
           <div class="token-row" role="listitem"><i style="--swatch:var(--bg)"></i><strong>Фон</strong><code>--bg</code><em>фон страницы</em><span data-token-value="--bg">#111111</span></div>
           <div class="token-row" role="listitem"><i style="--swatch:var(--surface)"></i><strong>Поверхность</strong><code>--surface</code><em>выделенная смысловая группа</em><span data-token-value="--surface">#1a1a1a</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--line)"></i><strong>Линия</strong><code>--line</code><em>разделитель секций и таблиц</em><span data-token-value="--line">#2a2a2a</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--line)"></i><strong>Линия</strong><code>--line</code><em>разделитель секций и таблиц</em><span data-token-value="--line">#eeeeee · 10%</span></div>
           <div class="token-row" role="listitem"><i style="--swatch:var(--text)"></i><strong>Текст</strong><code>--text</code><em>заголовки и значения</em><span data-token-value="--text">#eeeeee</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--muted)"></i><strong>Вторичный</strong><code>--muted</code><em>подписи, единицы, пояснения</em><span data-token-value="--muted">#a8a8a8</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--muted)"></i><strong>Вторичный</strong><code>--muted</code><em>подписи, единицы, пояснения</em><span data-token-value="--muted">#eeeeee · 66%</span></div>
           <div class="token-row" role="listitem"><i style="--swatch:var(--accent)"></i><strong>Акцент</strong><code>--accent</code><em>акцентный текст и ссылка</em><span data-token-value="--accent">#ff5a67</span></div>
           <div class="token-row" role="listitem"><i style="--swatch:var(--accent-mark)"></i><strong>Метка</strong><code>--accent-mark</code><em>точка, полоса, линия графика, фокус</em><span data-token-value="--accent-mark">#ff3f4d</span></div>
           <div class="token-row" role="listitem"><i style="--swatch:var(--accent-fill)"></i><strong>Заливка</strong><code>--accent-fill</code><em>плоскость под белым текстом</em><span data-token-value="--accent-fill">#c5303d</span></div>
-          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-tint)"></i><strong>Фон сигнала</strong><code>--accent-tint</code><em>тихое выделение под обычным текстом</em><span data-token-value="--accent-tint">9%</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-tint)"></i><strong>Фон сигнала</strong><code>--accent-tint</code><em>тихое выделение под обычным текстом</em><span data-token-value="--accent-tint">#ff3f4d · 9%</span></div>
           <div class="token-row" role="listitem"><i style="--swatch:var(--ok)"></i><strong>Норма</strong><code>--ok</code><em>состояние в норме</em><span data-token-value="--ok">#23cc70</span></div>
           <div class="token-row" role="listitem"><i style="--swatch:var(--warn)"></i><strong>Предупреждение</strong><code>--warn</code><em>требует внимания</em><span data-token-value="--warn">#ffae1a</span></div>
           <div class="token-row" role="listitem"><i style="--swatch:var(--error)"></i><strong>Ошибка</strong><code>--error</code><em>сбой, тот же красный, что и метка</em><span data-token-value="--error">#ff3f4d</span></div>
@@ -311,17 +311,17 @@
       <section class="system-section" id="records">
         <div class="system-section__head">
           <h2>Записи</h2>
-          <p>Метка называет принадлежность, лейбл — состояние, лента — хронологию. Ход выполнения всегда дублируется числом.</p>
+          <p>Метка называет принадлежность или состояние, лента — хронологию. Ход выполнения всегда дублируется числом.</p>
         </div>
         <div class="demo-grid">
           <div class="demo-cell">
             <span class="demo-label">Метки и состояния</span>
             <div class="tag-list"><span class="tag">Интерфейс</span><span class="tag">Безопасность</span><span class="tag tag--accent">Приоритет</span></div>
             <div class="control-line">
-              <span class="status status--label status--ok">пройдено</span>
-              <span class="status status--label status--warn">на проверке</span>
-              <span class="status status--label status--error">отклонено</span>
-              <span class="status status--label">черновик</span>
+              <span class="tag tag--ok">пройдено</span>
+              <span class="tag tag--warn">на проверке</span>
+              <span class="tag tag--error">отклонено</span>
+              <span class="tag">черновик</span>
             </div>
           </div>
           <div class="demo-cell">
@@ -480,8 +480,8 @@
                 <th>Состояние</th>
               </tr></thead>
               <tbody>
-                <tr data-interactive tabindex="0" aria-selected="false"><td>Сохранение параметров поиска</td><td>18 мс</td><td><span class="status status--label status--ok">пройдено</span></td></tr>
-                <tr data-interactive tabindex="0" aria-selected="true"><td>Управление доступом</td><td>64 мс</td><td><span class="status status--label status--warn">на проверке</span></td></tr>
+                <tr data-interactive tabindex="0" aria-selected="false"><td>Сохранение параметров поиска</td><td>18 мс</td><td><span class="tag tag--ok">пройдено</span></td></tr>
+                <tr data-interactive tabindex="0" aria-selected="true"><td>Управление доступом</td><td>64 мс</td><td><span class="tag tag--warn">на проверке</span></td></tr>
                 <tr class="data-table__detail"><td colspan="3">Проверка ждёт второго одобрения от владельца потока.</td></tr>
               </tbody>
             </table>

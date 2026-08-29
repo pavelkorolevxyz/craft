@@ -544,7 +544,7 @@
           "source": "assets/interfaces/theme.css",
           "rootClass": "status",
           "dependencies": [],
-          "summary": "Короткое состояние с точкой",
+          "summary": "Короткое состояние точкой рядом со словом",
           "level": "atom"
         },
         {
@@ -554,7 +554,7 @@
           "source": "assets/interfaces/theme.css",
           "rootClass": "tag",
           "dependencies": [],
-          "summary": "Категория или признак без статуса",
+          "summary": "Категория, признак или состояние в рамке",
           "level": "atom"
         },
         {
@@ -804,6 +804,7 @@
       "fragmentTarget": ".slides",
       "catalog": "catalog/slides/index.html",
       "catalogPages": 58,
+      "catalogPrintPages": 58,
       "catalogLayouts": [
         "title",
         "cover",

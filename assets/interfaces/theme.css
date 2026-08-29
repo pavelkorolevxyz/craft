@@ -4,7 +4,11 @@
      токен. Композиции ссылаются только на роли: подменив строку здесь,
      формат меняет смысл, не трогая компоненты. */
 
-  /* Плоскости: фон страницы, выделенная группа, врезанная область. */
+  /* Плоскости. Страница лежит на --bg, и это фон по умолчанию для всего:
+     поля, флажка, листинга, врезки. Серая плоскость остаётся только для
+     наведения и подобных мгновенных состояний. Компонент, который темнее
+     фона просто так, выглядит выключенным, поэтому Craft строит форму
+     линией, а заливку тратит на акцент. */
   --bg: var(--craft-bg);
   --surface: var(--craft-surface);
   --surface-sunken: var(--craft-sunken);
@@ -28,6 +32,7 @@
   --accent-fill: var(--craft-accent-fill);
   --accent-tint: var(--craft-accent-tint);
   --on-accent: var(--craft-on-accent);
+  --fill-quiet: var(--craft-fill-quiet);
   --scrim: var(--craft-scrim);
   --selection: var(--craft-selection);
 
@@ -153,7 +158,7 @@ h1 { max-width: 24ch; font-size: var(--type-page); font-weight: 650; line-height
 
 .section { padding: var(--section-y) var(--gutter); border-bottom: 1px solid var(--line); }
 .section--tight { padding-block: var(--space-6); }
-.section--accent { color: var(--craft-on-accent-muted); background: var(--accent-fill); }
+.section--accent { color: var(--text-body); background: var(--accent-fill); }
 .section--accent h2, .section--accent h3 { color: var(--on-accent); }
 .surface-tint { background: var(--accent-tint); }
 .surface-tint--error { background: var(--error-tint); }
@@ -229,7 +234,7 @@ h3 { font-size: var(--type-local); line-height: 1.25; }
 
 .bar-list { display: grid; gap: var(--space-5); }
 .bar__head { display: flex; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-2); color: var(--text); font-size: var(--type-body); }
-.bar__track { height: .55rem; background: var(--surface); overflow: hidden; }
+.bar__track { height: .55rem; background: transparent; box-shadow: inset 0 0 0 1px var(--line); overflow: hidden; }
 .bar__fill { display: block; height: 100%; width: var(--value); background: var(--accent-mark); transform-origin: left; animation: grow .8s var(--ease-out) both; }
 @keyframes grow { from { transform: scaleX(0); } }
 
@@ -241,10 +246,22 @@ h3 { font-size: var(--type-local); line-height: 1.25; }
 .status--ok { --status: var(--ok); }
 .status--warn { --status: var(--warn); }
 .status--error { --status: var(--error); }
-.status--label { justify-content: center; min-height: 1.7rem; padding: 0 var(--space-2); border: 1px solid var(--status, var(--line)); background: var(--surface); white-space: nowrap; }
-.status--label::before { display: none; }
 
-.section--accent, .notice--action, .button--primary, .data-table .total td {
+/* Поверх акцентной плоскости нейтрали строятся прозрачностью белого.
+   Тихий текст, линия и недоступное состояние пропускают красный сквозь
+   себя и остаются его частью; готовый серый лёг бы поверх грязным пятном.
+   Роли переопределены на самой плоскости, поэтому вложенные компоненты
+   меняют цвет вместе с ней и о ней не знают. */
+.section--accent, .notice--action, .button--primary, .data-table .total td,
+.segmented input:checked + span, .pagination__page[aria-current="page"] {
+  --text: var(--on-accent);
+  --text-body: var(--craft-on-accent-muted);
+  --muted: var(--craft-on-accent-muted);
+  --line: var(--craft-on-accent-line);
+  --accent: var(--on-accent);
+  --accent-mark: var(--on-accent);
+  --craft-disabled: var(--craft-on-accent-disabled);
+  /* Красным по красному тонировать нечего — на заливке выделение белое. */
   --selection: var(--craft-selection-on-accent);
 }
 .segmented { display: inline-flex; border: 1px solid var(--line); }
@@ -258,17 +275,19 @@ h3 { font-size: var(--type-local); line-height: 1.25; }
 .segmented input:disabled + span { color: var(--craft-disabled); cursor: default; }
 
 /* Инлайновый код в тексте, списке и ячейке таблицы. Имя токена, класса или
-   атрибута ничего не открывает по нажатию, поэтому берёт тихую плашку, а не
-   цвет: красным в Craft помечено кликабельное. */
-:is(p, li, dd, td, th, figcaption, summary, .notice__title) code { padding: .15em .4em; color: var(--craft-code-text); background: var(--surface); font-family: var(--font-mono); font-size: .9em; }
+   атрибута ничего не открывает по нажатию, поэтому его отличает шрифт, а не
+   цвет: красным в Craft помечено кликабельное. Плашка прозрачная: она
+   держит границы имени внутри строки и проявляется на любом фоне, включая
+   акцентный тон, не превращаясь в серый прямоугольник. */
+:is(p, li, dd, td, th, figcaption, summary, .notice__title) code { padding: .1em .3em; color: var(--craft-code-text); background: var(--fill-quiet); font-family: var(--font-mono); font-size: .9em; }
 
 .prose { max-width: 72ch; }
 .prose h2 { max-width: 18ch; margin-top: 1.5em; }
 .prose h3 { margin-top: 2em; }
 .prose p, .prose ul, .prose ol { margin-block: 1.2em; }
-.prose pre { padding: var(--space-5); overflow: auto; color: var(--craft-code-text); background: var(--surface-sunken); border: 1px solid var(--line); }
+.prose pre { padding: var(--space-5); overflow: auto; color: var(--craft-code-text); background: transparent; border: 1px solid var(--line); }
 
-input, select, textarea { width: 100%; min-height: 2.5rem; padding: var(--space-2) var(--space-3); border: 1px solid var(--line); border-radius: 0; color: var(--text); background: var(--surface-sunken); transition: border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out); }
+input, select, textarea { width: 100%; min-height: 2.5rem; padding: var(--space-2) var(--space-3); border: 1px solid var(--line); border-radius: 0; color: var(--text); background: transparent; transition: border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out); }
 input::placeholder, textarea::placeholder { color: var(--craft-disabled); }
 .button { display: inline-flex; min-height: 2.5rem; align-items: center; justify-content: center; padding: var(--space-2) var(--space-3); border: 1px solid var(--line); color: var(--text); background: transparent; text-decoration: none; cursor: pointer; }
 .button:disabled { color: var(--craft-disabled); border-color: var(--line); cursor: not-allowed; }
@@ -287,8 +306,10 @@ input::placeholder, textarea::placeholder { color: var(--craft-disabled); }
 /* Стрелка приходит из спрайта через <use>, поэтому обводку задаёт сам
    элемент: правила для вложенного path в теневое дерево не попадают. */
 .select-control__icon { position: absolute; top: 50%; right: var(--space-3); width: 12px; height: 8px; color: var(--muted); fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; transform: translateY(-50%); transition: color 160ms var(--ease-out); }
-.select-control select:not(:disabled):not(:focus-visible):hover { border-color: var(--muted); }
-.select-control:has(select:not(:disabled):hover) .select-control__icon { color: var(--text); }
+.select-control select:not(:disabled):not(:focus-visible):not([aria-invalid="true"]):hover,
+.field:hover .select-control select:not(:disabled):not(:focus-visible):not([aria-invalid="true"]) { border-color: var(--muted); }
+.select-control:has(select:not(:disabled):hover) .select-control__icon,
+.field:hover .select-control:has(select:not(:disabled)) .select-control__icon { color: var(--text); }
 .select-control:has(select:focus-visible) .select-control__icon { color: var(--accent); }
 .select-control select:disabled { color: var(--craft-disabled); cursor: not-allowed; }
 .select-control:has(select:disabled) .select-control__icon { color: var(--craft-disabled); }
@@ -303,7 +324,8 @@ input::placeholder, textarea::placeholder { color: var(--craft-disabled); }
 .field__label { color: var(--muted); font-size: var(--type-service); }
 .field__hint { margin: 0; color: var(--muted); font-size: var(--type-service); }
 /* Ошибку красит --accent: это красный роли текста, его читают. Насыщенную
-   метку берёт на себя рамка недоступного значения. */
+   метку берёт на себя рамка неверного значения, и наведение её не гасит:
+   серая рамка под курсором спорила бы с подписью ошибки. */
 .field__error { margin: 0; color: var(--accent); font-size: var(--type-service); }
 .field__hint:empty, .field__error:empty { display: none; }
 .field-set { min-width: 0; margin: 0; padding: 0; border: 0; }
@@ -312,18 +334,25 @@ input::placeholder, textarea::placeholder { color: var(--craft-disabled); }
 .form-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
 
 /* Состояние прямоугольного поля меняет его собственную рамку, а не
-   добавляет вторую линию снаружи. Наведение поднимает рамку до
-   приглушённого текста, фокус красит её меткой и добавляет внутреннюю
-   линию: рамка читается как двухпиксельная, но остаётся одной. Поле в
-   фокусе наведение не слушает, иначе внешняя линия ушла бы в серый и
-   рядом с красной внутренней снова читались бы две рамки. */
-input:not([type="checkbox"], [type="radio"], [type="range"]):not(:disabled):not(:focus-visible):hover,
-textarea:not(:disabled):not(:focus-visible):hover { border-color: var(--muted); }
+   добавляет вторую линию снаружи и не утолщает её. Наведение поднимает
+   рамку до приглушённого текста, фокус красит её меткой: ширина остаётся
+   прежней, меняется только цвет, поэтому соседние поля не расходятся и
+   активное поле не выглядит тяжелее остальных. Поле в фокусе наведение
+   не слушает, иначе красная рамка ушла бы в серый.
+
+   Наведение принадлежит всей ячейке .field, а не одному управлению.
+   Подпись связана с управлением, и браузер наводит их вместе, а зазор
+   между ними ничей: по дороге от подписи к полю рамка гасла и зажигалась
+   заново. Одна цель на подпись, зазор, управление и подсказку убирает
+   это мигание. */
+input:not([type="checkbox"], [type="radio"], [type="range"]):not(:disabled):not(:focus-visible):not([aria-invalid="true"]):hover,
+textarea:not(:disabled):not(:focus-visible):not([aria-invalid="true"]):hover,
+.field:hover :is(input:not([type="checkbox"], [type="radio"], [type="range"]), textarea):not(:disabled):not(:focus-visible):not([aria-invalid="true"]) { border-color: var(--muted); }
 input:not([type="checkbox"], [type="radio"], [type="range"]):focus-visible,
 textarea:focus-visible, select:focus-visible {
-  border-color: var(--accent-mark); box-shadow: inset 0 0 0 1px var(--accent-mark); outline: none;
+  border-color: var(--accent-mark); outline: none;
 }
-input:disabled, textarea:disabled { color: var(--craft-disabled); background: var(--surface); cursor: not-allowed; }
+input:disabled, textarea:disabled { color: var(--craft-disabled); border-color: var(--craft-disabled); background: transparent; cursor: not-allowed; }
 input:read-only:not([type="checkbox"], [type="radio"], [type="range"]), textarea:read-only { color: var(--muted); background: transparent; }
 [aria-invalid="true"] { border-color: var(--accent-mark); }
 textarea { min-height: 6rem; resize: vertical; }
@@ -335,7 +364,7 @@ textarea { min-height: 6rem; resize: vertical; }
 input[type="checkbox"]:not([role="switch"]), input[type="radio"] {
   flex: none; appearance: none; display: inline-grid; place-content: center;
   width: 1.05rem; height: 1.05rem; min-height: 0; padding: 0; margin: 0;
-  border: 1px solid var(--line-strong); background: var(--surface-sunken); cursor: pointer;
+  border: 1px solid var(--line-strong); background: transparent; cursor: pointer;
 }
 input[type="radio"] { border-radius: 50%; }
 input[type="checkbox"]:not([role="switch"])::after, input[type="radio"]::after { content: ""; }
@@ -347,7 +376,7 @@ input[type="radio"]:checked::after { background: var(--on-accent); }
 input[type="checkbox"]:indeterminate { border-color: var(--accent-fill); background: var(--accent-fill); }
 input[type="checkbox"]:indeterminate::after { width: .5rem; height: 2px; border: 0; background: var(--on-accent); transform: none; }
 input[type="checkbox"]:not(:disabled):hover, input[type="radio"]:not(:disabled):hover { border-color: var(--accent-mark); }
-input[type="checkbox"]:disabled, input[type="radio"]:disabled { border-color: var(--craft-disabled); background: var(--surface); cursor: not-allowed; }
+input[type="checkbox"]:disabled, input[type="radio"]:disabled { border-color: var(--craft-disabled); background: transparent; cursor: not-allowed; }
 .check { display: inline-flex; align-items: center; gap: var(--space-3); min-height: 2.5rem; color: var(--text); cursor: pointer; }
 .check:has(input:disabled) { color: var(--craft-disabled); cursor: not-allowed; }
 .check-group { display: grid; gap: var(--space-1); }
@@ -360,7 +389,7 @@ input[type="checkbox"]:disabled, input[type="radio"]:disabled { border-color: va
 .switch input {
   flex: none; appearance: none; display: inline-flex; align-items: center;
   width: 2.75rem; height: 1.375rem; min-height: 0; padding: 3px; margin: 0; border-radius: 999px;
-  border: 1px solid var(--line-strong); background: var(--surface-sunken); cursor: pointer;
+  border: 1px solid var(--line-strong); background: transparent; cursor: pointer;
   transition: border-color 160ms var(--ease-out), background-color 160ms var(--ease-out);
 }
 /* Процент высоты внутри поля не разрешается, поэтому ползунок задан явно. */
@@ -378,7 +407,7 @@ input[type="checkbox"]:disabled, input[type="radio"]:disabled { border-color: va
    появляется отдача. */
 .switch input:not(:disabled):active::after { width: 1.125rem; }
 .switch input:not(:disabled):checked:active::after { transform: translateX(calc(2.75rem - 1.125rem - 8px)); }
-.switch input:disabled { border-color: var(--craft-disabled); background: var(--surface); cursor: not-allowed; }
+.switch input:disabled { border-color: var(--craft-disabled); background: transparent; cursor: not-allowed; }
 .switch input:disabled::after { background: var(--craft-disabled); }
 .switch:has(input:disabled) { color: var(--craft-disabled); cursor: not-allowed; }
 
@@ -408,10 +437,18 @@ input[type="checkbox"]:disabled, input[type="radio"]:disabled { border-color: va
 
 /* Метка категории. Она называет принадлежность, а не состояние, поэтому
    остаётся нейтральной и не берёт сигнальный цвет. */
+/* Метка в рамке. Одна фигура на все случаи: категория, приоритет и
+   состояние отличаются только цветом, который метка берёт из --status.
+   Рамка и подпись внутри неё читаются как одна деталь, поэтому цвет
+   достаётся обеим сразу. Слово в потоке текста цветным не становится:
+   там состояние показывает точка .status. */
 .tag-list { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.tag { display: inline-flex; align-items: center; gap: var(--space-2); padding: 2px var(--space-2); border: 1px solid var(--line); color: var(--muted); font-size: var(--type-service); text-decoration: none; white-space: nowrap; transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out); }
-.tag--accent { color: var(--accent); border-color: var(--accent); }
-a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent); }
+.tag { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: 1.7rem; padding: 2px var(--space-2); border: 1px solid var(--status, var(--line)); color: var(--status, var(--muted)); font-size: var(--type-service); text-decoration: none; white-space: nowrap; transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out); }
+.tag--accent { --status: var(--accent); }
+.tag--ok { --status: var(--ok); }
+.tag--warn { --status: var(--warn); }
+.tag--error { --status: var(--error); }
+a.tag:hover, button.tag:hover { --status: var(--accent); }
 
 /* Пары «поле — значение». Подпись и значение стоят на одной строке, пока
    хватает ширины, и разворачиваются в две строки на узком экране. */
@@ -426,7 +463,7 @@ a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent
    показывает только факт работы и останавливается при уменьшении движения. */
 .progress { display: grid; gap: var(--space-2); }
 .progress__head { display: flex; justify-content: space-between; gap: var(--space-4); color: var(--text); font-size: var(--type-service); font-variant-numeric: tabular-nums; }
-.progress__track { height: 3px; overflow: hidden; background: var(--surface); }
+.progress__track { height: 3px; overflow: hidden; background: var(--line); }
 .progress__fill { display: block; width: var(--value); height: 100%; background: var(--accent-mark); }
 .progress--indeterminate .progress__fill { width: 30%; animation: craft-progress 1.2s linear infinite; }
 @keyframes craft-progress { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
@@ -450,14 +487,14 @@ a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent
 
 /* Блок кода с копированием. Подпись называет источник, кнопка держит обе
    подписи в одной ячейке и не меняет ширину после нажатия. */
-.code-block { margin: 0; border: 1px solid var(--line); background: var(--surface-sunken); }
+.code-block { margin: 0; border: 1px solid var(--line); background: transparent; }
 .code-block__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--line); color: var(--muted); font-size: var(--type-service); }
 .code-block__copy { min-height: 2rem; padding: 0 var(--space-2); font-size: var(--type-service); }
 .code-block pre { margin: 0; padding: var(--space-4); overflow: auto; color: var(--craft-code-text); font-family: var(--font-mono); font-size: 13px; }
 
 /* Уведомление внутри страницы. Цвет живёт в квадратной метке, текст
    остаётся нейтральным, а тихий фон достаётся только ошибке. */
-.notice { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--line); background: var(--surface); }
+.notice { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--line); background: transparent; }
 .notice__mark { width: .65rem; height: .65rem; margin-top: .42rem; background: var(--status, var(--muted)); }
 .notice__title { display: block; color: var(--text); font-weight: 600; }
 .notice p { margin: var(--space-1) 0 0; }
@@ -534,7 +571,7 @@ a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent
 .steps__index { color: var(--muted); font: 650 var(--type-body)/1 var(--font-display); font-variant-numeric: tabular-nums; }
 .steps__title { color: var(--muted); }
 .steps li[data-state="done"] .steps__title { color: var(--text); }
-.steps li[data-state="current"] { background: var(--surface); }
+.steps li[data-state="current"] { background: var(--accent-tint); }
 .steps li[data-state="current"] .steps__index { color: var(--accent); }
 .steps li[data-state="current"] .steps__title { color: var(--text); font-weight: 600; }
 
@@ -546,7 +583,7 @@ a.tag:hover, button.tag:hover { color: var(--accent); border-color: var(--accent
 .data-table th[aria-sort] .data-table__sort { color: var(--text); }
 .data-table th[aria-sort] .data-table__sort .icon { opacity: 1; }
 .data-table th[aria-sort="descending"] .data-table__sort .icon { transform: rotate(180deg); }
-.data-table__detail td { color: var(--muted); background: var(--surface); }
+.data-table__detail td { color: var(--muted); background: transparent; }
 .data-table--sticky thead th { position: sticky; top: 0; z-index: 1; background: var(--bg); }
 
 /* Утилита идёт после компонентов, чтобы их padding-шорткаты не сбрасывали

@@ -3,7 +3,10 @@ const formatTokenValue = (value) => {
   const channels = value.match(/[\d.]+/g)?.map(Number) || [];
   if (channels.length < 3) return value;
   const hex = `#${channels.slice(0, 3).map((channel) => Math.round(channel).toString(16).padStart(2, '0')).join('')}`;
-  return hex;
+  // Тихие роли заданы прозрачностью, и доля важна: она объясняет, почему
+  // тот же токен на красном фоне выглядит иначе, чем на фоне страницы.
+  const alpha = channels.length > 3 ? channels[3] : 1;
+  return alpha < 1 ? `${hex} · ${Math.round(alpha * 100)}%` : hex;
 };
 
 const syncTokenValues = () => {
