@@ -281,6 +281,38 @@ def check_control_states() -> None:
     assert ".data-table tbody tr:hover" not in theme, "статическая строка таблицы не должна притворяться интерактивной"
 
 
+
+def check_hover_paint() -> None:
+    """Наведение красит текст, а не подкладывает плоскость.
+
+    Одно правило на всю систему: под курсором подпись уходит в акцент, фон
+    остаётся прежним. Плоскость закреплена за постоянным выбором, и если её
+    занимает наведение, два состояния становятся неразличимы. Заливку под
+    курсором меняют только те элементы, у которых подпись лежит на акцентной
+    плоскости или текста нет вовсе."""
+    filled = (".button--primary", ".switch input", ".range")
+    for path in (ASSETS / "interfaces/theme.css", ROOT / "catalog/interfaces/catalog.css"):
+        css = path.read_text(encoding="utf-8")
+        for selector, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+            selector = selector.strip()
+            if ":hover" not in selector or not re.search(r"\bbackground(-color)?\s*:", body):
+                continue
+            assert any(control in selector for control in filled), (
+                f"наведение подкладывает плоскость в {path.relative_to(ROOT)}: {selector}"
+            )
+        # Элемент управления с собственной рамкой под курсором усиливает рамку
+        # и стрелку: акцент там занят фокусом. Остальным гасить подпись до
+        # --text нельзя — наведение добавляет краску, а не убавляет.
+        bordered = (".select-control", ".field", ".switch", "input", "textarea")
+        for selector, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+            selector = selector.strip()
+            if ":hover" not in selector or "color: var(--text)" not in body:
+                continue
+            assert any(control in selector for control in bordered), (
+                f"наведение гасит акцент вместо того, чтобы его добавить, "
+                f"в {path.relative_to(ROOT)}: {selector}"
+            )
+
 def check_accessibility_contract() -> None:
     for path in CHECKED_HTML:
         if not path.is_file():
@@ -418,6 +450,15 @@ def check_interface_documentation() -> None:
         assert not duplicates, f"компоненты описаны на нескольких уровнях: {', '.join(sorted(duplicates))}"
         documented.update(actual)
 
+    listing = (directory / "catalog.css").read_text(encoding="utf-8")
+    syntax_roles = {
+        ".syntax-tag { color: var(--accent)": "имя элемента в листинге не совпадает с подсветкой слайдов",
+        ".syntax-attr, .syntax-string { color: var(--craft-code-gold)": "атрибут и строка не используют золотой",
+        ".syntax-doctype, .syntax-comment { color: var(--muted)": "служебные части листинга не приглушены",
+    }
+    for rule, message in syntax_roles.items():
+        assert rule in listing, message
+
     assert documented == expected_ids, "страницы уровней не покрывают реестр компонентов"
     foundation_page = (directory / "foundations.html").read_text(encoding="utf-8")
     actual_foundations = set(re.findall(r'data-foundation-doc="([a-z-]+)"', foundation_page))
@@ -493,6 +534,7 @@ def check_slide_layouts() -> None:
     theme = (ASSETS / "slides/theme.css").read_text(encoding="utf-8")
     syntax_roles = {
         ".code .hljs-type { color: var(--accent)": "управляющие слова не используют акцент",
+        ".code .hljs-name,": "имя элемента не покрашено акцентом",
         ".code .hljs-template-variable { color: var(--craft-code-gold)": "строки не используют золотой",
         ".code .hljs-bullet { color: var(--craft-code-blue)": "числа не используют синий",
     }
@@ -621,6 +663,7 @@ def main() -> None:
         check_catalog_grid,
         check_state_marks,
         check_control_states,
+        check_hover_paint,
         check_accessibility_contract,
         check_spacing_scale,
         check_fragment_manifest,
@@ -642,6 +685,7 @@ def main() -> None:
         check_catalog_grid: "сетка каталога",
         check_state_marks: "метки состояний",
         check_control_states: "состояния управления",
+        check_hover_paint: "краска наведения",
         check_accessibility_contract: "контракт доступности",
         check_spacing_scale: "шкала отступов",
         check_fragment_manifest: "метаданные фрагментов",

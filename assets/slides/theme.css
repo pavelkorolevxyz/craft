@@ -368,9 +368,11 @@
 /* Акцентная палитра разделяет управляющие слова, значения и числа.
    Она должна читаться с проектора, а не сливаться в монохромный листинг. */
 .code .hljs-comment,
-.code .hljs-quote { color: var(--muted); }
+.code .hljs-quote,
+.code .hljs-meta { color: var(--muted); }
 .code .hljs-keyword,
 .code .hljs-selector-tag,
+.code .hljs-name,
 .code .hljs-literal,
 .code .hljs-type { color: var(--accent); font-weight: 650; }
 .code .hljs-string,
@@ -388,6 +390,7 @@
 .code .hljs-attribute { color: var(--craft-code-gold); }
 .code .hljs-variable,
 .code .hljs-params,
+.code .hljs-tag,
 .code .hljs-punctuation { color: var(--code-text); }
 
 /* --- 10 иллюстрация --- */

@@ -262,6 +262,16 @@
           "level": "organism"
         },
         {
+          "id": "section",
+          "title": "Секция",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/section.html",
+          "rootClass": "section",
+          "dependencies": [],
+          "summary": "Самостоятельная часть документа",
+          "level": "organism"
+        },
+        {
           "id": "workspace-head",
           "title": "Рабочая шапка",
           "kind": "fragment",
@@ -409,7 +419,9 @@
           "kind": "primitive",
           "source": "assets/interfaces/theme.css",
           "rootClass": "range",
-          "dependencies": [],
+          "dependencies": [
+            "assets/interfaces/range.js"
+          ],
           "summary": "Выбор числового значения в диапазоне",
           "level": "atom"
         },
@@ -618,42 +630,6 @@
           "rootClass": null,
           "dependencies": [],
           "summary": "Шкала текста и заголовков"
-        },
-        {
-          "id": "stack",
-          "title": "Вертикальный поток",
-          "kind": "primitive",
-          "source": "assets/interfaces/theme.css",
-          "rootClass": "stack",
-          "dependencies": [],
-          "summary": "Ритм последовательных блоков"
-        },
-        {
-          "id": "section",
-          "title": "Секция",
-          "kind": "fragment",
-          "source": "assets/interfaces/fragments/section.html",
-          "rootClass": "section",
-          "dependencies": [],
-          "summary": "Самостоятельная часть документа"
-        },
-        {
-          "id": "equal-panels",
-          "title": "Равные панели",
-          "kind": "primitive",
-          "source": "assets/interfaces/theme.css",
-          "rootClass": "equal-panels",
-          "dependencies": [],
-          "summary": "Панели с общими смысловыми рядами"
-        },
-        {
-          "id": "prose",
-          "title": "Длинный текст",
-          "kind": "primitive",
-          "source": "assets/interfaces/theme.css",
-          "rootClass": "prose",
-          "dependencies": [],
-          "summary": "Читаемая колонка размеченного текста"
         }
       ]
     },
@@ -888,8 +864,10 @@
     "num",
     "hljs-comment",
     "hljs-quote",
+    "hljs-meta",
     "hljs-keyword",
     "hljs-selector-tag",
+    "hljs-name",
     "hljs-literal",
     "hljs-type",
     "hljs-string",
@@ -905,6 +883,7 @@
     "hljs-attribute",
     "hljs-variable",
     "hljs-params",
+    "hljs-tag",
     "hljs-punctuation",
     "class_",
     "function_"
