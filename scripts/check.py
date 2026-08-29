@@ -590,7 +590,9 @@ def check_content() -> None:
     identity = (ROOT / "references/identity.md").read_text(encoding="utf-8")
     workflow = (ROOT / "references/workflow.md").read_text(encoding="utf-8")
     interface = (ROOT / "references/interfaces/design-language.md").read_text(encoding="utf-8")
+    patterns = (ROOT / "references/interfaces/patterns.md").read_text(encoding="utf-8")
     slides = (ROOT / "references/slides/design-language.md").read_text(encoding="utf-8")
+    project_check = (ROOT / "scripts/check_project.py").read_text(encoding="utf-8")
     assert "Каждое действие сразу даёт различимый результат в текущей области видимости" in identity, "общая идентичность не требует видимой обратной связи"
     assert "Не чередуй красные и нейтральные элементы ради узора" in identity, "общая идентичность разрешает декоративное чередование акцента"
     workflow_contracts = [
@@ -610,6 +612,9 @@ def check_content() -> None:
     assert all(contract in interface for contract in interface_contracts), "интерфейс допускает невидимый результат действия"
     assert "не декоративный чередователь" in interface, "интерфейс допускает декоративное чередование красного"
     assert "Не чередуй нейтральные и красные слайды" in slides, "слайды допускают декоративное чередование фонов"
+    assert "остаётся списком строк" in patterns and "не переносит свою структуру целиком" in patterns, "паттерны превращают простой список в лишние карточки или копируют референс"
+    assert "буквальным составом запроса" in workflow and "общую линию рисует один владелец" in workflow, "рабочий процесс не проверяет состав данных или общие стыки"
+    assert "doubleBorders" in project_check and "двойные границы на общих стыках" in project_check, "валидатор не ищет двух владельцев общей границы"
 
 
 def check_language() -> None:
