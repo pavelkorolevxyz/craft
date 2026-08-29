@@ -779,8 +779,8 @@
       ],
       "fragmentTarget": ".slides",
       "catalog": "catalog/slides/index.html",
-      "catalogPages": 58,
-      "catalogPrintPages": 58,
+      "catalogPages": 62,
+      "catalogPrintPages": 62,
       "catalogLayouts": [
         "title",
         "cover",
@@ -806,7 +806,11 @@
       "catalogCssClasses": [
         "about",
         "byline",
+        "chart-keys--inline",
         "column-track",
+        "is-current",
+        "is-down",
+        "is-rest",
         "jersey",
         "lanes",
         "line-base",
@@ -816,13 +820,18 @@
         "line-plot",
         "line-scale",
         "line-series",
+        "pie-cuts",
+        "pie-plot",
+        "pie-slices",
+        "pie-track",
+        "range-row",
+        "range-track",
         "s-cover",
         "s-quote",
         "s-shot",
         "svg-defs",
         "takeaways",
-        "timeline-key",
-        "is-current"
+        "timeline-key"
       ]
     }
   },
@@ -830,6 +839,7 @@
     "--at",
     "--column-ratio",
     "--columns",
+    "--from",
     "--metrics",
     "--nav-marker-h",
     "--nav-marker-w",
@@ -837,7 +847,9 @@
     "--nav-marker-y",
     "--space",
     "--stack-gap",
+    "--start",
     "--swatch",
+    "--to",
     "--value"
   ],
   "requirements": {

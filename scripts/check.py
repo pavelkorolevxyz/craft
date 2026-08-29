@@ -540,6 +540,10 @@ def check_slide_layouts() -> None:
     }
     for rule, message in syntax_roles.items():
         assert rule in theme, message
+    # Gecko молча игнорирует calc без единиц измерения в геометрии SVG:
+    # доля кольца превращается в целое кольцо, и слайд врёт про данные.
+    assert "stroke-dasharray: calc(var(--value) * 1px" in theme, "доля кольца снова считается без единиц измерения"
+    assert "stroke-dashoffset" not in theme, "начало доли снова смещает штрих вместо поворота и потеряется в Gecko"
 
     catalog_definition = MANIFEST["surfaces"]["slides"]
     catalog = (ROOT / catalog_definition["catalog"]).read_text(encoding="utf-8")

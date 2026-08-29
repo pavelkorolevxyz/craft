@@ -192,8 +192,19 @@
     if (finalWidth) {
       element.style.display = 'inline-block';
       element.style.inlineSize = `${finalWidth}px`;
-      element.style.textAlign = 'end';
-      element.style.justifySelf = 'start';
+      // Опорный край числа берём от того, как показатель поставлен.
+      // Прижатый к краю держит правый край, а значение над столбцом
+      // графика стоит по середине столбца и середину же держит: иначе
+      // на отсчёте оно съезжает вбок и возвращается только в конце.
+      const placement = getComputedStyle(element).justifySelf;
+      if (placement === 'center') {
+        element.style.textAlign = 'center';
+      } else {
+        element.style.textAlign = 'end';
+        if (placement === 'auto' || placement === 'normal' || placement === 'stretch') {
+          element.style.justifySelf = 'start';
+        }
+      }
     }
 
     const format = (value) => {

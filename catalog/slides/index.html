@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Craft · Каталог слайдов</title>
-<link rel="stylesheet" href="../../assets/shared/tokens.css">
-<link rel="stylesheet" href="../../assets/slides/base.css">
-<link rel="stylesheet" href="../../assets/slides/theme.css">
+<link rel="stylesheet" href="../../assets/shared/tokens.css?v=0.5.0-print2">
+<link rel="stylesheet" href="../../assets/slides/base.css?v=0.5.0-print2">
+<link rel="stylesheet" href="../../assets/slides/theme.css?v=0.5.0-print2">
 </head>
 <body>
 <svg class="svg-defs" width="0" height="0" aria-hidden="true"><defs><path id="qr-example" stroke="currentColor" d="M2 2.5h7m1 0h1m2 0h2m1 0h3m1 0h7M2 3.5h1m5 0h1m2 0h3m4 0h1m1 0h1m5 0h1M2 4.5h1m1 0h3m1 0h1m2 0h1m4 0h1m1 0h1m1 0h1m1 0h3m1 0h1M2 5.5h1m1 0h3m1 0h1m1 0h3m1 0h5m1 0h1m1 0h3m1 0h1M2 6.5h1m1 0h3m1 0h1m1 0h1m2 0h1m2 0h3m1 0h1m1 0h3m1 0h1M2 7.5h1m5 0h1m1 0h2m3 0h1m4 0h1m5 0h1M2 8.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M10 9.5h2m2 0h1m1 0h1M2 10.5h1m3 0h1m1 0h4m1 0h1m2 0h2m1 0h5m2 0h1M2 11.5h1m2 0h1m1 0h1m2 0h2m1 0h1m2 0h2m1 0h1m2 0h2m1 0h1M2 12.5h1m2 0h1m1 0h2m1 0h2m1 0h5m1 0h3m1 0h2M2 13.5h1m1 0h1m2 0h1m1 0h1m2 0h2m2 0h2m1 0h1m1 0h1m2 0h2M2 14.5h3m1 0h1m1 0h1m1 0h1m4 0h2m2 0h3m1 0h4M2 15.5h2m6 0h3m1 0h1m1 0h3m3 0h1m2 0h1M6 16.5h1m1 0h2m1 0h1m1 0h7m1 0h4M4 17.5h1m1 0h1m2 0h1m2 0h2m1 0h1m1 0h1m3 0h2m1 0h2M2 18.5h4m2 0h1m1 0h3m1 0h2m1 0h8M10 19.5h1m4 0h2m1 0h1m3 0h1M2 20.5h7m1 0h1m1 0h1m5 0h1m1 0h1m1 0h1M2 21.5h1m5 0h1m2 0h1m2 0h1m1 0h1m1 0h1m3 0h4M2 22.5h1m1 0h3m1 0h1m1 0h4m1 0h2m1 0h9M2 23.5h1m1 0h3m1 0h1m3 0h1m1 0h1m4 0h3m2 0h3M2 24.5h1m1 0h3m1 0h1m2 0h10m2 0h1m1 0h1M2 25.5h1m5 0h1m4 0h1m1 0h1m4 0h6M2 26.5h7m1 0h3m1 0h2m1 0h1m1 0h2m3 0h3"/></defs></svg>
@@ -252,14 +252,15 @@ function example(input) {
   <section class="slide s-chart" data-slide-layout="chart">
     <div class="pad">
       <p class="slide-title">Пик приходится на середину периода</p>
-      <div class="column-chart place-fill" role="img" aria-label="Пример вертикального столбчатого графика: семь месяцев, наибольшее значение в июне">
-        <div class="column"><div class="column-track"><i style="--value:38%"></i></div><span>Янв</span></div>
-        <div class="column"><div class="column-track"><i style="--value:52%"></i></div><span>Фев</span></div>
-        <div class="column"><div class="column-track"><i style="--value:47%"></i></div><span>Мар</span></div>
-        <div class="column"><div class="column-track"><i style="--value:64%"></i></div><span>Апр</span></div>
-        <div class="column"><div class="column-track"><i style="--value:81%"></i></div><span>Май</span></div>
-        <div class="column is-focus"><strong>00</strong><div class="column-track"><i style="--value:100%"></i></div><span>Июн</span></div>
-        <div class="column"><div class="column-track"><i style="--value:73%"></i></div><span>Июл</span></div>
+      <div class="column-chart place-fill" role="img" aria-label="Значение по месяцам в единицах: январь 38, февраль 52, март 47, апрель 64, май 81, июнь 100, июль 73">
+        <div class="chart-y-axis" aria-hidden="true"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div>
+        <div class="column"><strong data-count>38</strong><div class="column-track"><i style="--value:38%"></i></div><span>Янв</span></div>
+        <div class="column"><strong data-count>52</strong><div class="column-track"><i style="--value:52%"></i></div><span>Фев</span></div>
+        <div class="column"><strong data-count>47</strong><div class="column-track"><i style="--value:47%"></i></div><span>Мар</span></div>
+        <div class="column"><strong data-count>64</strong><div class="column-track"><i style="--value:64%"></i></div><span>Апр</span></div>
+        <div class="column"><strong data-count>81</strong><div class="column-track"><i style="--value:81%"></i></div><span>Май</span></div>
+        <div class="column is-focus"><strong data-count>100</strong><div class="column-track"><i style="--value:100%"></i></div><span>Июн</span></div>
+        <div class="column"><strong data-count>73</strong><div class="column-track"><i style="--value:73%"></i></div><span>Июл</span></div>
       </div>
       <p class="type-note">Укажите источник, период и единицу измерения.</p>
     </div>
@@ -270,7 +271,8 @@ function example(input) {
   <section class="slide s-chart" data-slide-layout="chart">
     <div class="pad">
       <p class="slide-title">Рост начинается после июня</p>
-      <div class="line-chart place-fill" role="img" aria-label="Пример линейного графика: новый поток держится вровень с прежним до июня, затем растёт, прежний остаётся на месте">
+      <div class="line-chart place-fill" role="img" aria-label="Значение по месяцам в единицах. Новый поток: январь 50, июнь 55, август 170. Прежний поток: январь 60, июнь 65, август 80. До июня потоки идут вровень, после июня новый растёт, прежний остаётся на месте">
+        <div class="chart-y-axis" aria-hidden="true"><span>200</span><span>150</span><span>100</span><span>50</span><span>0</span></div>
         <div class="line-plot">
           <svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
             <line class="line-base" x1="0" y1="40" x2="100" y2="40"/>
@@ -292,7 +294,99 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 18 · Таймлайн -->
+  <!-- 18 · Круговой график: доли одного целого -->
+  <section class="slide s-chart" data-slide-layout="chart">
+    <div class="pad">
+      <p class="slide-title">Половину срока занимает один этап</p>
+      <div class="pie-chart place-fill" role="img" aria-label="Пример кругового графика: сборка 52%, проверки 23%, публикация 15%, остальные этапы 10%">
+        <div class="pie-plot">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="pie-track" cx="50" cy="50" r="40" pathLength="100"/>
+            <g class="pie-slices">
+              <circle cx="50" cy="50" r="40" pathLength="100" style="--value:23;--start:0"/>
+              <circle cx="50" cy="50" r="40" pathLength="100" style="--value:15;--start:23"/>
+              <circle class="is-rest" cx="50" cy="50" r="40" pathLength="100" style="--value:10;--start:38"/>
+              <circle class="is-focus" cx="50" cy="50" r="40" pathLength="100" style="--value:52;--start:48"/>
+            </g>
+            <g class="pie-cuts" aria-hidden="true">
+              <line x1="50" y1="50" x2="100" y2="50" style="--start:0"/>
+              <line x1="50" y1="50" x2="100" y2="50" style="--start:23"/>
+              <line x1="50" y1="50" x2="100" y2="50" style="--start:38"/>
+              <line x1="50" y1="50" x2="100" y2="50" style="--start:48"/>
+            </g>
+          </svg>
+        </div>
+        <ul class="chart-keys">
+          <li><i aria-hidden="true"></i><span>Проверки</span><strong data-count>23%</strong></li>
+          <li><i aria-hidden="true"></i><span>Публикация</span><strong data-count>15%</strong></li>
+          <li class="is-rest"><i aria-hidden="true"></i><span>Остальные этапы</span><strong data-count>10%</strong></li>
+          <li class="is-focus"><i aria-hidden="true"></i><span>Сборка</span><strong data-count>52%</strong></li>
+        </ul>
+      </div>
+      <p class="type-note">Укажите источник, период и единицу измерения.</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 19 · Структура периода: доли внутри стоящего столбца -->
+  <section class="slide s-chart" data-slide-layout="chart">
+    <div class="pad">
+      <p class="slide-title">Автоматические проверки вытесняют ручные</p>
+      <ul class="chart-keys chart-keys--inline">
+        <li><i aria-hidden="true"></i><span>Ручные</span></li>
+        <li><i aria-hidden="true"></i><span>Смешанные</span></li>
+        <li class="is-focus"><i aria-hidden="true"></i><span>Автоматические</span></li>
+      </ul>
+      <div class="column-chart column-chart--stacked place-fill" role="img" aria-label="Доля проверок по кварталам в процентах: автоматические растут с 38 до 72, ручные падают с 41 до 12">
+        <div class="chart-y-axis" aria-hidden="true"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0</span></div>
+        <div class="column"><div class="column-track"><i style="--value:41%"></i><i style="--value:21%"></i><i class="is-focus" style="--value:38%"></i></div><span>1 кв.</span></div>
+        <div class="column"><div class="column-track"><i style="--value:32%"></i><i style="--value:22%"></i><i class="is-focus" style="--value:46%"></i></div><span>2 кв.</span></div>
+        <div class="column"><div class="column-track"><i style="--value:23%"></i><i style="--value:19%"></i><i class="is-focus" style="--value:58%"></i></div><span>3 кв.</span></div>
+        <div class="column"><div class="column-track"><i style="--value:12%"></i><i style="--value:16%"></i><i class="is-focus" style="--value:72%"></i></div><span>4 кв.</span></div>
+      </div>
+      <p class="type-note">Укажите источник, период и единицу измерения.</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 20 · Два ряда по периодам: столбцы стоят парами -->
+  <section class="slide s-chart" data-slide-layout="chart">
+    <div class="pad">
+      <p class="slide-title">Новый поток обгоняет прежний в апреле</p>
+      <ul class="chart-keys chart-keys--inline">
+        <li><i aria-hidden="true"></i><span>Прежний поток</span></li>
+        <li class="is-focus"><i aria-hidden="true"></i><span>Новый поток</span></li>
+      </ul>
+      <div class="column-chart column-chart--grouped place-fill" role="img" aria-label="Значение по месяцам в единицах: новый поток растёт с 31 до 88, прежний держится около 60">
+        <div class="chart-y-axis" aria-hidden="true"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div>
+        <div class="column"><div class="column-track"><i style="--value:58%"></i><i class="is-focus" style="--value:31%"></i></div><span>Янв</span></div>
+        <div class="column"><div class="column-track"><i style="--value:61%"></i><i class="is-focus" style="--value:44%"></i></div><span>Фев</span></div>
+        <div class="column"><div class="column-track"><i style="--value:57%"></i><i class="is-focus" style="--value:52%"></i></div><span>Мар</span></div>
+        <div class="column"><div class="column-track"><i style="--value:60%"></i><i class="is-focus" style="--value:63%"></i></div><span>Апр</span></div>
+        <div class="column"><div class="column-track"><i style="--value:59%"></i><i class="is-focus" style="--value:76%"></i></div><span>Май</span></div>
+        <div class="column"><div class="column-track"><i style="--value:62%"></i><i class="is-focus" style="--value:88%"></i></div><span>Июн</span></div>
+      </div>
+      <p class="type-note">Укажите источник, период и единицу измерения.</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 21 · График изменения: путь величины между двумя замерами -->
+  <section class="slide s-chart" data-slide-layout="chart">
+    <div class="pad">
+      <p class="slide-title">Медленнее всего изменился поиск</p>
+      <div class="range-chart place-fill" role="img" aria-label="Пример графика изменения: список 1 200 → 320 мс, карточка 940 → 260 мс, поиск 1 500 → 1 180 мс, экспорт 380 → 640 мс">
+        <div class="range-row is-down"><span>Список</span><strong>1 200 → 320</strong><div class="range-track"><i style="--from:80%;--to:21%"></i></div></div>
+        <div class="range-row is-down"><span>Карточка</span><strong>940 → 260</strong><div class="range-track"><i style="--from:63%;--to:17%"></i></div></div>
+        <div class="range-row is-focus is-down"><span>Поиск</span><strong>1 500 → 1 180</strong><div class="range-track"><i style="--from:100%;--to:79%"></i></div></div>
+        <div class="range-row"><span>Экспорт</span><strong>380 → 640</strong><div class="range-track"><i style="--from:25%;--to:43%"></i></div></div>
+      </div>
+      <p class="type-note">Укажите источник, период и единицу измерения.</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
+  <!-- 22 · Таймлайн -->
   <section class="slide s-timeline" data-slide-layout="timeline">
     <div class="pad">
       <p class="slide-title">Таймлайн</p>
@@ -307,7 +401,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 19 · Схема процесса -->
+  <!-- 23 · Схема процесса -->
   <section class="slide s-flow" data-slide-layout="flow">
     <div class="pad">
       <p class="slide-title">Схема процесса</p>
@@ -331,7 +425,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 20 · Сравнение изображений: та же композиция, что и текстовое сравнение -->
+  <!-- 24 · Сравнение изображений: та же композиция, что и текстовое сравнение -->
   <section class="slide s-comparison s-visual-compare" data-slide-layout="visual-comparison">
     <div class="comparison-split">
       <div class="comparison-side is-before">
@@ -356,7 +450,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 21 · Заголовочный слайд внутри доклада -->
+  <!-- 25 · Заголовочный слайд внутри доклада -->
   <section class="slide s-title-card" data-slide-layout="title">
     <div class="pad">
       <h2 class="type-hero">Заголовок в одну-две строки</h2>
@@ -364,7 +458,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 22 · Итоги -->
+  <!-- 26 · Итоги -->
   <section class="slide" data-slide-layout="list">
     <div class="pad">
       <p class="slide-title">Выводы</p>
@@ -377,7 +471,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 23 · Ресурс: обычный заголовок, медиа и связанный QR -->
+  <!-- 27 · Ресурс: обычный заголовок, медиа и связанный QR -->
   <section class="slide s-figure" data-slide-layout="resource">
     <div class="pad">
       <p class="slide-title">Ресурс и QR-код</p>
@@ -399,7 +493,7 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
-  <!-- 24 · Финал -->
+  <!-- 28 · Финал -->
   <section class="slide s-end" data-slide-layout="end">
     <div class="pad">
       <h2 class="type-hero">Спасибо<br>за внимание</h2>
@@ -474,8 +568,8 @@ function example(input) {
   </button>
 </div>
 
-<script src="../../assets/slides/vendor/highlight.min.js"></script>
-<script src="../../assets/slides/code-highlight.js"></script>
-<script src="../../assets/slides/deck.js"></script>
+<script src="../../assets/slides/vendor/highlight.min.js?v=0.5.0-print2"></script>
+<script src="../../assets/slides/code-highlight.js?v=0.5.0-print2"></script>
+<script src="../../assets/slides/deck.js?v=0.5.0-print2"></script>
 </body>
 </html>

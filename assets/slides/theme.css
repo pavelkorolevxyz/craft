@@ -28,6 +28,12 @@
   --on-accent-muted: var(--craft-on-accent-muted);
   --on-accent-line: var(--craft-on-accent-line);
   --code-text: var(--craft-code-text);
+  /* Ряд данных: кроме фирменного красного насыщенный цвет живёт
+     только в данных. Порядок ряда закреплён и не тасуется от слайда
+     к слайду, иначе одна и та же часть меняет цвет между графиками. */
+  --data-blue: var(--craft-data-blue);
+  --data-amber: var(--craft-data-amber);
+  --data-green: var(--craft-data-green);
   --selection: var(--craft-selection);
 
   /* Контур блока: яркий у изображения, спокойный у схемы и разлиновки. */
@@ -50,6 +56,20 @@
   --rule-strong: 3px;
   --chart-bar: 3.2cqh;
   --chart-gap: 3.4cqh;
+  /* Ряд долей: части одного целого различает цвет, и порядок цветов
+     закреплён. Красный в ряду не участвует: он остаётся акцентом и
+     достаётся той части, о которой доклад. Остаток берёт нейтральный
+     тон, в каком бы месте ряда он ни стоял. */
+  --chart-series-1: var(--data-blue);
+  --chart-series-2: var(--data-amber);
+  --chart-series-3: var(--data-green);
+  /* Остаток тише всего ряда: это не отдельная часть рассказа, а всё,
+     что в нём не разбирают. Белым он спорил бы с акцентом. */
+  --chart-series-4: var(--chart-rest);
+  --chart-rest: color-mix(in srgb, var(--text) 45%, var(--bg));
+  /* Полоса графика изменения не входит в ряд: она показывает путь
+     одной величины, а не отдельный ряд данных. */
+  --chart-band: color-mix(in srgb, var(--text) 38%, var(--bg));
 }
 .pad {
   padding: calc(var(--pad-y) + 6cqh) var(--pad-x);
@@ -145,15 +165,15 @@
 
 /* Строка списка: тонкая линия сверху, плотность задаёт --row-pad.
    На этой основе строятся оба списка колоды; различает их только маркер. */
-.plain-list, .bullets { list-style: none; margin: 0; padding: 0; display: grid; }
-.plain-list > li, .bullets > li {
+.plain-list, .bullets, .chart-keys { list-style: none; margin: 0; padding: 0; display: grid; }
+.plain-list > li, .bullets > li, .chart-keys > li {
   padding: var(--row-pad, 2.6cqh) 0;
   border-top: var(--rule) solid var(--line);
 }
-.plain-list > li:first-child, .bullets > li:first-child { border-top: 0; }
+.plain-list > li:first-child, .bullets > li:first-child, .chart-keys > li:first-child { border-top: 0; }
 /* Плотность следует фактическому числу пунктов; кегль не меняется. */
-.plain-list:has(> li:nth-child(4)), .bullets:has(> li:nth-child(4)) { --row-pad: 1.7cqh; }
-.plain-list:has(> li:nth-child(6)), .bullets:has(> li:nth-child(6)) { --row-pad: 1cqh; }
+.plain-list:has(> li:nth-child(4)), .bullets:has(> li:nth-child(4)), .chart-keys:has(> li:nth-child(4)) { --row-pad: 1.7cqh; }
+.plain-list:has(> li:nth-child(6)), .bullets:has(> li:nth-child(6)), .chart-keys:has(> li:nth-child(6)) { --row-pad: 1cqh; }
 
 /* Ненумерованный список: залитый акцентный круг стоит непосредственно
    перед текстом. Отдельной колонки и вертикального разделителя нет. */
@@ -241,7 +261,8 @@
 /* Короткая подпись внутри блока: отметка времени, сторона сравнения,
    категория графика, пояснение к показателю. Одна роль — один кегль. */
 .timeline-key, .comparison-label, .scoreboard .k,
-.chart-row > span, .column > span, .line-scale > span, .line-key {
+.chart-row > span, .column > span, .line-scale > span, .line-key,
+.chart-keys > li > span, .range-row > span {
   color: var(--muted);
   font: 500 1.5cqw/1.4 var(--font-text);
   margin: 0;
@@ -463,7 +484,9 @@
   row-gap: 1.2cqh;
   column-gap: 1.2cqw;
 }
-.chart-row > strong {
+/* Значение подписывает строку в любой форме графика: один кегль, один
+   край выравнивания, табличные цифры. */
+.chart-row > strong, .chart-keys > li > strong, .range-row > strong {
   color: var(--text);
   font: 650 1.9cqw/1 var(--font-display);
   font-variant-numeric: tabular-nums;
@@ -477,6 +500,30 @@
 .chart-track i { display: block; width: var(--value); height: 100%; background: var(--text); }
 .chart-row.is-focus > span, .chart-row.is-focus > strong { color: var(--accent); }
 .chart-row.is-focus .chart-track i { background: var(--accent); }
+
+/* --- ось значений: общая для стоящего и линейного графика --- */
+/* У графика с двумя измерениями подписаны обе оси. Без шкалы значений
+   высота столбца и наклон линии показывают только форму, а на вопрос
+   «сколько» слайд не отвечает. Подписи стоят по краю у поля графика,
+   табличными цифрами, и делят ряд сетки с самим полем: крайние метки
+   приходятся ровно на низ и верх поля, поэтому колонка выступает за ряд
+   на половину строки сверху и снизу. */
+.chart-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-block: -.7em;
+  color: var(--muted);
+  font: 500 1.5cqw/1.4 var(--font-text);
+  font-variant-numeric: tabular-nums;
+}
+.chart-y-axis > span { display: block; }
+/* Разлиновка поперёк поля не нужна: числа слева и опора внизу дают
+   отсчёт, а лишние линии спорят со столбцами и рядами. */
+/* Верхняя метка стоит вровень с верхом поля и потому подходит вплотную
+   к заголовку слайда: графику со шкалой нужен зазор под ним. */
+.column-chart:has(> .chart-y-axis), .line-chart:has(> .chart-y-axis) { padding-block-start: 2cqh; }
 
 /* --- вертикальный график: та же величина, но по периодам --- */
 /* Периоды идут слева направо, поэтому столбцы стоят, а не лежат:
@@ -499,13 +546,24 @@
   grid-template-rows: auto minmax(0, 1fr) auto;
   grid-auto-flow: column;
   grid-auto-columns: var(--chart-bar);
-  justify-content: center;
+  justify-content: start;
   column-gap: var(--chart-gap);
 }
+/* Колонку под ось заводит только график, у которого она есть: иначе
+   первый столбец встал бы в эту колонку и получил ширину по содержимому.
+   Ось делит ряд с дорожками, а не со всем графиком: деления совпадают с
+   нулём и верхом столбца, а не с подписью периода. */
+.column-chart:has(> .chart-y-axis) { grid-template-columns: auto; }
+.column-chart > .chart-y-axis { grid-row: 2; }
 .column {
   min-width: 0;
   grid-row: span 3;
   display: grid;
+  /* Колонка внутри себя тоже сетка, и её единственный столбец нужно
+     привязать к ширине ячейки. Столбец по содержимому раздувала бы
+     подпись периода: она шире дорожки и у каждого месяца своя, отчего
+     столбцы выходили разной толщины. */
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: subgrid;
   row-gap: 1.2cqh;
 }
@@ -537,6 +595,41 @@
 .column.is-focus > span, .column.is-focus > strong { color: var(--accent); }
 .column.is-focus .column-track i { background: var(--accent); }
 
+/* Структура периода: один столбец разбит на части одного целого. Части
+   идут сверху вниз в порядке разметки, светлота падает от первой к
+   последней, а разделяет их полоса фона внутри самой части: доли
+   складываются ровно в сто процентов, и промежутки их не сдвигают.
+
+   Столбец со структурой вдвое толще одиночного: в нём сравнивают части
+   между собой, и на толщине одиночного нижние доли превращаются в
+   полоски. Промежуток между периодами остаётся общим. */
+.column-chart--stacked { grid-auto-columns: calc(var(--chart-bar) * 2); }
+.column-chart--stacked .column-track i {
+  box-sizing: border-box;
+  border-block-end: var(--rule-strong) solid var(--bg);
+  background: var(--chart-series-1);
+}
+.column-chart--stacked .column-track i:last-child { border-block-end: 0; }
+.column-chart--stacked .column-track i:nth-child(2) { background: var(--chart-series-2); }
+.column-chart--stacked .column-track i:nth-child(3) { background: var(--chart-series-3); }
+.column-chart--stacked .column-track i:nth-child(n+4) { background: var(--chart-series-4); }
+.column-chart--stacked .column-track i.is-rest { background: var(--chart-rest); }
+.column-chart--stacked .column-track i.is-focus { background: var(--accent); }
+
+/* Два ряда в периоде стоят вплотную: сравнивают их между собой, а не с
+   соседним периодом, поэтому пара читается как один столбец, разрезанный
+   надвое. Колонка вдвое шире одиночной, промежуток между периодами
+   остаётся общим. */
+.column-chart--grouped { grid-auto-columns: calc(var(--chart-bar) * 2 + var(--rule-strong)); }
+.column-chart--grouped .column-track {
+  flex-direction: row;
+  align-items: flex-end;
+  column-gap: var(--rule-strong);
+}
+.column-chart--grouped .column-track i { flex: 1; background: var(--chart-series-1); }
+.column-chart--grouped .column-track i:nth-child(2) { background: var(--chart-series-2); }
+.column-chart--grouped .column-track i.is-focus { background: var(--accent); }
+
 /* --- линейный график: величина, меняющаяся непрерывно --- */
 /* Линия читается формой, а не отдельными точками, поэтому маркеров на
    ней нет: точки предлагают считывать каждое значение, а на слайде
@@ -552,13 +645,14 @@
   --line-keys: 15cqw;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--line-keys);
+  grid-template-columns: auto minmax(0, 1fr) var(--line-keys);
   grid-template-rows: minmax(0, 1fr) auto;
   column-gap: 1.4cqw;
   row-gap: 1.6cqh;
 }
-.line-plot { grid-area: 1 / 1; min-height: 0; }
-.line-keys { grid-area: 1 / 2; position: relative; }
+.line-chart > .chart-y-axis { grid-area: 1 / 1; }
+.line-plot { grid-area: 1 / 2; min-height: 0; }
+.line-keys { grid-area: 1 / 3; position: relative; }
 /* Подпись стоит на высоте конца своей линии: доля берётся от поля
    графика, поэтому колонка подписей делит с ним ряд сетки. */
 .line-key {
@@ -592,9 +686,151 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.line-scale { grid-area: 2 / 1; display: flex; justify-content: space-between; gap: 1cqw; }
+.line-scale { grid-area: 2 / 2; display: flex; justify-content: space-between; gap: 1cqw; }
 .line-series.is-focus { stroke: var(--accent); }
 .line-scale > .is-focus { color: var(--accent); }
+
+/* --- ключи рядов: подпись доли рядом с её краской --- */
+/* Части целого нельзя подписать у самой формы: подпись внутри сектора
+   или сегмента упирается в его размер и первой ломается на узкой
+   доле. Поэтому у составных графиков есть список ключей: образец
+   краски, название и значение в одной строке. Порядок ключей повторяет
+   порядок частей в разметке — светлота образца совпадает с частью сама
+   собой, вручную её не назначают.
+
+   Строка ключа стоит на общей основе списков колоды: тонкая линия
+   сверху, плотность по числу пунктов. Различает её только образец. */
+.chart-keys {
+  --marker-size: 1.1cqw;
+  --marker-gap: 1.2cqw;
+  align-content: center;
+}
+.chart-keys > li {
+  display: grid;
+  grid-template-columns: var(--marker-size) minmax(0, 1fr) auto;
+  column-gap: var(--marker-gap);
+  align-items: center;
+}
+.chart-keys > li > i {
+  width: var(--marker-size); height: var(--marker-size);
+  background: var(--chart-series-1);
+}
+.chart-keys > li:nth-child(2) > i { background: var(--chart-series-2); }
+.chart-keys > li:nth-child(3) > i { background: var(--chart-series-3); }
+.chart-keys > li:nth-child(n+4) > i { background: var(--chart-series-4); }
+.chart-keys > li.is-rest > i { background: var(--chart-rest); }
+.chart-keys > li.is-focus > i { background: var(--accent); }
+.chart-keys > li.is-focus > span, .chart-keys > li.is-focus > strong { color: var(--accent); }
+/* Ряды стоящего графика подписаны до него: значения стоят у самих
+   столбцов, ключу остаётся название, и строка ему уже не нужна. */
+.chart-keys--inline {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 2.6cqw;
+  row-gap: 1cqh;
+}
+.chart-keys--inline > li { border-top: 0; padding: 0; grid-template-columns: var(--marker-size) auto; }
+
+/* --- круговой график: доли одного целого --- */
+/* Кольцо отвечает на один вопрос: какую часть целого занимает доля, о
+   которой доклад. Долей от двух до четырёх — дальше сектора становятся
+   тоньше подписи, и сравнение уходит в таблицу или в лежащий график.
+
+   Сектор — обводка одной окружности: pathLength=100 переводит её длину
+   в проценты, поэтому доля и её начало пишутся в разметке теми же
+   числами, что и в источнике. Кольцо повёрнуто на четверть влево:
+   первая доля начинается сверху, а не справа. */
+.pie-chart {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  column-gap: 4cqw;
+}
+/* Кольцо вписывается в свою половину само: viewBox держит квадрат, и
+   на узкой записи график уменьшается вместе с полем, а не вылезает
+   за него. */
+.pie-plot { min-width: 0; min-height: 0; }
+.pie-plot svg { display: block; width: 100%; height: 100%; rotate: -90deg; }
+.pie-track, .pie-slices > circle { fill: none; stroke-width: 13; }
+.pie-track { stroke: var(--surface); }
+.pie-slices > circle {
+  stroke: var(--chart-series-1);
+  /* Длина дуги считается в единицах viewBox: calc без единиц измерения
+     Gecko в этом свойстве не принимает и молча рисует целое кольцо
+     вместо доли.
+
+     Начало доли задаёт поворот, а не смещение штриха: смещение — тоже
+     число без единиц, и в Gecko оно так же молчит. Процент доли
+     переводится в градусы напрямую, сотая часть круга равна 3.6°.
+
+     Дуги смыкаются вплотную, зазор между ними режет .pie-cuts. */
+  stroke-dasharray: calc(var(--value) * 1px) 100px;
+  transform: rotate(calc(var(--start) * 3.6deg));
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+.pie-slices > circle:nth-child(2) { stroke: var(--chart-series-2); }
+.pie-slices > circle:nth-child(3) { stroke: var(--chart-series-3); }
+.pie-slices > circle:nth-child(n+4) { stroke: var(--chart-series-4); }
+.pie-slices > circle.is-rest { stroke: var(--chart-rest); }
+.pie-slices > circle.is-focus { stroke: var(--accent); }
+/* Границу долей режет полоса фона, а не обрезка самой дуги: конец дуги
+   срезан по радиусу, и такой зазор расходится клином — у внешнего края
+   кольца он заметно шире, чем у внутреннего. У прямой полосы края
+   параллельны, поэтому зазор одинаков по всей толщине.
+
+   Полоса идёт от центра за внешний край кольца: и в отверстии, и
+   снаружи она совпадает с фоном, поэтому одна и та же геометрия
+   работает при любой толщине кольца. Полоса стоит на начале доли и
+   поворачивается тем же углом. В разметке она лежит вправо, как и
+   начало окружности: четверть влево оба получают от самого кольца. */
+.pie-cuts > line {
+  stroke: var(--bg);
+  stroke-width: 1.2;
+  transform: rotate(calc(var(--start) * 3.6deg));
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+
+/* --- график изменения: путь величины между двумя замерами --- */
+/* Полоса лежит не от нуля, а между «было» и «стало»: сравнивают здесь
+   расстояние, которое прошла величина, и её место на общей шкале.
+   Заливка держит весь путь, метка стоит на конце «стало» — по ней
+   читается направление, поэтому падение и рост не путаются. Обе
+   величины подписаны: без чисел полоса говорит только «изменилось». */
+.range-chart { display: grid; gap: var(--chart-gap); align-content: center; }
+.range-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  row-gap: 1.2cqh;
+  column-gap: 1.2cqw;
+}
+.range-track { grid-column: 1 / -1; position: relative; height: var(--chart-bar); }
+/* Шкала общая для всех строк, поэтому у каждой видна её опора. */
+.range-track::before {
+  content: "";
+  position: absolute; inset-inline: 0; top: 50%;
+  height: var(--rule); translate: 0 -50%;
+  background: var(--line);
+}
+.range-track > i {
+  position: absolute; inset-block: 0;
+  left: min(var(--from), var(--to));
+  right: calc(100% - max(var(--from), var(--to)));
+  background: var(--chart-band);
+}
+.range-track > i::after {
+  content: "";
+  position: absolute; inset-block: 0; right: 0;
+  width: var(--chart-bar);
+  background: var(--text);
+}
+.range-row.is-down .range-track > i::after { right: auto; left: 0; }
+/* Акцент носит строка, которая доказывает тезис, — как и в лежащем
+   графике. Направление изменения показывает метка на конце, не цвет. */
+.range-row.is-focus > span, .range-row.is-focus > strong { color: var(--accent); }
+.range-row.is-focus .range-track > i::after { background: var(--accent); }
 
 /* --- таймлайн: непрерывная ось времени, событие отмечено точкой на ней --- */
 .timeline {
@@ -920,6 +1156,18 @@
 
 [data-reveal] .column-track i {
   animation: column-track-grow 900ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* Кольцо вычерчивается по кругу одним ходом: доля ждёт свою очередь и
+   рисуется за время, равное своей величине. Сотая часть круга занимает
+   9 мс, поэтому полный круг укладывается в те же 900 мс, что и рост
+   столбца. Ход равномерный: это одно движение по окружности, а не
+   четыре отдельных выезда, и торможение в конце каждой доли выдавало бы
+   их друг за другом. */
+@keyframes pie-slice-draw { from { stroke-dasharray: 0px 100px; } }
+
+[data-reveal] .pie-slices > circle {
+  animation: pie-slice-draw calc(var(--value) * 9ms) linear calc(var(--start) * 9ms) both;
 }
 
 /* Линия появляется слева направо, как её и читают, — вместе с опорой и
