@@ -92,14 +92,24 @@
 .chart-panel > figcaption { min-height: 74px; display: flex; justify-content: space-between; gap: var(--space-4); align-items: start; padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--line); }
 .chart-panel > figcaption h3 { font-size: 18px; }
 .chart-panel > figcaption p { margin: var(--space-1) 0 0; color: var(--muted); font-size: 12px; }
-.column-chart { position: relative; height: 250px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-4); align-items: end; margin: var(--space-5); padding-top: var(--space-5); border-bottom: 1px solid var(--line); }
-.column-chart > div { position: relative; z-index: 1; height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: var(--space-2); align-items: end; text-align: center; }
+.chart-panel > .bar-list { margin: var(--space-5); }
+/* В карточке компонента рамку уже держит .component-preview. Своя рамка панели
+   встала бы второй линией в двадцати пикселях от первой, поэтому здесь панель
+   отдаёт рамку превью и оставляет себе только разделители. */
+.catalog-chart-panel { border: 0; }
+/* Столбец и порог считают долю от одной величины --plot, поэтому пунктир
+   встаёт на своё деление шкалы. Пока столбец брал процент от свободной строки
+   сетки, а порог от всей высоты блока вместе с подписями, линия 500 уходила
+   на 11 пикселей вверх и столбец D читался почти на пороге вместо 10% выше.
+   Доля порога задаётся числом без единиц: умножать длину на проценты нельзя. */
+.column-chart { --plot: 168px; --label: 18px; position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: auto var(--plot) var(--label); gap: var(--space-2) var(--space-4); align-items: end; margin: var(--space-5); padding-top: var(--space-5); border-bottom: 1px solid var(--line); }
+.column-chart > div { z-index: 1; grid-row: 1 / -1; display: grid; grid-template-rows: subgrid; align-items: end; text-align: center; }
 .column-chart strong { color: var(--text); font-size: 12px; font-variant-numeric: tabular-nums; }
 .column-chart i { width: min(100%, 44px); height: var(--value); justify-self: center; background: var(--data-neutral); }
-.column-chart span { color: var(--muted); font-size: var(--type-service); }
+.column-chart span { display: block; color: var(--muted); font-size: var(--type-service); line-height: var(--label); }
 .column-chart__alert i { background: var(--data-red); }
 .column-chart__alert strong { color: var(--accent); }
-.column-threshold { position: absolute; z-index: 2; top: 17%; right: 0; left: 0; padding-bottom: var(--space-1); border-bottom: 1px dashed var(--accent-mark); color: var(--accent) !important; text-align: right; }
+.column-threshold { position: absolute; z-index: 2; right: 0; left: 0; bottom: calc(var(--label) + var(--space-2) + var(--plot) * var(--at)); padding-bottom: var(--space-1); border-bottom: 1px dashed var(--accent-mark); color: var(--accent) !important; text-align: right; }
 .chart-panel > figcaption.heatmap-heading { align-items: center; }
 .heatmap-legend { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--muted); font-size: var(--type-service); white-space: nowrap; }
 .heatmap-legend i { width: 14px; height: 14px; background: var(--data-neutral); }
