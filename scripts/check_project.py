@@ -120,7 +120,12 @@ def browser_probe_script(surface: str) -> str:
         + "const unnamed=controls.filter(el=>{const id=el.id;const label=el.closest('label')||(id&&document.querySelector(`label[for=\"${CSS.escape(id)}\"]`));return !(el.getAttribute('aria-label')||el.getAttribute('title')||el.textContent.trim()||label)}).length;"
         + "const ranks=[...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(el=>Number(el.tagName[1]));const jumps=ranks.slice(1).filter((rank,i)=>rank>ranks[i]+1).length;"
         + "const slides=[...document.querySelectorAll('.slide')];const undeclared=slides.filter(el=>!el.dataset.slideLayout).length;const active=document.querySelectorAll('.slide[data-active]').length;"
-        + "return `${document.documentElement.scrollWidth}:${innerWidth}:${unnamed}:${jumps}:${changed?1:0}:${slides.length}:${undeclared}:${active}`;"
+        + "const styleOf=frame.contentWindow.getComputedStyle.bind(frame.contentWindow);"
+        + "const candidates=[...document.body.querySelectorAll('*')].filter(el=>{const r=el.getBoundingClientRect();const s=styleOf(el);return r.width>8&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden'&&!el.closest('table')});"
+        + "const owns=(el,side)=>{const s=styleOf(el);return parseFloat(s[`border${side}Width`])>0&&s[`border${side}Style`]!=='none'};"
+        + "const tops=candidates.filter(el=>owns(el,'Top'));const bottoms=candidates.filter(el=>owns(el,'Bottom'));"
+        + "const doubleBorders=bottoms.filter(a=>tops.some(b=>{if(a===b)return false;const ar=a.getBoundingClientRect(),br=b.getBoundingClientRect();if(Math.abs(ar.bottom-br.top)>.75)return false;const overlap=Math.min(ar.right,br.right)-Math.max(ar.left,br.left);return overlap>8&&overlap>=Math.min(ar.width,br.width)*.8})).length;"
+        + "return `${document.documentElement.scrollWidth}:${innerWidth}:${unnamed}:${jumps}:${changed?1:0}:${slides.length}:${undeclared}:${active}:${doubleBorders}`;"
     )
 
 
@@ -167,7 +172,7 @@ inspectWhenReady();
         match = re.search(r"<title>craft-check:([^<]+)</title>", dumped)
         assert match and match.group(1) != "pending", "браузерная проверка не выполнилась"
         results = [tuple(map(int, result.split(":"))) for result in match.group(1).split("|")]
-        assert len(results) == len(VIEWPORTS) and all(len(result) == 8 for result in results), "Chromium вернул неполный результат проверки"
+        assert len(results) == len(VIEWPORTS) and all(len(result) == 9 for result in results), "Chromium вернул неполный результат проверки"
         return results
     finally:
         probe_path.unlink(missing_ok=True)
@@ -175,12 +180,14 @@ inspectWhenReady();
 
 def check_browser(index: Path, surface: str) -> None:
     for (width, _), result in zip(VIEWPORTS, probe_all(index, surface)):
-        scroll, viewport, unnamed, jumps, theme_changed, slides, undeclared, active = result
+        scroll, viewport, unnamed, jumps, theme_changed, slides, undeclared, active, double_borders = result
         assert viewport == width, f"Chromium открыл контрольный экран {width}px с шириной {viewport}px"
         assert scroll <= viewport, f"горизонтальное переполнение при ширине {width}px: {scroll}px > {viewport}px"
         assert unnamed == 0, f"элементы управления без доступного имени: {unnamed}"
         assert jumps == 0, f"найдены пропуски уровней заголовков: {jumps}"
         assert theme_changed == 1, "переключение темы не работает"
+        if surface == "interface":
+            assert double_borders == 0, f"двойные границы на общих стыках при ширине {width}px: {double_borders}"
         if surface == "slides":
             assert slides > 0 and undeclared == 0 and active == 1, "нарушен контракт слайдовой колоды"
 

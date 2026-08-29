@@ -165,7 +165,7 @@ def test_project_check_batches_browser(root: Path) -> None:
             assert "document.createElement('iframe')" in document, "контрольные размеры не собраны в один прогон"
             assert all(str(width) in document and str(height) in document for width, height in VIEWPORTS)
             assert "%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0%20%231%3F.html" in document
-            results = "|".join(f"{width}:{width}:0:0:1:0:0:0" for width, _ in VIEWPORTS)
+            results = "|".join(f"{width}:{width}:0:0:1:0:0:0:0" for width, _ in VIEWPORTS)
             return SimpleNamespace(stdout=f"<title>craft-check:{results}</title>")
         pdf_argument = next(value for value in command if value.startswith("--print-to-pdf="))
         Path(pdf_argument.split("=", 1)[1]).write_bytes(b"%PDF" + b"x" * 6_000)
@@ -176,6 +176,24 @@ def test_project_check_batches_browser(root: Path) -> None:
     ):
         check_project_module.check_browser(index, "interface")
     assert len(calls) == 2, f"ожидалось два запуска Chromium, получено: {len(calls)}"
+
+
+def test_project_check_rejects_double_boundaries(root: Path) -> None:
+    project = root / "double-boundary"
+    project.mkdir()
+    index = project / "index.html"
+    index.write_text(
+        '''<!doctype html><html lang="ru" data-theme="dark"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<style>*{box-sizing:border-box}body{margin:0}.theme{position:fixed}.head{height:64px;border-bottom:1px solid #444}.list{margin:0;border-top:1px solid #444}</style>
+<button class="theme" data-theme-toggle aria-label="Переключить тему" onclick="document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'">Тема</button>
+<header class="head"><h1>Страницы</h1></header><main data-craft-layout="interface"><ol class="list"><li>Материал</li></ol></main></html>''',
+        encoding="utf-8",
+    )
+    doubled = check_project_module.probe_all(index, "interface")
+    assert all(result[8] > 0 for result in doubled), "валидатор не заметил двух владельцев общей границы"
+    index.write_text(index.read_text(encoding="utf-8").replace(".list{margin:0;border-top:1px solid #444}", ".list{margin:0}"), encoding="utf-8")
+    fixed = check_project_module.probe_all(index, "interface")
+    assert all(result[8] == 0 for result in fixed), "валидатор считает одиночную границу двойной"
 
 
 def test_dump_probe_isolated(root: Path) -> None:
@@ -371,6 +389,7 @@ def main() -> None:
         test_scaffold_inputs(root)
         test_static_resources(root)
         test_project_check_batches_browser(root)
+        test_project_check_rejects_double_boundaries(root)
         test_dump_probe_isolated(root)
         test_interface_starter(outputs["interface-blank"], root)
         test_interface_catalog(root)
