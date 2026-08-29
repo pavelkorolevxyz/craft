@@ -587,6 +587,15 @@ def check_content() -> None:
     personal_terms = ["pa" + "vel", "koro" + "lev", "па" + "вел", "коро" + "л"]
     assert not any(term in searchable for term in personal_terms), "персональные названия не входят в Craft"
 
+    identity = (ROOT / "references/identity.md").read_text(encoding="utf-8")
+    workflow = (ROOT / "references/workflow.md").read_text(encoding="utf-8")
+    interface = (ROOT / "references/interfaces/design-language.md").read_text(encoding="utf-8")
+    assert "Каждое действие сразу даёт различимый результат в текущей области видимости" in identity, "общая идентичность не требует видимой обратной связи"
+    assert "Не чередуй красные и нейтральные элементы ради узора" in identity, "общая идентичность разрешает декоративное чередование акцента"
+    assert "управление → видимый результат" in workflow and "Назначай акцент по функции" in workflow, "рабочий процесс не проверяет обратную связь и функцию акцента"
+    assert "Результат каждого клика, выбора и клавиатурной команды виден" in interface, "интерфейс может менять содержимое вне области видимости"
+    assert "не декоративный чередователь" in interface, "интерфейс допускает декоративное чередование красного"
+
 
 def check_language() -> None:
     assert MANIFEST.get("language") == "ru", "в craft.json должен быть указан русский язык"
