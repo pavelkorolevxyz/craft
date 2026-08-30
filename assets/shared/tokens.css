@@ -43,6 +43,14 @@
   --craft-surface: #1a1a1a;
   --craft-surface-muted: #161616;
   --craft-sunken: #0d0d0d;
+  /* Эксперимент: вложенный блок. Полупрозрачная краска, а не готовый серый.
+     Вложение считает сам браузер: блок внутри блока накладывает её второй
+     раз и отходит от фона ещё на шаг. Один токен на обе темы, направление
+     задаёт цвет: белый осветляет тёмную, тёмный затемняет светлую. */
+  --craft-raise: rgb(238 238 238 / .07);
+  /* Рельса шкалы. Остаток прогресса, полосы и ползунка — плоскость, а не
+     линия: цветом линии он читался как случайная рамка под значением. */
+  --craft-track: rgb(238 238 238 / .12);
 
   /* Линии. --craft-line — обычный разделитель и рамка. --craft-line-strong
      нужен там, где линия сама несёт данные: ось, курсор, шкала. */
@@ -163,6 +171,8 @@
   --craft-light-surface: #eae8e3;
   --craft-light-surface-muted: #f1efea;
   --craft-light-sunken: #dedbd4;
+  --craft-light-raise: rgb(32 32 30 / .06);
+  --craft-light-track: rgb(32 32 30 / .11);
   --craft-light-line: rgb(32 32 30 / .22);
   --craft-light-line-strong: #3b3a37;
   --craft-light-text: #20201e;
@@ -197,6 +207,8 @@
   --craft-surface: var(--craft-light-surface);
   --craft-surface-muted: var(--craft-light-surface-muted);
   --craft-sunken: var(--craft-light-sunken);
+  --craft-raise: var(--craft-light-raise);
+  --craft-track: var(--craft-light-track);
   --craft-line: var(--craft-light-line);
   --craft-line-strong: var(--craft-light-line-strong);
   --craft-text: var(--craft-light-text);

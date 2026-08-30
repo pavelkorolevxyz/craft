@@ -1,6 +1,6 @@
 .system-layout { min-height: 100vh; display: grid; grid-template-columns: 220px minmax(0, 1fr); }
 .sheet-layout { min-height: 100vh; }
-.system-nav { position: fixed; z-index: 10; inset: 0 auto 0 0; width: 220px; min-width: 0; height: 100vh; display: flex; flex-direction: column; padding: var(--space-5) var(--space-5); border-right: 1px solid var(--line); background: var(--bg); }
+.system-nav { position: fixed; z-index: 10; inset: 0 auto 0 0; width: 220px; min-width: 0; height: 100vh; display: flex; flex-direction: column; padding: var(--space-5) var(--space-5); border-right: 1px solid var(--line); background: var(--raise-solid); }
 .system-brand { display: flex; align-items: baseline; gap: var(--space-2); }
 .system-name { color: var(--text); font: 650 20px/1 var(--font-display); letter-spacing: -.03em; text-decoration: none; transition: color 160ms var(--ease-out); }
 .system-name:hover, .system-name:focus-visible { color: var(--accent); }
@@ -186,7 +186,7 @@
 /* Контур вместо рамки: соседние ячейки делят линию, а незанятый остаток
    последнего ряда не превращается в пустую панель. */
 .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; padding: 1px; }
-.demo-cell { min-width: 0; display: grid; gap: var(--space-3); align-content: start; padding: var(--space-5); outline: 1px solid var(--line); background: var(--bg); }
+.demo-cell { min-width: 0; display: grid; gap: var(--space-3); align-content: start; padding: var(--space-5); outline: 1px solid var(--line); background: var(--raise); }
 .demo-cell--wide { grid-column: 1 / -1; }
 .demo-label { color: var(--muted); font-size: 12px; }
 #navigation .breadcrumbs { margin-bottom: var(--space-5); }
@@ -246,7 +246,7 @@
 .component-doc__head { margin-bottom: var(--space-6); }
 .component-doc__head h2 { font-size: var(--type-section); }
 .component-doc__summary { max-width: 56ch; margin: var(--space-2) 0 0; color: var(--muted); font-size: var(--type-lede); }
-.component-preview { min-height: 180px; display: grid; align-content: center; padding: var(--space-7); border: 1px solid var(--line); background: var(--bg); overflow: auto; }
+.component-preview { min-height: 180px; display: grid; align-content: center; padding: var(--space-7); border: 1px solid var(--line); background: var(--raise); overflow: auto; }
 .component-preview--start { align-content: start; }
 .component-preview--flush { padding: 0; }
 .component-preview > :only-child { width: 100%; }
@@ -272,7 +272,7 @@
 .docs-preview-stack { display: grid; gap: var(--space-4); }
 .docs-preview-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
 .docs-icon-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; padding: 1px; background: var(--line); }
-.docs-icon-grid div { min-height: 88px; display: grid; place-items: center; gap: var(--space-2); padding: var(--space-3); color: var(--muted); background: var(--bg); font-size: var(--type-service); }
+.docs-icon-grid div { min-height: 88px; display: grid; place-items: center; gap: var(--space-2); padding: var(--space-3); color: var(--muted); background: var(--raise-solid); font-size: var(--type-service); }
 .docs-icon-grid .icon { color: var(--text); }
 
 @media (max-width: 1180px) {
@@ -282,7 +282,7 @@
 @media (max-width: 900px) {
   .system-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
   .docs-intro, .component-group, .docs-page-head, .component-doc { padding-inline: var(--space-5); }
-  .system-nav { position: sticky; inset: auto; top: 0; width: auto; height: auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "brand theme" "links links"; align-items: center; padding: var(--space-4) var(--space-5) 0; border: 0; border-bottom: 1px solid var(--line); background: var(--bg); }
+  .system-nav { position: sticky; inset: auto; top: 0; width: auto; height: auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "brand theme" "links links"; align-items: center; padding: var(--space-4) var(--space-5) 0; border: 0; border-bottom: 1px solid var(--line); background: var(--raise-solid); }
   .docs-main { grid-column: 1; }
   .system-brand { grid-area: brand; }
   .system-version { display: none; }
