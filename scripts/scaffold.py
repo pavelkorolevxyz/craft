@@ -20,18 +20,20 @@ def escaped_title(value: str) -> str:
     return html.escape(value, quote=True)
 
 
-def copy_shared(target: Path) -> None:
+def copy_shared(target: Path, favicon: str) -> None:
     shutil.copy2(SHARED / "tokens.css", target / "tokens.css")
+    shutil.copy2(SHARED / favicon, target / "favicon.svg")
     shutil.copytree(SHARED / "fonts", target / "fonts", dirs_exist_ok=True)
 
 
 def scaffold_interface(target: Path, title: str, lang: str) -> None:
-    copy_shared(target)
+    copy_shared(target, "favicon-interface.svg")
     shutil.copy2(INTERFACES / "theme.css", target / "theme.css")
     shutil.copy2(INTERFACES / "theme.js", target / "theme.js")
     shutil.copy2(INTERFACES / "section-nav.js", target / "section-nav.js")
 
     html = (INTERFACES / "starter-index.html").read_text(encoding="utf-8")
+    html = html.replace('href="../shared/favicon-interface.svg"', 'href="favicon.svg"', 1)
     html = html.replace('href="../shared/tokens.css"', 'href="tokens.css"', 1)
     html = html.replace("{{TITLE}}", escaped_title(title))
     html = html.replace('lang="ru"', f'lang="{lang}"', 1)
@@ -39,7 +41,7 @@ def scaffold_interface(target: Path, title: str, lang: str) -> None:
 
 
 def scaffold_slides(target: Path, title: str, lang: str) -> None:
-    copy_shared(target)
+    copy_shared(target, "favicon-slides.svg")
     for name in ("base.css", "theme.css", "deck.js", "code-highlight.js", "code-source.js"):
         output_name = "slides.css" if name == "theme.css" else name
         shutil.copy2(SLIDES / name, target / output_name)
@@ -47,6 +49,7 @@ def scaffold_slides(target: Path, title: str, lang: str) -> None:
 
     html = (SLIDES / "starter/index.html").read_text(encoding="utf-8")
     replacements = {
+        'href="../../shared/favicon-slides.svg"': 'href="favicon.svg"',
         'href="../../shared/tokens.css"': 'href="tokens.css"',
         'href="../base.css"': 'href="base.css"',
         'href="../theme.css"': 'href="slides.css"',

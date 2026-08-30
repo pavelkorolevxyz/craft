@@ -39,6 +39,7 @@ def validate_output(key: str, output: Path) -> None:
     index = output / "index.html"
     assert index.is_file(), f"{key}: отсутствует index.html"
     assert (output / "tokens.css").is_file(), f"{key}: отсутствует tokens.css"
+    assert (output / "favicon.svg").is_file(), f"{key}: отсутствует favicon.svg"
     if key.startswith("interface-"):
         assert (output / "theme.js").is_file(), f"{key}: отсутствует theme.js"
         assert (output / "section-nav.js").is_file(), f"{key}: отсутствует section-nav.js"
@@ -46,6 +47,7 @@ def validate_output(key: str, output: Path) -> None:
     assert len(list((output / "fonts").glob("*.woff2"))) == expected_fonts
 
     html = index.read_text(encoding="utf-8")
+    assert '<link rel="icon" href="favicon.svg" type="image/svg+xml">' in html, f"{key}: favicon не подключён"
     assert not re.search(r"\{\{[A-Z][A-Z0-9_]*\}\}", html), f"{key}: необработанная подстановка"
     parser = LocalAssetParser()
     parser.feed(html)
@@ -53,6 +55,17 @@ def validate_output(key: str, output: Path) -> None:
         assert not value.startswith(("http://", "https://", "//")), f"{key}: внешний ресурс {value}"
         target = output / value.split("?", 1)[0].split("#", 1)[0]
         assert target.is_file(), f"{key}: сломанный ресурс {value}"
+
+
+def test_catalog_favicons() -> None:
+    pages = sorted(CATALOG.rglob("*.html"))
+    assert pages, "публичные каталоги не найдены"
+    for page in pages:
+        surface = page.relative_to(CATALOG).parts[0]
+        favicon = "favicon-slides.svg" if surface == "slides" else "favicon-interface.svg"
+        expected = f'<link rel="icon" href="../../assets/shared/{favicon}" type="image/svg+xml">'
+        html = page.read_text(encoding="utf-8")
+        assert expected in html, f"{page.relative_to(ROOT)}: favicon не подключён"
 
 
 def dump_probe(source: Path, script: str, width: int, height: int) -> str:
@@ -369,6 +382,7 @@ def main() -> None:
             validate_output(key, output)
             print(f"✓ {key}")
         test_scaffold_inputs(root)
+        test_catalog_favicons()
         test_static_resources(root)
         test_project_check_batches_browser(root)
         test_dump_probe_isolated(root)
