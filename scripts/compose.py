@@ -189,8 +189,29 @@ def main() -> None:
             if not fragment:
                 raise ComposeError(f"неизвестный фрагмент {args.fragment}")
             print(f"{fragment['id']}: {fragment['purpose']}")
+            guidance = surface.get("layoutGuidance", {}).get(fragment["id"])
+            if guidance:
+                print(f"Работа: {guidance['job']}")
+                print("Подходит, когда:")
+                for item in guidance["useWhen"]:
+                    print(f"  + {item}")
+                print("Не подходит, когда:")
+                for item in guidance["avoidWhen"]:
+                    print(f"  - {item}")
+                print("Можно менять:")
+                for item in guidance["variable"]:
+                    print(f"  · {item}")
+                print(f"Раскрытие по умолчанию: {guidance['reveal']['default']}")
+                print(f"  {guidance['reveal']['guidance']}")
+                print("Подстановки:")
             for name, kind in fragment["placeholders"].items():
-                print(f"  {name}: {kind}")
+                note = guidance.get("slots", {}).get(name) if guidance else None
+                suffix = f". {note}" if note else ""
+                print(f"  {name}: {kind}{suffix}")
+            if guidance and guidance["alternatives"]:
+                print("Альтернативы:")
+                for item, reason in guidance["alternatives"].items():
+                    print(f"  {item}: {reason}")
             return
         rendered = compose(
             index,

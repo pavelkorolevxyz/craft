@@ -383,6 +383,23 @@ def check_fragment_manifest() -> None:
                 html = path.read_text(encoding="utf-8")
                 layouts = re.findall(r'data-slide-layout="([a-z-]+)"', html)
                 assert layouts == [fragment["id"]], f"id и раскладка расходятся в {fragment['path']}"
+        if surface_id == "slides":
+            guidance = surface.get("layoutGuidance", {})
+            assert set(guidance) == set(surface["catalogLayouts"]), "подсказки выбора не покрывают раскладки каталога"
+            guidance_fields = {"job", "useWhen", "avoidWhen", "variable", "fixed", "slots", "reveal", "alternatives"}
+            fragments_by_id = {fragment["id"]: fragment for fragment in fragments}
+            for layout_id, item in guidance.items():
+                assert set(item) == guidance_fields, f"неполная подсказка выбора {layout_id}"
+                assert isinstance(item["job"], str) and item["job"].strip(), f"не описана работа {layout_id}"
+                for field in ("useWhen", "avoidWhen", "variable", "fixed"):
+                    assert isinstance(item[field], list) and all(isinstance(value, str) and value.strip() for value in item[field]), f"не заполнено поле {field} у {layout_id}"
+                assert isinstance(item["slots"], dict) and item["slots"], f"не описаны изменяемые области {layout_id}"
+                assert all(isinstance(value, str) and value.strip() for value in item["slots"].values()), f"пустое описание области у {layout_id}"
+                if layout_id in fragments_by_id:
+                    assert set(item["slots"]) == set(fragments_by_id[layout_id]["placeholders"]), f"описания подстановок расходятся у {layout_id}"
+                assert set(item["reveal"]) == {"default", "guidance"}, f"не описано раскрытие {layout_id}"
+                assert item["reveal"]["default"] in {"none", "optional"}, f"неизвестное раскрытие {layout_id}"
+                assert isinstance(item["alternatives"], dict) and item["alternatives"], f"не указаны альтернативы {layout_id}"
 
 
 def check_interface_components() -> None:
@@ -549,6 +566,17 @@ def check_slide_layouts() -> None:
     catalog = (ROOT / catalog_definition["catalog"]).read_text(encoding="utf-8")
     catalog_layouts = set(re.findall(r'data-slide-layout="([a-z-]+)"', catalog))
     assert catalog_layouts == set(catalog_definition["catalogLayouts"]), "реестр раскладок каталога расходится с HTML"
+    section_tags = re.findall(r'<section class="slide\b[^>]*>', catalog)
+    examples = catalog_definition.get("catalogExamples", [])
+    example_fields = {"id", "name", "layout", "job", "useWhen", "variable"}
+    assert len(examples) == len(section_tags), "не каждый исходный слайд каталога описан в реестре"
+    assert len({item.get("id") for item in examples}) == len(examples), "идентификаторы примеров каталога не уникальны"
+    for item, tag in zip(examples, section_tags):
+        assert set(item) == example_fields, f"неполное описание примера {item.get('id')}"
+        assert all(isinstance(item[field], str) and item[field].strip() for field in example_fields), f"пустое описание примера {item.get('id')}"
+        assert re.search(rf'data-catalog-example="{re.escape(item["id"])}"', tag), f"описание {item['id']} расходится с порядком каталога"
+        layout = re.search(r'data-slide-layout="([a-z-]+)"', tag)
+        assert layout and layout.group(1) == item["layout"], f"раскладка примера {item['id']} расходится с HTML"
     chart_rows = re.findall(r'<div class="chart-row[^"]*"><span>[^<]+</span><strong data-count>[^<]+</strong>', catalog)
     assert len(chart_rows) == catalog.count('class="chart-row'), "не у каждой строки горизонтального графика подписано и анимировано значение"
     source_pages = len(re.findall(r'<section class="slide\b', catalog))

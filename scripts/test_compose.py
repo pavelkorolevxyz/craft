@@ -110,6 +110,7 @@ def test_slides(root: Path) -> None:
     project = root / "slides"
     scaffold(project, "slides", "deck", "Проверка композиции")
     listing = command(project, "--fragment", "list", "--list-placeholders")
+    assert "Работа:" in listing.stdout and "Не подходит, когда:" in listing.stdout
     assert "SLIDE_TITLE: text" in listing.stdout and "LIST_ITEMS: html" in listing.stdout
     command(
         project,
@@ -117,8 +118,17 @@ def test_slides(root: Path) -> None:
         "--set", "SLIDE_TITLE=Структура",
         "--html", "LIST_ITEMS=<li>Первый</li><li>Второй</li>",
     )
-    html = project.joinpath("index.html").read_text(encoding="utf-8")
+    index = project / "index.html"
+    html = index.read_text(encoding="utf-8")
     assert html.count('<section class="slide') == 2 and 'data-slide-layout="list"' in html
+
+    mixed = html.replace("<li>Второй</li>", '<li class="frag">Второй</li>')
+    index.write_text(mixed, encoding="utf-8")
+    failed = subprocess.run([sys.executable, str(CHECK_PROJECT), str(project), "--static-only"], cwd=ROOT, text=True, capture_output=True)
+    assert failed.returncode != 0 and "включая первый" in failed.stderr, "смешанное раскрытие списка должно считаться ошибкой"
+
+    fixed = mixed.replace("<li>Первый</li>", '<li class="frag">Первый</li>')
+    index.write_text(fixed, encoding="utf-8")
     run(sys.executable, CHECK_PROJECT, project)
 
 
