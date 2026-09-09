@@ -93,6 +93,8 @@ def check_required() -> None:
         ROOT / "references/interfaces/patterns.md",
         ROOT / "references/slides/design-language.md",
         ROOT / "references/slides/authoring.md",
+        ROOT / "references/slides/selection.md",
+        ROOT / "references/slides/charts.md",
         ASSETS / "shared/tokens.css",
         ASSETS / "interfaces/theme.css",
         ASSETS / "interfaces/theme.js",
@@ -134,6 +136,10 @@ def check_required() -> None:
     skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
     description = re.search(r'^description:\s*"([^"]+)"', skill, re.MULTILINE)
     assert description and len(description.group(1)) <= 57, "description навыка обрезается в индексе"
+    assert "references/slides/selection.md" in skill, "выбор раскладки должен быть доступен из маршрута навыка"
+    assert "references/slides/charts.md" in skill, "графики должны быть отдельной веткой навыка"
+    docs = [ROOT / "SKILL.md", *sorted((ROOT / "references").rglob("*.md"))]
+    assert sum(len(path.read_text(encoding="utf-8")) for path in docs) <= 75_000, "инструкции выросли: проверь дублирование и маршруты чтения"
     assert len(skill.splitlines()) <= 60, "SKILL.md должен оставаться кратким роутером"
     assert "references/workflow.md" in skill and "## Обязательные требования" not in skill, "процесс и требования должны жить в справочниках"
     extending = (ROOT / "references/extending.md").read_text(encoding="utf-8")
@@ -580,6 +586,12 @@ def check_slide_layouts() -> None:
     chart_rows = re.findall(r'<div class="chart-row[^"]*"><span>[^<]+</span><strong data-count>[^<]+</strong>', catalog)
     assert len(chart_rows) == catalog.count('class="chart-row'), "не у каждой строки горизонтального графика подписано и анимировано значение"
     source_pages = len(re.findall(r'<section class="slide\b', catalog))
+    fragment_count = len(re.findall(r'<[^>]+\bclass="[^"]*\bfrag\b[^"]*"', catalog))
+    assert catalog_definition["catalogPages"] == source_pages + fragment_count, "число страниц каталога расходится со сценарием раскрытия"
+    flow_example = re.search(r'<section[^>]+data-catalog-example="flow"[^>]*>(.*?)</section>', catalog, re.DOTALL)
+    assert flow_example and "flow-node--accent" not in flow_example.group(1), "обзорная схема каталога не должна навязывать акцентный узел"
+    chart_example = re.search(r'<section[^>]+data-catalog-example="bar-chart-finding"[^>]*>(.*?)</section>', catalog, re.DOTALL)
+    assert chart_example and 'class="bar-chart"' in chart_example.group(1), "график должен быть виден до раскрытия вывода"
     assert catalog_definition["catalogPages"] > source_pages, "каталог не проверяет пошаговое раскрытие"
     assert catalog_definition["catalogPrintPages"] == catalog_definition["catalogPages"], "PDF должен содержать все экранные страницы"
 

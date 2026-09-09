@@ -29,6 +29,9 @@ def test_interface(root: Path) -> None:
     index = project / "index.html"
 
     before = index.read_text(encoding="utf-8")
+    available = command(project, "--list-fragments")
+    assert "split-workspace:" in available.stdout and "flow:" not in available.stdout
+    assert index.read_text(encoding="utf-8") == before
     preview = command(
         project,
         "--fragment", "section",
@@ -109,9 +112,22 @@ def test_interface(root: Path) -> None:
 def test_slides(root: Path) -> None:
     project = root / "slides"
     scaffold(project, "slides", "deck", "Проверка композиции")
+    available = command(project, "--list-fragments")
+    assert len(available.stdout.splitlines()) == 11
+    assert "comparison:" in available.stdout and "cover:" not in available.stdout
+    unknown = command(project, "--fragment", "cover", "--list-placeholders", success=False)
+    assert "доступны:" in unknown.stderr and "comparison" in unknown.stderr
+    command(project, "--list-fragments", "--list-placeholders", success=False)
     listing = command(project, "--fragment", "list", "--list-placeholders")
     assert "Работа:" in listing.stdout and "Не подходит, когда:" in listing.stdout
     assert "SLIDE_TITLE: text" in listing.stdout and "LIST_ITEMS: html" in listing.stdout
+    assert "Обязательные условия:" in listing.stdout and "единый тип пунктов" in listing.stdout
+    assert "references/slides/selection.md" in listing.stdout
+    comparison = command(project, "--fragment", "comparison", "--list-placeholders")
+    assert "общий критерий" in comparison.stdout and "две независимые темы" in comparison.stdout
+    flow = command(project, "--fragment", "flow", "--list-placeholders")
+    assert "центральное положение не даёт права на акцент" in flow.stdout
+    assert "входящую связь со следующим узлом" in flow.stdout
     command(
         project,
         "--fragment", "list",

@@ -172,22 +172,31 @@ def compose(index: Path, fragment_id: str, text_values: dict[str, str], html_val
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("project", type=Path, help="Папка проекта или index.html")
-    parser.add_argument("--fragment", required=True, help="Идентификатор фрагмента")
+    selection = parser.add_mutually_exclusive_group(required=True)
+    selection.add_argument("--fragment", help="Идентификатор фрагмента")
+    selection.add_argument("--list-fragments", action="store_true", help="Показать доступные фрагменты формата")
     parser.add_argument("--set", dest="sets", action="append", default=[], metavar="ИМЯ=ЗНАЧЕНИЕ", help="Текст, id, число или имя")
     parser.add_argument("--html", action="append", default=[], metavar="ИМЯ=РАЗМЕТКА", help="Явно доверенная HTML-разметка")
     parser.add_argument("--html-file", action="append", default=[], metavar="ИМЯ=ПУТЬ", help="Разметка из локального файла")
     parser.add_argument("--list-placeholders", action="store_true", help="Показать контракт выбранного фрагмента")
     parser.add_argument("--dry-run", action="store_true", help="Проверить и вывести фрагмент без изменения проекта")
     args = parser.parse_args()
+    if args.list_placeholders and not args.fragment:
+        parser.error("--list-placeholders требует --fragment")
 
     try:
         index = project_index(args.project)
         document = index.read_text(encoding="utf-8")
         surface = MANIFEST["surfaces"][detect_surface(document)]
+        if args.list_fragments:
+            for item in surface["fragments"]:
+                print(f"{item['id']}: {item['purpose']}")
+            return
         fragment = next((item for item in surface["fragments"] if item["id"] == args.fragment), None)
         if args.list_placeholders:
             if not fragment:
-                raise ComposeError(f"неизвестный фрагмент {args.fragment}")
+                available = ", ".join(item["id"] for item in surface["fragments"])
+                raise ComposeError(f"неизвестный фрагмент {args.fragment}; доступны: {available}")
             print(f"{fragment['id']}: {fragment['purpose']}")
             guidance = surface.get("layoutGuidance", {}).get(fragment["id"])
             if guidance:
@@ -198,10 +207,15 @@ def main() -> None:
                 print("Не подходит, когда:")
                 for item in guidance["avoidWhen"]:
                     print(f"  - {item}")
+                print("Обязательные условия:")
+                for item in guidance["fixed"]:
+                    print(f"  ! {item}")
                 print("Можно менять:")
                 for item in guidance["variable"]:
                     print(f"  · {item}")
-                print(f"Раскрытие по умолчанию: {guidance['reveal']['default']}")
+                print("До сборки: запиши мысль, отношение данных, первый кадр, шаги раскрытия и причину акцента.")
+                print("Правила выбора: references/slides/selection.md")
+                print(f"Раскрытие исходного шаблона: {guidance['reveal']['default']}")
                 print(f"  {guidance['reveal']['guidance']}")
                 print("Подстановки:")
             for name, kind in fragment["placeholders"].items():

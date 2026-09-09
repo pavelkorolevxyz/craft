@@ -56,7 +56,7 @@ SHOTS = (
     Shot("slides-catalog", "slides-catalog-cover", 1280, 720, "#1"),
     Shot("slides-catalog", "slides-catalog-content", 1280, 720, "#5"),
     Shot("slides-catalog", "slides-catalog-code", 1280, 720, "?theme=dark#25"),
-    Shot("slides-catalog", "slides-catalog-parts", 1280, 720, "?theme=light#39"),
+    Shot("slides-catalog", "slides-catalog-parts", 1280, 720, "?theme=light#38"),
     Shot("slides-catalog", "slides-catalog-recording", 390, 844, "#1"),
     Shot("slides-catalog", "slides-catalog-grid", 1440, 900, "?view=grid#1"),
     Shot("slides-case-study", "slides-case-study-cover", 1280, 720, "?theme=light#1"),

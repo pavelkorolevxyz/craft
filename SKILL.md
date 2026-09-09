@@ -5,29 +5,26 @@ description: "Используй Craft для автономных HTML-стра
 
 # Craft
 
-## Маршрут
+1. Определи носитель. Доклад или презентация используют `slides`; страница для чтения или управления использует `interface`. Если носитель неясен, прочитай [карту форматов](references/surfaces.md).
+2. Прочитай общие [правила оформления](references/identity.md) и [процесс сборки и проверки](references/workflow.md).
+3. Пройди только выбранную ветку ниже. Не загружай весь реестр, каталог и все справочники.
 
-1. Выбери формат по [карте поверхностей](references/surfaces.md).
-2. Прочитай [идентичность Craft](references/identity.md) и [рабочий процесс](references/workflow.md).
-3. Открой только справочники выбранного формата.
+## Слайды
 
-### Интерфейс
+До HTML прочитай [выбор формы и сценария](references/slides/selection.md), затем [визуальную грамматику](references/slides/design-language.md) и [механику](references/slides/authoring.md).
 
-Сначала прочитай [визуальную грамматику](references/interfaces/design-language.md). Дальше выбери нужную ветку:
+Если есть числовой график, дополнительно прочитай [графики](references/slides/charts.md). Контракт выбранного фрагмента получи через `compose.py --list-placeholders`.
 
-- геометрия документа, данных или рабочей поверхности: [паттерны страниц](references/interfaces/patterns.md);
-- каркас, секции, таблицы, графики, статусы и базовое управление: [компоненты](references/interfaces/components.md);
-- поля, проверка и кнопки: [формы](references/interfaces/components/forms.md);
-- метки, пары значений, прогресс, события и код: [данные](references/interfaces/components/data.md);
-- уведомления, загрузка, раскрытие, окна и пустые состояния: [обратная связь](references/interfaces/components/feedback.md);
-- вкладки, фильтры, пагинация и шаги: [навигация](references/interfaces/components/navigation.md).
+## Интерфейс
 
-Загружай расширенные справочники компонентов по одному, когда задача требует их содержимого.
+Прочитай [геометрию страницы](references/interfaces/patterns.md) и [визуальную грамматику](references/interfaces/design-language.md). [Каркас и указатель компонентов](references/interfaces/components.md) ведут к нужной разметке.
 
-### Слайды
+Открывай только используемые ветки:
+- [формы](references/interfaces/components/forms.md): поля, кнопки, выбор значения и проверка;
+- [данные](references/interfaces/components/data.md): таблицы, статусы, графики, значения, события и код;
+- [обратная связь](references/interfaces/components/feedback.md): уведомления, загрузка, раскрытие, окна и пустые состояния;
+- [навигация](references/interfaces/components/navigation.md): вкладки, фильтры, шаги, список с деталями и клавиатура.
 
-Прочитай [визуальную грамматику слайдов](references/slides/design-language.md), затем [создание презентации](references/slides/authoring.md).
+## Другой носитель или расширение системы
 
-### Другой носитель
-
-До создания плаката, лонгрида, изображения, резюме или нового формата прочитай [правила расширения](references/extending.md).
+Прочитай [правила расширения](references/extending.md). Теория уровней, устройство каталога и релизов не нужны для обычной сборки материала.
