@@ -636,8 +636,8 @@ def check_language() -> None:
     assert MANIFEST.get("language") == "ru", "в craft.json должен быть указан русский язык"
     allowed_latin = {
         "aa", "api", "cdn", "chromium", "ci", "cli", "craft", "css", "esc", "example.com",
-        "foundation", "geologica", "highlight.js", "html", "imagemagick", "javascript", "json", "markdown", "node.js", "onest",
-        "pdf", "px", "python", "qr", "svg", "url", "wcag",
+        "fonts", "foundation", "geologica", "google", "highlight.js", "html", "https", "imagemagick", "javascript", "json",
+        "lucide", "markdown", "node.js", "onest", "pdf", "px", "python", "qr", "svg", "url", "wcag", "woff2",
     }
 
     for path in [ROOT / "README.md", ROOT / "SKILL.md", *sorted((ROOT / "references").rglob("*.md"))]:

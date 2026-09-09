@@ -18,6 +18,8 @@ CSS_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 CSS_IMPORT = re.compile(r"@import\s+(?:url\(\s*)?[\"']?([^\"')\s;]+)", re.I)
 CSS_URL = re.compile(r"url\(\s*[\"']?([^\"')]+)[\"']?\s*\)", re.I)
 VIEWPORTS = ((1440, 900), (390, 844), (320, 720))
+WEB_DELIVERY = re.compile(r"<html\b[^>]*\bdata-craft-delivery=\"web\"")
+ALLOWED_HOSTS = {"fonts.googleapis.com", "fonts.gstatic.com", "cdn.jsdelivr.net", "unpkg.com"}
 
 
 class ProjectParser(HTMLParser):
@@ -66,14 +68,18 @@ def css_references(text: str) -> list[str]:
     return [*CSS_IMPORT.findall(source), *CSS_URL.findall(source)]
 
 
-def validate_reference(root: Path, base: Path, value: str, origin: Path) -> None:
+def validate_reference(root: Path, base: Path, value: str, origin: Path, web: bool = False) -> None:
     reference = value.strip()
     if not reference or reference.startswith("#"):
         return
     parsed = urlsplit(reference)
     if parsed.scheme in {"data", "blob"}:
         return
-    assert not parsed.scheme and not reference.startswith("//"), f"внешний ресурс в {origin.relative_to(root)}: {reference}"
+    if parsed.scheme or reference.startswith("//"):
+        allowed = web and parsed.scheme == "https" and parsed.hostname in ALLOWED_HOSTS
+        detail = "внешний ресурс вне белого списка" if web else "внешний ресурс в локальном проекте"
+        assert allowed, f"{detail} в {origin.relative_to(root)}: {reference}"
+        return
     relative = Path(unquote(parsed.path))
     assert not relative.is_absolute(), f"абсолютный путь к ресурсу в {origin.relative_to(root)}: {reference}"
     target = (base / relative).resolve()
@@ -109,6 +115,7 @@ def check_static(index: Path, resource_root: Path | None = None) -> str:
     resources = resource_root.expanduser().resolve() if resource_root else root
     assert resources == root or resources in root.parents, "папка ресурсов должна содержать проверяемый проект"
     project_files = [path for path in root.rglob("*") if path.is_file() and path.suffix in {".html", ".css", ".js"}]
+    web = bool(WEB_DELIVERY.search(index.read_text(encoding="utf-8")))
     html_parsers: dict[Path, ProjectParser] = {}
     for path in project_files:
         text = path.read_text(encoding="utf-8")
@@ -119,10 +126,10 @@ def check_static(index: Path, resource_root: Path | None = None) -> str:
             parser.feed(text)
             html_parsers[path] = parser
             for value in parser.assets:
-                validate_reference(resources, path.parent, value, path)
+                validate_reference(resources, path.parent, value, path, web)
         elif path.suffix == ".css":
             for value in css_references(text):
-                validate_reference(resources, path.parent, value, path)
+                validate_reference(resources, path.parent, value, path, web)
 
     parser = html_parsers[index]
     assert parser.h1_count == 1, f"ожидался один h1, найдено: {parser.h1_count}"

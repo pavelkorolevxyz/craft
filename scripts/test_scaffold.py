@@ -162,6 +162,30 @@ def test_static_resources(root: Path) -> None:
     assert_static_failure(escaped, "ресурс выходит за папку проекта")
 
 
+def test_delivery_and_bundle(root: Path) -> None:
+    web = root / "delivery-web"
+    run(sys.executable, ROOT / "scripts/scaffold.py", web, "--surface", "interface", "--title", "Веб", "--delivery", "web")
+    index = web / "index.html"
+    text = index.read_text(encoding="utf-8")
+    assert 'data-craft-delivery="web"' in text and "fonts.googleapis.com" in text, "веб-доставка не оформлена"
+    assert not (web / "fonts").exists(), "веб-доставка не должна копировать шрифты"
+    assert "@font-face" not in (web / "tokens.css").read_text(encoding="utf-8"), "в веб-доставке остались локальные шрифты"
+    run(sys.executable, CHECK_PROJECT, web, "--static-only")
+    index.write_text(text.replace("</head>", '<script src="https://evil.example/x.js"></script></head>'), encoding="utf-8")
+    assert_static_failure(web, "вне белого списка")
+    index.write_text(text, encoding="utf-8")
+
+    bundled = root / "delivery-bundle"
+    scaffold(bundled, "interface", "blank")
+    run(sys.executable, ROOT / "scripts/bundle.py", bundled)
+    single = root / "delivery-single"
+    single.mkdir()
+    shutil.copy2(bundled / "index.single.html", single / "index.html")
+    run(sys.executable, CHECK_PROJECT, single, "--static-only")
+    text = (single / "index.html").read_text(encoding="utf-8")
+    assert "base64," in text and "<style>" in text and 'href="tokens.css"' not in text, "бандл не встроил ресурсы"
+
+
 def test_project_check_batches_browser(root: Path) -> None:
     project = root / "batched-browser-check"
     scaffold(project, "interface", "blank")
@@ -384,6 +408,7 @@ def main() -> None:
         test_scaffold_inputs(root)
         test_catalog_favicons()
         test_static_resources(root)
+        test_delivery_and_bundle(root)
         test_project_check_batches_browser(root)
         test_dump_probe_isolated(root)
         test_interface_starter(outputs["interface-blank"], root)
