@@ -110,6 +110,18 @@ def check_staged_reveals(text: str) -> None:
             assert all(staged), f"{layout}: при пошаговом раскрытии каждый пункт, включая первый, должен иметь class=\"frag\""
 
 
+def check_qr_color(text: str) -> None:
+    """Модули QR-кода берут цвет рамки .qr: инлайн-svg с currentColor, не <img> и не зашитый цвет."""
+    for block in re.findall(r'<div class="qr">(.*?)</div>', text, re.DOTALL):
+        assert "<img" not in block, "QR внутри .qr должен быть инлайн-<svg> с currentColor, а не <img>: цвет модулей иначе не совпадёт с рамкой"
+        if "<use" in block:
+            continue
+        paints = re.findall(r'(?:fill|stroke)\s*[=:]\s*["\']?\s*([^"\';\s]+)', block)
+        assert paints and all(value == "currentColor" for value in paints), (
+            "QR внутри .qr должен красить модули через currentColor, чтобы они совпадали с рамкой"
+        )
+
+
 def check_static(index: Path, resource_root: Path | None = None) -> str:
     root = index.parent
     resources = resource_root.expanduser().resolve() if resource_root else root
@@ -136,6 +148,7 @@ def check_static(index: Path, resource_root: Path | None = None) -> str:
     assert parser.interface != parser.slides, "не удалось однозначно определить поверхность Craft"
     if parser.slides:
         check_staged_reveals(index.read_text(encoding="utf-8"))
+        check_qr_color(index.read_text(encoding="utf-8"))
     return "interface" if parser.interface else "slides"
 
 
