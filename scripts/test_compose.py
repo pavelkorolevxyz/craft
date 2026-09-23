@@ -138,13 +138,9 @@ def test_slides(root: Path) -> None:
     html = index.read_text(encoding="utf-8")
     assert html.count('<section class="slide') == 2 and 'data-slide-layout="list"' in html
 
+    # Первый пункт может стоять вместе с заголовком, остальные раскрываются.
     mixed = html.replace("<li>Второй</li>", '<li class="frag">Второй</li>')
     index.write_text(mixed, encoding="utf-8")
-    failed = subprocess.run([sys.executable, str(CHECK_PROJECT), str(project), "--static-only"], cwd=ROOT, text=True, capture_output=True)
-    assert failed.returncode != 0 and "включая первый" in failed.stderr, "смешанное раскрытие списка должно считаться ошибкой"
-
-    fixed = mixed.replace("<li>Первый</li>", '<li class="frag">Первый</li>')
-    index.write_text(fixed, encoding="utf-8")
     run(sys.executable, CHECK_PROJECT, project)
 
 

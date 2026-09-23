@@ -24,28 +24,9 @@
   const slidesRoot = deck.querySelector('.slides');
   const sourceSlides = [...slidesRoot.querySelectorAll(':scope > .slide')];
 
-  // У перечислений раскрытие начинается с заголовка. Если автор пометил
-  // хотя бы один пункт, вся группа становится последовательной. Так
-  // случайно оставленный без .frag первый пункт не прилипает к заголовку.
-  const stagedSelectors = {
-    list: '.bullets > li, .takeaways > li',
-    metrics: '.scoreboard > div > div',
-    steps: '.steps > div',
-    timeline: '.timeline > li',
-  };
-  const normalizeStagedReveal = (source) => {
-    const selector = stagedSelectors[source.dataset.slideLayout];
-    if (!selector) return;
-    const items = [...source.querySelectorAll(selector)];
-    if (items.some((item) => item.classList.contains('frag'))) {
-      items.forEach((item) => item.classList.add('frag'));
-    }
-  };
-
   // Автор пишет каждый смысловой слайд один раз. Для показа создаём
   // страницу с одним дополнительным раскрытым .frag на каждом шаге.
   sourceSlides.forEach((source, sourceIndex) => {
-    normalizeStagedReveal(source);
     // Отделяем физическую страницу от внутренней области раскладки.
     // В печати Firefox может дать странице пропорции выбранной бумаги,
     // а вложенный size-container честно пересчитает cqw/cqh под неё.

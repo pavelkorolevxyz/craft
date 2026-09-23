@@ -87,29 +87,6 @@ def validate_reference(root: Path, base: Path, value: str, origin: Path, web: bo
     assert target.is_file(), f"сломанный локальный ресурс в {origin.relative_to(root)}: {reference}"
 
 
-def check_staged_reveals(text: str) -> None:
-    """У перечисления с раскрытием все пункты появляются после заголовка."""
-    sections = re.findall(r'<section\b[^>]*class="[^"]*\bslide\b[^"]*"[^>]*>.*?</section>', text, re.DOTALL)
-    for section in sections:
-        layout_match = re.search(r'data-slide-layout="([a-z-]+)"', section)
-        if not layout_match:
-            continue
-        layout = layout_match.group(1)
-        if layout == "list":
-            item_attrs = re.findall(r'<li\b([^>]*)>', section)
-        elif layout == "steps":
-            item_attrs = re.findall(r'<div\b([^>]*)>\s*<div class="n">', section)
-        elif layout == "timeline":
-            item_attrs = re.findall(r'<li\b([^>]*)>', section)
-        elif layout == "metrics":
-            item_attrs = re.findall(r'<div(?:\s+[^>]*)?>\s*<div\b([^>]*)>\s*<div class="v\b', section)
-        else:
-            continue
-        staged = [bool(re.search(r'class="[^"]*\bfrag\b', attrs)) for attrs in item_attrs]
-        if any(staged):
-            assert all(staged), f"{layout}: при пошаговом раскрытии каждый пункт, включая первый, должен иметь class=\"frag\""
-
-
 def check_qr_color(text: str) -> None:
     """Модули QR-кода берут цвет рамки .qr: инлайн-svg с currentColor, не <img> и не зашитый цвет."""
     for block in re.findall(r'<div class="qr">(.*?)</div>', text, re.DOTALL):
@@ -147,7 +124,6 @@ def check_static(index: Path, resource_root: Path | None = None) -> str:
     assert parser.h1_count == 1, f"ожидался один h1, найдено: {parser.h1_count}"
     assert parser.interface != parser.slides, "не удалось однозначно определить поверхность Craft"
     if parser.slides:
-        check_staged_reveals(index.read_text(encoding="utf-8"))
         check_qr_color(index.read_text(encoding="utf-8"))
     return "interface" if parser.interface else "slides"
 
