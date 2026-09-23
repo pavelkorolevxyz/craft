@@ -202,7 +202,7 @@ def test_project_check_batches_browser(root: Path) -> None:
             assert "document.createElement('iframe')" in document, "контрольные размеры не собраны в один прогон"
             assert all(str(width) in document and str(height) in document for width, height in VIEWPORTS)
             assert "%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0%20%231%3F.html" in document
-            results = "|".join(f"{width}:{width}:0:0:1:0:0:0" for width, _ in VIEWPORTS)
+            results = "|".join(f"{width}:{width}:0:0:1:0:0:0:0" for width, _ in VIEWPORTS)
             return SimpleNamespace(stdout=f"<title>craft-check:{results}</title>")
         pdf_argument = next(value for value in command if value.startswith("--print-to-pdf="))
         Path(pdf_argument.split("=", 1)[1]).write_bytes(b"%PDF" + b"x" * 6_000)

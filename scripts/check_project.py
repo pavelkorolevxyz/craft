@@ -165,7 +165,8 @@ def browser_probe_script(surface: str) -> str:
         + "const unnamed=controls.filter(el=>{const id=el.id;const label=el.closest('label')||(id&&document.querySelector(`label[for=\"${CSS.escape(id)}\"]`));return !(el.getAttribute('aria-label')||el.getAttribute('title')||el.textContent.trim()||label)}).length;"
         + "const ranks=[...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].map(el=>Number(el.tagName[1]));const jumps=ranks.slice(1).filter((rank,i)=>rank>ranks[i]+1).length;"
         + "const slides=[...document.querySelectorAll('.slide')];const undeclared=slides.filter(el=>!el.dataset.slideLayout).length;const active=document.querySelectorAll('.slide[data-active]').length;"
-        + "return `${document.documentElement.scrollWidth}:${innerWidth}:${unnamed}:${jumps}:${changed?1:0}:${slides.length}:${undeclared}:${active}`;"
+        + "const panel=document.querySelector('.help-panel');let spill=0;if(panel){const hidden=panel.hidden;panel.hidden=false;spill=Math.max(0,...[...panel.querySelectorAll('button,label')].map(el=>Math.ceil(el.getBoundingClientRect().right-innerWidth)));panel.hidden=hidden;}"
+        + "return `${document.documentElement.scrollWidth}:${innerWidth}:${unnamed}:${jumps}:${changed?1:0}:${slides.length}:${undeclared}:${active}:${spill}`;"
     )
 
 
@@ -212,7 +213,7 @@ inspectWhenReady();
         match = re.search(r"<title>craft-check:([^<]+)</title>", dumped)
         assert match and match.group(1) != "pending", "браузерная проверка не выполнилась"
         results = [tuple(map(int, result.split(":"))) for result in match.group(1).split("|")]
-        assert len(results) == len(VIEWPORTS) and all(len(result) == 8 for result in results), "Chromium вернул неполный результат проверки"
+        assert len(results) == len(VIEWPORTS) and all(len(result) == 9 for result in results), "Chromium вернул неполный результат проверки"
         return results
     finally:
         probe_path.unlink(missing_ok=True)
@@ -220,9 +221,10 @@ inspectWhenReady();
 
 def check_browser(index: Path, surface: str) -> None:
     for (width, _), result in zip(VIEWPORTS, probe_all(index, surface)):
-        scroll, viewport, unnamed, jumps, theme_changed, slides, undeclared, active = result
+        scroll, viewport, unnamed, jumps, theme_changed, slides, undeclared, active, spill = result
         assert viewport == width, f"Chromium открыл контрольный экран {width}px с шириной {viewport}px"
         assert scroll <= viewport, f"горизонтальное переполнение при ширине {width}px: {scroll}px > {viewport}px"
+        assert spill == 0, f"панель управления выходит за край при ширине {width}px на {spill}px"
         assert unnamed == 0, f"элементы управления без доступного имени: {unnamed}"
         assert jumps == 0, f"найдены пропуски уровней заголовков: {jumps}"
         assert theme_changed == 1, "переключение темы не работает"

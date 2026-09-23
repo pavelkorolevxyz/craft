@@ -42,6 +42,9 @@ body {
 
 .slide {
   position: relative;
+  /* Всё внутри слайда, включая метки с большим z-index, остаётся в его
+     собственном слое. Панель управления всегда рисуется поверх. */
+  isolation: isolate;
   width: min(100%, calc((100dvh - var(--stage-pad, 0px) * 2) * 16 / 9));
   aspect-ratio: 16 / 9;
   overflow: hidden;
@@ -274,6 +277,27 @@ body {
 }
 .help-page-total { color: var(--muted); }
 .help-close { justify-self: end; }
+/* Одна строка панели занимает около 26rem. Уже неё панель собирается
+   в две колонки по краям: слева обзор и полный экран столбиком, справа
+   тема над закрытием, которое стоит на месте кнопки открытия панели.
+   Навигация остаётся внизу по центру. Размер касания не меняется. */
+@media (max-width: 30rem) {
+  .help-panel {
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: end;
+    column-gap: .5rem;
+    row-gap: .2rem;
+  }
+  .help-actions { display: contents; }
+  .help-actions [data-deck-action="grid"] { grid-area: 1 / 1; }
+  .help-actions [data-deck-action="fullscreen"] { grid-area: 2 / 1; }
+  .help-theme { grid-area: 1 / 3; }
+  .help-close { grid-area: 2 / 3; }
+  .help-nav { grid-area: 2 / 2; }
+  /* На узком экране кнопки ленты нет, клавиша L продолжает работать. */
+  .help-panel .help-strip { display: none; }
+}
 .shortcut-key {
   position: absolute;
   z-index: 2;
