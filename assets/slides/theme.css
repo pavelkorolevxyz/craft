@@ -1,0 +1,1612 @@
+/* ============================================================
+   CRAFT · SLIDES
+
+   Tokens and freely combinable building blocks come first, then
+   recipes for specific slides. Copy, mix and rewrite the recipes.
+   This is a gallery of solutions, not a closed builder.
+
+   Craft tokens set the palette. Geologica is for headings
+   and numbers, Onest for body text, mono only inside code.
+   No all-caps text and no decorative motion.
+   ============================================================ */
+
+:root {
+  /* Slides use the same semantic roles as interfaces. The text accent is
+     for reading, the mark draws lines and dots, the fill carries white text. */
+  --bg: var(--craft-bg);
+  --surface: var(--craft-surface);
+  --surface-muted: var(--craft-surface-muted);
+  --surface-sunken: var(--craft-sunken);
+  --line: var(--craft-line);
+  --line-strong: var(--craft-line-strong);
+  --text: var(--craft-text);
+  --muted: var(--craft-muted);
+  --accent: var(--craft-accent);
+  --accent-mark: var(--craft-accent-mark);
+  --accent-fill: var(--craft-accent-fill);
+  --on-accent: var(--craft-on-accent);
+  --on-accent-muted: var(--craft-on-accent-muted);
+  --on-accent-line: var(--craft-on-accent-line);
+  --code-text: var(--craft-code-text);
+  /* Data series. Apart from the brand red, saturated color appears only
+     in data. The series order is fixed and does not shuffle from slide
+     to slide, otherwise the same part changes color between charts. */
+  --data-blue: var(--craft-data-blue);
+  --data-amber: var(--craft-data-amber);
+  --data-green: var(--craft-data-green);
+  --selection: var(--craft-selection);
+
+  /* Block border: bright for an image, quiet for a diagram and rules. */
+  --edge-strong: var(--text);
+  --edge: var(--muted);
+
+  --stage-pad: 0px;
+  --font-display: var(--craft-font-display);
+  --font-text: var(--craft-font-text);
+  --font-mono: var(--craft-font-mono);
+  --pad-x: 3.6cqw;
+  --pad-y: 5cqh;
+}
+
+.slide {
+  font-family: var(--font-text); color: var(--text);
+  /* Fallback values for rules. See .pad, where the same tokens are
+     set in fractions of the slide. */
+  --rule: 1px;
+  --rule-strong: 3px;
+  --chart-bar: 3.2cqh;
+  --chart-gap: 3.4cqh;
+  /* Share series. Color tells the parts of one whole apart, and the color
+     order is fixed. Red is not in the series. It stays the accent and
+     goes to the part the talk is about. The remainder gets a neutral
+     tone wherever it sits in the series. */
+  --chart-series-1: var(--data-blue);
+  --chart-series-2: var(--data-amber);
+  --chart-series-3: var(--data-green);
+  /* The remainder is the quietest in the series. It is not a separate part
+     of the story, it is everything the talk does not cover. In white it
+     would compete with the accent. */
+  --chart-series-4: var(--chart-rest);
+  --chart-rest: color-mix(in srgb, var(--text) 45%, var(--bg));
+  /* The change chart bar is not part of the series. It shows the path of
+     one value, not a separate data series. */
+  --chart-band: color-mix(in srgb, var(--text) 38%, var(--bg));
+}
+.pad {
+  padding: calc(var(--pad-y) + 6cqh) var(--pad-x);
+  justify-content: center; gap: 3cqh;
+
+  /* Rules are set in fractions of the slide, not in pixels. In the overview
+     a tile is five or six times smaller than the frame, and a line must
+     thin out with it, otherwise it looks that many times heavier than
+     intended. A line cannot be thinner than a pixel, so the floor is 1px.
+     On a tile every rule converges to it and looks even, with no jumps
+     in thickness. During the talk the values go back to the usual 1px
+     and 3px. Here cqw resolves against .slide, the slide container. */
+  --rule: max(1px, .0625cqw);
+  --rule-strong: max(1px, .1875cqw);
+}
+
+/* ============================================================
+   BUILDING BLOCKS
+
+   They set the visual language but do not dictate composition.
+   Change local values through custom properties right on a
+   specific slide: --gap, --columns, --column-ratio.
+   ============================================================ */
+
+/* surfaces */
+.surface-accent { background: var(--accent-fill); color: var(--on-accent); }
+/* On a bright fill, neutrals come only from white with transparency. */
+.surface-accent,
+.comparison-side.is-after,
+.flow-node--accent,
+.data-table tr[data-total] {
+  --text: var(--on-accent);
+  --muted: var(--on-accent-muted);
+  --line: var(--on-accent-line);
+  --accent: var(--on-accent);
+  --accent-mark: var(--on-accent);
+  /* The border inside a fill is white too. --edge is built from --muted in
+     :root and does not know the surroundings changed. */
+  --edge: var(--on-accent-muted);
+  --edge-strong: var(--on-accent);
+  /* There is nothing to tint red on red, so on a fill the selection is white. */
+  --selection: var(--craft-selection-on-accent);
+}
+/* A panel is allowed only inside a composition, not as a third page background. */
+.surface-panel  { background: var(--surface); color: var(--text); }
+.surface-code   { background: var(--surface-sunken); color: var(--text); }
+
+/* composition */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap, 2.4cqh);
+}
+/* Standard explanation block: a local heading and a short note.
+   Combine it with columns, frame, charts and other building blocks. */
+.content-block {
+  display: grid;
+  align-content: center;
+  gap: var(--gap, 1.4cqh);
+  max-width: var(--content-block-width, 32ch);
+}
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--gap, 1.4cqw);
+}
+.columns {
+  display: grid;
+  grid-template-columns: var(--column-ratio, repeat(var(--columns, 2), minmax(0, 1fr)));
+  gap: var(--gap, 3cqw);
+}
+/* Main material and the extra information on the right use one
+   proportion, whatever the type of the main content. */
+.content-aside {
+  --content-block-width: none;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: 3cqw;
+}
+/* A main block with labels at its right edge needs a wider gap, so the
+   labels do not run into the explanation in the next column. */
+.content-aside--separated { gap: 6cqw; }
+.place-center { justify-content: center; }
+.place-fill { flex: 1; min-height: 0; }
+.bleed-x {
+  margin-inline: calc(-1 * var(--pad-x));
+  padding-inline: var(--pad-x);
+}
+
+/* image without its own composition */
+.media-cover { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* A contained image narrower than the column starts at the left edge
+   of the text area, not at some random center. */
+.media-contain { width: 100%; height: 100%; object-fit: contain; object-position: 0 50%; display: block; }
+
+/* List row: a thin line on top, --row-pad sets the density.
+   Both deck lists build on this base. Only the marker tells them apart. */
+.plain-list, .bullets, .chart-keys { list-style: none; margin: 0; padding: 0; display: grid; }
+.plain-list > li, .bullets > li, .chart-keys > li {
+  padding: var(--row-pad, 2.6cqh) 0;
+  border-top: var(--rule) solid var(--line);
+}
+.plain-list > li:first-child, .bullets > li:first-child, .chart-keys > li:first-child { border-top: 0; }
+/* Density follows the real number of items. The font size does not change. */
+.plain-list:has(> li:nth-child(4)), .bullets:has(> li:nth-child(4)), .chart-keys:has(> li:nth-child(4)) { --row-pad: 1.7cqh; }
+.plain-list:has(> li:nth-child(6)), .bullets:has(> li:nth-child(6)), .chart-keys:has(> li:nth-child(6)) { --row-pad: 1cqh; }
+
+/* Unordered list: a filled accent circle sits right before the text.
+   There is no separate column and no vertical divider. */
+.plain-list {
+  --marker-size: .72cqw;
+  --marker-gap: 1.2cqw;
+}
+.plain-list > li {
+  display: grid;
+  grid-template-columns: var(--marker-size) 1fr;
+  column-gap: var(--marker-gap);
+  align-items: center;
+}
+.plain-list > li::before {
+  content: "";
+  width: var(--marker-size); height: var(--marker-size);
+  border-radius: 50%;
+  background: var(--accent-mark);
+}
+
+
+/* Vector diagonal lanes. The lines extend past the viewBox, so the
+   pattern covers the slide edge to edge with no gaps. */
+.lanes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.lanes path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 48;
+  opacity: .09;
+}
+
+/* --- service elements: slide title at the top left, number at the bottom right.
+   Both always sit in the same place. The title is optional. --- */
+.slide-title, .slide-number {
+  position: absolute;
+  margin: 0; pointer-events: none;
+}
+.slide-title, .comparison-title {
+  left: var(--pad-x); top: var(--pad-y);
+  font: 600 2.4cqw/1.12 var(--font-display);
+  letter-spacing: -.02em;
+  max-width: 70cqw;
+}
+/* the number works like a jersey number: large, but the same on every slide */
+.slide-number {
+  right: var(--pad-x); bottom: var(--pad-y);
+  font: 700 2.9cqw/1 var(--font-display); letter-spacing: -.03em;
+  opacity: .92;
+}
+.slide-number span {
+  font: 500 .5em/1 var(--font-text); letter-spacing: .04em;
+  opacity: .72; margin-left: .4em;
+}
+
+/* --- typography --- */
+.type-hero {
+  font: 700 7.2cqw/1.04 var(--font-display);
+  letter-spacing: -.03em; margin: 0;
+}
+.type-title {
+  font: 700 3.9cqw/1.08 var(--font-display);
+  letter-spacing: -.025em; margin: 0;
+}
+.type-heading { font: 600 2.1cqw/1.25 var(--font-display); letter-spacing: -.02em; margin: 0; }
+.type-lede { font: 400 2.35cqw/1.46 var(--font-text); margin: 0; max-width: 36ch; }
+.type-note { font: 400 1.6cqw/1.5 var(--font-text); margin: 0; color: var(--muted); }
+.type-metric, .comparison-value {
+  font: 700 var(--metric-size, 6.6cqw)/1 var(--font-display);
+  letter-spacing: -.04em;
+}
+/* On dark, secondary text is gray. On bright, it is white with transparency. */
+.surface-accent .type-note, .surface-panel .type-note { line-height: 1.56; }
+/* Quiet text on a fill uses the ready-made role, not transparency over
+   white. At .6 a label on red dropped below 3:1. */
+.surface-accent .type-note { color: var(--on-accent-muted); }
+.surface-panel .type-note { color: var(--muted); }
+/* The number sits in the bottom right corner and takes the color of the
+   fill under it, on an accent slide and on the revealed "After" half. */
+.surface-accent .slide-title, .surface-accent .slide-number,
+.slide:has(.comparison-side.is-after:not(.frag:not([data-shown]))) .slide-number { color: var(--on-accent); }
+.surface-accent .slide-number,
+.slide:has(.comparison-side.is-after:not(.frag:not([data-shown]))) .slide-number { opacity: 1; }
+.surface-accent .slide-number span,
+.slide:has(.comparison-side.is-after:not(.frag:not([data-shown]))) .slide-number span { opacity: 1; color: var(--on-accent-muted); }
+/* Short label inside a block: a timestamp, a comparison side, a chart
+   category, a note on a metric. One role, one font size. */
+.timeline-key, .comparison-label, .scoreboard .k,
+.chart-row > span, .column > span, .line-scale > span, .line-key,
+.chart-keys > li > span, .range-row > span, .data-table caption {
+  color: var(--muted);
+  font: 500 1.5cqw/1.4 var(--font-text);
+  margin: 0;
+}
+
+/* --- 01 cover --- */
+.s-cover .type-hero, .s-title-card .type-hero {
+  font-size: 8.2cqw; line-height: 1.02; max-width: 13ch; text-wrap: balance;
+}
+/* the author pairs with the number: same edge, same baseline, same font size */
+.byline {
+  position: absolute; left: var(--pad-x); bottom: var(--pad-y);
+  font: 700 2.9cqw/1 var(--font-display);
+  letter-spacing: -.03em; margin: 0;
+}
+/* An optional event follows the author, quieter, after a dot. An empty
+   event leaves no dot behind. */
+.byline__event { font-weight: 500; color: var(--muted); }
+.surface-accent .byline__event { color: var(--on-accent-muted); }
+.byline__event:not(:empty)::before {
+  content: ""; display: inline-block; width: .26em; height: .26em; border-radius: 50%;
+  background: currentColor; vertical-align: .13em; margin: 0 .35em 0 .3em;
+}
+/* the cover needs no number, there is nothing to count from */
+.s-cover .slide-number { display: none; }
+
+/* --- 02 section --- */
+.s-section .lanes path {
+  stroke: var(--surface-muted);
+  opacity: 1;
+}
+.s-section .pad { justify-content: center; gap: 1.5cqh; }
+/* The right edge of the digit sits on the same margin as the page number. */
+.s-section .jersey {
+  position: absolute; right: var(--pad-x); top: 50%; transform: translateY(-50%);
+  font: 700 30cqw/.78 var(--font-display); letter-spacing: -.04em; color: var(--text);
+}
+/* A two-digit number takes the right half of the stage, the title stays to the left. */
+.s-section .type-hero { position: relative; font-size: 6.4cqw; max-width: 52cqw; }
+
+/* --- 04 agenda: a list of sections, nothing else --- */
+
+/* --- 04 statement --- */
+.s-statement .pad { justify-content: center; gap: 7cqh; }
+.s-statement .type-hero { font-size: 6.6cqw; max-width: 15ch; }
+.s-statement u { text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 100% .08em no-repeat; box-decoration-break: clone; }
+
+/* --- 05 list: the number sits in its own column behind a vertical line --- */
+.bullets > li {
+  position: relative;
+  display: grid; grid-template-columns: 7cqw 1fr; gap: 0; align-items: stretch;
+}
+.bullets li > div { padding-left: 2cqw; }
+.bullets li::after {
+  content: "";
+  position: absolute; left: 7cqw; inset-block: 0;
+  border-left: var(--rule) solid var(--line);
+}
+.bullets li::before {
+  content: attr(data-n);
+  text-align: center;
+  font: 700 3.1cqw/1 var(--font-display); letter-spacing: -.03em; color: var(--accent);
+}
+.bullets li h3 { font: 600 2.25cqw/1.25 var(--font-display); letter-spacing: -.02em; margin: 0 0 .7cqh; }
+.bullets li small { font: 400 1.6cqw/1.5 var(--font-text); opacity: .85; }
+/* --- 06 comparison: "After" appears on the right as the next page --- */
+.comparison-split {
+  position: absolute; inset: 0;
+  display: grid; grid-template-columns: 1fr 1fr;
+}
+.comparison-side {
+  position: relative;
+  padding: calc(var(--pad-y) + 6cqh) var(--pad-x) var(--pad-y);
+  display: flex; flex-direction: column; justify-content: center;
+}
+.comparison-side.is-before { background: var(--surface); }
+.comparison-side.is-after { background: var(--accent-fill); color: var(--on-accent); }
+.comparison-title { position: absolute; margin: 0; }
+.comparison-body { display: grid; gap: 1.8cqh; align-content: center; }
+/* A number in half a slide is the same .type-metric, only more compact. */
+.comparison-value { --metric-size: 5.8cqw; margin: 0; }
+/* In half a slide the rows are more compact. */
+.comparison-points {
+  --row-pad: 1.1cqh;
+  --marker-size: .48cqw;
+  --marker-gap: .9cqw;
+  margin: 1cqh 0 0;
+  font: 400 1.8cqw/1.4 var(--font-text);
+}
+.is-after .comparison-label { opacity: 1; }
+
+/* --- 07 quote --- */
+.s-quote .pad { justify-content: center; }
+.s-quote figure { margin: 0; display: grid; gap: 3.4cqh; }
+.s-quote blockquote {
+  margin: 0; font: 600 4.6cqw/1.18 var(--font-display); letter-spacing: -.025em; max-width: 22ch;
+}
+.s-quote figcaption { font: 400 1.7cqw/1.46 var(--font-text); opacity: .85; }
+.s-quote figcaption b { display: block; font-weight: 600; opacity: 1; }
+
+/* --- 08 scoreboard: the same columns as the steps, split by a thin line --- */
+.scoreboard {
+  display: grid; grid-template-columns: repeat(3, 1fr); flex: 1;
+  align-content: center;
+}
+.scoreboard > div { display: grid; }
+/* The divider belongs to the metric, not to the empty column. Until the
+   metric is revealed, there is no line in its place. The metric stretches
+   to the full row height, so every divider has the same length. */
+.scoreboard > div > * { display: grid; gap: 1.4cqh; align-content: start; padding-right: 2.4cqw; }
+.scoreboard > div:not(:first-child) > * {
+  padding-left: 2.4cqw;
+  border-left: var(--rule) solid var(--line);
+}
+.scoreboard .v { color: var(--accent); }
+
+/* --- 09 code --- */
+/* A local Highlight.js colors the syntax. The monospace font appears only here. */
+.code {
+  background: transparent; color: var(--code-text);
+  margin: 0; padding: 3.2cqh 0; overflow: hidden;
+  font: 400 1.7cqw/1.65 var(--font-mono);
+  tab-size: 4;
+}
+.code code { display: block; font: inherit; }
+.code-line {
+  position: relative;
+  display: block;
+  min-height: 1.65em;
+  padding: 0;
+  white-space: pre;
+}
+.code:has(.code-line.is-highlighted) .code-line:not(.is-highlighted) {
+  opacity: .18;
+}
+
+/* The accent palette separates keywords, values and numbers.
+   It has to read from a projector instead of blending into a monochrome listing. */
+.code .hljs-comment,
+.code .hljs-quote,
+.code .hljs-meta { color: var(--muted); }
+.code .hljs-keyword,
+.code .hljs-selector-tag,
+.code .hljs-name,
+.code .hljs-literal,
+.code .hljs-type { color: var(--accent); font-weight: 650; }
+.code .hljs-string,
+.code .hljs-regexp,
+.code .hljs-template-tag,
+.code .hljs-template-variable { color: var(--craft-code-gold); }
+.code .hljs-number,
+.code .hljs-symbol,
+.code .hljs-bullet { color: var(--craft-code-blue); }
+.code .hljs-title,
+.code .hljs-title.function_,
+.code .hljs-title.class_ { color: var(--text); font-weight: 650; }
+.code .hljs-built_in,
+.code .hljs-attr,
+.code .hljs-attribute { color: var(--craft-code-gold); }
+.code .hljs-variable,
+.code .hljs-params,
+.code .hljs-tag,
+.code .hljs-punctuation { color: var(--code-text); }
+
+/* --- 10 figure --- */
+.figure { align-items: center; }
+/* In the media template the image starts right below the standard
+   title and takes all the remaining usable height. */
+.s-figure .figure { align-items: stretch; }
+.s-figure .frame { aspect-ratio: auto; }
+
+.frame, .photo {
+  border: var(--rule) solid var(--edge-strong);
+  position: relative;
+  display: grid;
+}
+.frame { aspect-ratio: 16/10; }
+/* A frame is never wider than its picture. When it holds a contained
+   image or video, the frame's slot becomes a container and the media
+   draws the border itself. The media fits the slot by its own proportions
+   and sits in the top left corner. media.js sets --media-ratio from the
+   file's natural size. */
+.frame:has(> .media-contain) {
+  container-type: size;
+  border-color: transparent;
+}
+.frame > .media-contain {
+  width: min(100cqw, 100cqh * var(--media-ratio, 1.6));
+  height: min(100cqh, 100cqw / var(--media-ratio, 1.6));
+  place-self: start;
+  border: var(--rule) solid var(--edge-strong);
+}
+/* Until the image is there, the block shows the space it will take.
+   The same block works inside .frame, .photo and .shot. */
+.placeholder {
+  position: absolute;
+  inset: var(--placeholder-inset, 1.4cqh);
+  border: var(--rule) dashed var(--line);
+  display: grid;
+  place-items: center;
+  font: 400 1.5cqw/1 var(--font-text);
+  color: var(--muted);
+}
+.figure .content-block { --gap: 1.4cqh; min-height: 0; }
+
+/* --- 11 results table --- */
+.data-table { border-collapse: collapse; width: 100%; font: 500 2cqw/1.28 var(--font-text); }
+.data-table th, .data-table td { text-align: left; padding: 1.7cqh 1.2cqw; }
+.data-table th {
+  font: inherit;
+  color: var(--muted);
+  border-bottom: var(--rule-strong) solid var(--text);
+}
+.data-table tbody tr { border-bottom: var(--rule) solid var(--line); }
+/* The table caption sits above it on the left, like chart labels.
+   By default the browser centers it across the full width. */
+.data-table caption { caption-side: top; text-align: left; padding-bottom: 1.2cqh; }
+.data-table .num {
+  font-family: var(--font-text);
+  text-align: right;
+}
+.data-table tr[data-total] { background: var(--accent-fill); color: var(--on-accent); }
+
+/* --- 12 steps --- */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); flex: 1; align-content: center; }
+/* The top rule is a background strip on the border box, so it can draw
+   from the left. The transparent border keeps the geometry. */
+.steps > div {
+  --step-rule: var(--line);
+  padding: 0 1.8cqw; display: grid; gap: 1.1cqh; align-content: start; padding-top: 2cqh;
+  border-top: var(--rule-strong) solid transparent;
+  background: linear-gradient(var(--step-rule), var(--step-rule)) 0 0 / 100% var(--rule-strong) no-repeat border-box;
+}
+/* The last revealed element is the current step. */
+/* Only in step-by-step mode. In the final frame for review and its PDF
+   the last step is not "current", and a red line would mean nothing. */
+.deck[data-reveal-mode="steps"] .steps > .frag[data-shown]:not(:has(~ .frag[data-shown])) {
+  --step-rule: var(--accent);
+}
+.steps .n {
+  font: 700 2.5cqw/1 var(--font-display); letter-spacing: -.03em; color: var(--accent);
+}
+/* The column heading and note look the same for steps and for timeline events. */
+.steps h3, .timeline h3 { font: 600 1.8cqw/1.25 var(--font-display); letter-spacing: -.02em; margin: 0; }
+.steps p, .timeline p { font: 400 1.55cqw/1.5 var(--font-text); color: var(--muted); margin: 0; }
+
+/* --- chart: label and value sit above the track, the finding sits at the chart center --- */
+.chart-layout {
+  min-height: 0;
+  display: grid;
+  align-content: center;
+  align-items: center;
+}
+.bar-chart { display: grid; gap: var(--chart-gap); }
+.chart-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  row-gap: 1.2cqh;
+  column-gap: 1.2cqw;
+}
+/* The value labels the row in every chart form: one font size, one
+   alignment edge, tabular digits. */
+.chart-row > strong, .chart-keys > li > strong, .range-row > strong {
+  color: var(--text);
+  font: 650 1.9cqw/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+/* The horizontal bar track is set in fractions of the slide height. A vertical
+   column uses the same measure, so neighboring slides keep one rhythm.
+   The data fill is the mark (--accent-mark), the label is the readable
+   text red (--accent). The darker text tone looked brown inside the bar. */
+.chart-track { grid-column: 1 / -1; height: var(--chart-bar); background: var(--surface); overflow: hidden; }
+.chart-track i { display: block; width: var(--value); height: 100%; background: var(--text); }
+.chart-row.is-focus > span, .chart-row.is-focus > strong { color: var(--accent); }
+.chart-row.is-focus .chart-track i { background: var(--accent-mark); }
+
+/* --- plot area with axes: shared by the column chart and the line chart ---
+   A two-dimensional chart has both axes and a scale. The value axis is a
+   vertical line on the left, the period axis is the baseline at the bottom,
+   both in --line-strong. Quiet grid lines cross the plot area at every
+   scale tick, so the number on the left can be matched to a column or a
+   point on the line. There are always five ticks, from zero to the top of
+   the plot area, so the lines sit at 0, 25, 50, 75 and 100% of the height.
+   The grid is the plot background. It does not take part in the growth
+   animation and does not move on reveal. */
+.column-track, .line-plot {
+  --chart-grid: linear-gradient(var(--line) 0 0);
+  --chart-axis: linear-gradient(var(--line-strong) 0 0);
+  background:
+    var(--chart-axis) 0 100% / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 0 / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 25% / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 50% / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 75% / 100% var(--rule) no-repeat;
+}
+/* Scale labels sit centered on their lines. The column shares the grid
+   row with the plot area and extends half a line above and below it, so
+   the outer ticks land exactly on the top and bottom of the plot area. */
+.chart-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-block: -.7em;
+  color: var(--muted);
+  font: 500 1.5cqw/1.4 var(--font-text);
+  font-variant-numeric: tabular-nums;
+}
+.chart-y-axis > span { display: block; }
+/* The top tick sticks out half a line above the plot area and comes close
+   to the slide title, so a chart with a scale needs a gap below the title. */
+.column-chart:has(> .chart-y-axis), .line-chart:has(> .chart-y-axis) { padding-block-start: 1cqh; }
+
+/* --- column chart: the same value, but over periods --- */
+/* Periods run left to right, so the columns stand instead of lying down
+   and the time order reads by itself. Labels at the bottom are short. For
+   long names use the horizontal .bar-chart.
+
+   The chart takes the full width of the plot area. Periods split it
+   evenly, and each column sits at the center of its share. There are no
+   gaps between shares, so the grid lines run across the whole area without
+   breaks. Column thickness comes from the same measure as the horizontal
+   bar track.
+
+   All three rows, value, plot area and period, are shared by every column
+   through subgrid, so the chart has one baseline for all of them. */
+.column-chart {
+  --column-bar: calc(var(--chart-bar) * 2);
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  column-gap: 0;
+  /* The chart sets the row gap, and the columns inherit it through
+     subgrid. A column's own gap would shrink its plot area inside the row
+     by half a gap at the top and bottom, and the scale ticks, which sit
+     in the full row, would drift away from the grid lines. */
+  row-gap: 1.2cqh;
+}
+/* Only a chart that has an axis gets a column for it. Otherwise the first
+   column would land in that grid column and get a content-based width.
+   The axis shares a row with the plot area, not with the whole chart, so
+   the ticks line up with zero and the top of the plot area, not with the
+   period label. */
+.column-chart:has(> .chart-y-axis) { grid-template-columns: auto; }
+.column-chart > .chart-y-axis { grid-row: 2; padding-inline-end: 1.2cqw; }
+.column {
+  min-width: 0;
+  grid-row: span 3;
+  display: grid;
+  /* The column is a grid inside too, and its single track has to be tied
+     to the cell width. Otherwise a period label would stretch the cell,
+     and the shares would end up with different widths. */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: subgrid;
+}
+.column > strong {
+  grid-row: 1;
+  justify-self: center;
+  width: max-content;
+  color: var(--text);
+  font: 650 1.9cqw/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.column > span {
+  grid-row: 3;
+  justify-self: center;
+  width: max-content;
+}
+/* The column grows from the bottom, so it is a flex container aligned to
+   the end. The height share resolves against the plot area, and the grid
+   row sets that height. */
+.column-track {
+  grid-row: 2;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+/* The value axis is the left edge of the first plot area. */
+.column-chart > .chart-y-axis + .column > .column-track {
+  background:
+    var(--chart-axis) 0 0 / var(--rule) 100% no-repeat,
+    var(--chart-axis) 0 100% / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 0 / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 25% / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 50% / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 75% / 100% var(--rule) no-repeat;
+}
+.column-track i { display: block; flex: none; width: var(--column-bar); height: var(--value); background: var(--text); }
+.column.is-focus > span, .column.is-focus > strong { color: var(--accent); }
+.column.is-focus .column-track i { background: var(--accent-mark); }
+
+/* Period structure: one column split into parts of one whole. The parts
+   go top to bottom in markup order, and a background strip inside each
+   part separates them. The shares add up to exactly one hundred percent,
+   and the gaps do not shift them. A structured column is thicker than a
+   single one. People compare its parts, and thin lower shares turned
+   into slivers. */
+.column-chart--stacked { --column-bar: calc(var(--chart-bar) * 3); }
+.column-chart--stacked .column-track i {
+  border-block-end: var(--rule-strong) solid var(--bg);
+  background: var(--chart-series-1);
+}
+.column-chart--stacked .column-track i:last-child { border-block-end: 0; }
+.column-chart--stacked .column-track i:nth-child(2) { background: var(--chart-series-2); }
+.column-chart--stacked .column-track i:nth-child(3) { background: var(--chart-series-3); }
+.column-chart--stacked .column-track i:nth-child(n+4) { background: var(--chart-series-4); }
+.column-chart--stacked .column-track i.is-rest { background: var(--chart-rest); }
+.column-chart--stacked .column-track i.is-focus { background: var(--accent-mark); }
+
+/* Two series in a period sit side by side with no gap. They are compared
+   with each other, not with the next period, so the pair reads as one
+   column cut in two. */
+.column-chart--grouped { --column-bar: calc(var(--chart-bar) * 1.5); }
+.column-chart--grouped .column-track {
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
+  column-gap: var(--rule-strong);
+}
+.column-chart--grouped .column-track i { background: var(--chart-series-1); }
+.column-chart--grouped .column-track i:nth-child(2) { background: var(--chart-series-2); }
+.column-chart--grouped .column-track i.is-focus { background: var(--accent-mark); }
+
+/* --- line chart: a value that changes continuously --- */
+/* A line reads by its shape, not by separate points, so it has no
+   markers. Points invite reading every value, and a slide cares about
+   one value. A rule from the baseline to the line marks the moment the
+   talk is about, and the scale highlights the same period.
+
+   The second series is the comparison background, so it is muted. The
+   accent goes to the series the talk is about. Series names sit at the
+   ends of the lines, not in a separate legend. A legend makes the eye
+   travel from the line to the color swatch and back, while a label at
+   the end reads in place. */
+.line-chart {
+  /* Label column: as wide as the longest series name. */
+  --line-keys: 15cqw;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) var(--line-keys);
+  grid-template-rows: minmax(0, 1fr) auto;
+  column-gap: 1.2cqw;
+  row-gap: 1.6cqh;
+}
+.line-chart > .chart-y-axis { grid-area: 1 / 1; }
+.line-plot { grid-area: 1 / 2; min-height: 0; }
+/* The value axis is the left edge of the plot area, the baseline is the
+   bottom edge. The plot background draws both, not the SVG. The series
+   line draws itself on reveal, the axes stay still. */
+.line-plot {
+  background:
+    var(--chart-axis) 0 0 / var(--rule) 100% no-repeat,
+    var(--chart-axis) 0 100% / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 0 / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 25% / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 50% / 100% var(--rule) no-repeat,
+    var(--chart-grid) 0 75% / 100% var(--rule) no-repeat;
+}
+/* The old baseline inside the SVG is no longer drawn. The bottom edge of
+   the plot area replaced it, and that edge does not draw along with the
+   series line. */
+.line-keys { grid-area: 1 / 3; position: relative; }
+/* A label sits at the height of its line's end. The share resolves
+   against the plot area, so the label column shares a grid row with it. */
+.line-key {
+  position: absolute;
+  left: 0;
+  top: var(--at);
+  translate: 0 -50%;
+}
+.line-key.is-focus { color: var(--accent); }
+.line-plot svg { display: block; width: 100%; height: 100%; overflow: visible; }
+/* The rule marks a moment, not a value. The dashes set it apart from the
+   chart's own lines, a solid rule would read as one more series. */
+.line-mark {
+  stroke: var(--accent-mark);
+  stroke-width: var(--rule);
+  stroke-dasharray: 4px 5px;
+  vector-effect: non-scaling-stroke;
+}
+.line-series {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: var(--rule-strong);
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.line-scale { grid-area: 2 / 2; display: flex; justify-content: space-between; gap: 1cqw; }
+.line-series.is-focus { stroke: var(--accent-mark); }
+.line-scale > .is-focus { color: var(--accent); }
+
+/* --- series keys: the share label next to its color --- */
+/* Parts of a whole cannot be labeled at the shape itself. A label inside
+   a sector or segment runs into its size and breaks first on a narrow
+   share. So composite charts have a list of keys: a color swatch, a name
+   and a value in one row. The key order repeats the part order in markup,
+   so the swatch shade matches its part on its own, nobody assigns it
+   by hand.
+
+   A key row uses the shared base of the deck lists: a thin line on top,
+   density by the number of items. Only the swatch tells it apart. */
+.chart-keys {
+  --marker-size: 1.1cqw;
+  --marker-gap: 1.2cqw;
+  align-content: center;
+}
+.chart-keys > li {
+  display: grid;
+  grid-template-columns: var(--marker-size) minmax(0, 1fr) auto;
+  column-gap: var(--marker-gap);
+  align-items: center;
+}
+.chart-keys > li > i {
+  width: var(--marker-size); height: var(--marker-size);
+  background: var(--chart-series-1);
+}
+.chart-keys > li:nth-child(2) > i { background: var(--chart-series-2); }
+.chart-keys > li:nth-child(3) > i { background: var(--chart-series-3); }
+.chart-keys > li:nth-child(n+4) > i { background: var(--chart-series-4); }
+.chart-keys > li.is-rest > i { background: var(--chart-rest); }
+.chart-keys > li.is-focus > i { background: var(--accent-mark); }
+.chart-keys > li.is-focus > span, .chart-keys > li.is-focus > strong { color: var(--accent); }
+/* Column chart series are labeled before the chart. Values sit at the
+   columns themselves, the key keeps only the name, and it no longer
+   needs a row.
+
+   The keys sit between the title and the chart, and the space for the
+   title in .pad fits exactly one line. Without a top margin the key row
+   sits right against the title and reads as its continuation. The margin
+   pushes it a third further than the distance to the chart, so the keys
+   stay with their chart, not with the title. */
+.chart-keys--inline {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 2.6cqw;
+  row-gap: 1cqh;
+  margin-block-start: 3cqh;
+}
+.chart-keys--inline > li { border-top: 0; padding: 0; grid-template-columns: var(--marker-size) auto; }
+
+/* --- pie chart: shares of one whole --- */
+/* The ring answers one question: how much of the whole the share the
+   talk is about takes. Use two to four shares. With more, sectors get
+   thinner than their labels, and the comparison belongs in a table or a
+   horizontal bar chart.
+
+   A sector is the stroke of one circle. pathLength=100 turns its length
+   into percent, so the markup writes a share and its start with the same
+   numbers as the source. The ring is rotated a quarter turn left, so the
+   first share starts at the top, not at the right. */
+.pie-chart {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  column-gap: 4cqw;
+}
+/* The ring fits its half by itself. The viewBox keeps a square, and on
+   a narrow layout the chart shrinks with the plot area instead of
+   overflowing it. */
+.pie-plot { min-width: 0; min-height: 0; }
+.pie-plot svg { display: block; width: 100%; height: 100%; rotate: -90deg; }
+.pie-track, .pie-slices > circle { fill: none; stroke-width: 13; }
+.pie-track { stroke: var(--surface); }
+.pie-slices > circle {
+  stroke: var(--chart-series-1);
+  /* The arc length is in viewBox units. Gecko does not accept unitless
+     calc in this property and silently draws the whole ring instead of
+     the share.
+
+     A rotation sets the start of the share, not a dash offset. The offset
+     is a unitless number too, and Gecko ignores it the same way. The
+     share percent converts straight to degrees, one hundredth of a circle
+     is 3.6°.
+
+     The arcs meet with no gap, .pie-cuts cuts the gap between them. */
+  stroke-dasharray: calc(var(--value) * 1px) 100px;
+  transform: rotate(calc(var(--start) * 3.6deg));
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+.pie-slices > circle:nth-child(2) { stroke: var(--chart-series-2); }
+.pie-slices > circle:nth-child(3) { stroke: var(--chart-series-3); }
+.pie-slices > circle:nth-child(n+4) { stroke: var(--chart-series-4); }
+.pie-slices > circle.is-rest { stroke: var(--chart-rest); }
+.pie-slices > circle.is-focus { stroke: var(--accent-mark); }
+/* A background strip cuts the border between shares, not a trimmed arc.
+   The arc end is cut along the radius, and such a gap opens like a wedge,
+   noticeably wider at the outer edge of the ring than at the inner one.
+   A straight strip has parallel edges, so the gap is even across the
+   whole thickness.
+
+   The strip runs from the center past the outer edge of the ring. Both
+   in the hole and outside it the strip matches the background, so the
+   same geometry works for any ring thickness. The strip sits at the start
+   of the share and rotates by the same angle. In markup it points right,
+   like the start of the circle. Both get the quarter turn left from the
+   ring itself. */
+.pie-cuts > line {
+  stroke: var(--bg);
+  stroke-width: 1.2;
+  transform: rotate(calc(var(--start) * 3.6deg));
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+
+/* --- change chart: the path of a value between two measurements --- */
+/* The bar does not start at zero, it lies between "Before" and "After".
+   The chart compares the distance the value traveled and its place on the
+   shared scale. The fill covers the whole path, and the mark sits at the
+   "After" end. It shows the direction, so a drop and a rise do not get
+   mixed up. Both values are labeled. Without numbers the bar only says
+   "it changed". */
+.range-chart { display: grid; gap: var(--chart-gap); align-content: center; }
+.range-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  row-gap: 1.2cqh;
+  column-gap: 1.2cqw;
+}
+.range-track { grid-column: 1 / -1; position: relative; height: var(--chart-bar); }
+/* The scale is shared by every row, so each row shows its baseline. */
+.range-track::before {
+  content: "";
+  position: absolute; inset-inline: 0; top: 50%;
+  height: var(--rule); translate: 0 -50%;
+  background: var(--line);
+}
+.range-track > i {
+  position: absolute; inset-block: 0;
+  left: min(var(--from), var(--to));
+  right: calc(100% - max(var(--from), var(--to)));
+  background: var(--chart-band);
+}
+.range-track > i::after {
+  content: "";
+  position: absolute; inset-block: 0; right: 0;
+  width: var(--chart-bar);
+  background: var(--text);
+}
+.range-row.is-down .range-track > i::after { right: auto; left: 0; }
+/* The accent goes to the row that proves the point, as in the horizontal
+   bar chart. The mark at the end shows the direction of change, not color. */
+.range-row.is-focus > span, .range-row.is-focus > strong { color: var(--accent); }
+.range-row.is-focus .range-track > i::after { background: var(--accent-mark); }
+/* The arrow between "Before" and "After" is drawn, not typed. The →
+   glyph in a text font has its own height and width. In a row of tabular
+   digits it sinks below their middle, and its side bearings do not match
+   the gap between digits, so the arrow wanders from row to row. The drawn
+   arrow sits exactly at the middle of the digits, takes the same spot in
+   every row and scales with the font size, because its sizes are in em.
+   It takes its color from the row, so it turns red by itself in the
+   accent row.
+
+   The namespace URL is written with escape codes. Two slashes in a row
+   in the theme source read as the start of a comment. */
+.range-row > strong > i {
+  display: inline-block;
+  width: 1.1em; height: .5em;
+  margin-inline: .3em;
+  vertical-align: .1em;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox='0 0 24 11' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 5.5h20.2M16.6 1.4l4.6 4.1-4.6 4.1'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* --- timeline: a continuous time axis, an event is a dot on it --- */
+.timeline {
+  --timeline-gap: 2cqw;
+  --timeline-dot-gap: .6cqw;
+  min-height: 0;
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 5), minmax(0, 1fr));
+  align-content: center;
+}
+.timeline li { min-width: 0; padding-right: var(--timeline-gap); }
+.timeline li > i { position: relative; display: block; height: 1.25cqw; margin: 2.4cqh 0 2.6cqh; }
+/* A segment runs from one dot to the next with an even gap at both ends. */
+.timeline li > i::before {
+  content: "";
+  position: absolute;
+  left: calc(1.25cqw + var(--timeline-dot-gap));
+  right: calc(var(--timeline-dot-gap) - var(--timeline-gap));
+  top: 50%;
+  border-top: var(--rule) solid var(--edge);
+}
+/* The axis reaches only the last revealed event. */
+.timeline li:last-child > i::before,
+.timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) > i::before { display: none; }
+/* The accent goes to the event the talk is about: the last revealed one
+   in step mode, or one marked with .is-current. In the final frame for
+   review the last event is not highlighted, there is nothing to talk
+   about there. */
+.deck[data-reveal-mode="steps"] .timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) > i::after,
+.timeline .is-current > i::after { background: var(--accent-mark); }
+.deck[data-reveal-mode="steps"] .timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) .timeline-key,
+.deck[data-reveal-mode="steps"] .timeline > .frag[data-shown]:not(:has(~ .frag[data-shown])) h3,
+.timeline .is-current .timeline-key,
+.timeline .is-current h3 { color: var(--accent); }
+.timeline li > i::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.25cqw;
+  height: 1.25cqw;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.timeline-key { display: block; }
+.timeline p { margin-top: .8cqh; max-width: 18ch; }
+
+/* --- process diagram: equal boxes, an arrow across the whole gap ---
+   Background strips draw the links, not borders. One piece is one
+   segment, so one technique covers horizontal, vertical and back links. --- */
+.flow {
+  --flow-gap: 5cqw;
+  --flow-drop: 9cqh;
+  --flow-return: 8cqh;
+  --flow-head: .9cqw;
+  min-height: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: auto auto auto;
+  column-gap: var(--flow-gap);
+  align-content: center;
+}
+.flow > .flow-node, .flow > .flow-step { grid-row: 2; }
+.flow-step { position: relative; min-width: 0; display: grid; }
+.flow-node {
+  min-width: 0;
+  display: grid;
+  place-content: center;
+  padding: 4cqh 2cqw;
+  text-align: center;
+  border: var(--rule) solid var(--edge);
+}
+.flow-node > strong { font: 600 2.1cqw/1.2 var(--font-display); letter-spacing: -.02em; }
+.flow-node--accent {
+  background: var(--accent-fill);
+  border-color: var(--accent-fill);
+  color: var(--text);
+}
+
+/* A link spans the whole gap, and the arrowhead touches the next node.
+   The segment stops at the base of the arrowhead instead of running under
+   it. The line and the triangle use a semi-transparent color, and where
+   they overlap they would show through each other as a dark spot. */
+.flow-arrow {
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  width: var(--flow-gap);
+  height: var(--rule);
+  transform: translateY(-50%);
+}
+.flow-arrow::before {
+  content: "";
+  position: absolute;
+  inset: 0 var(--flow-head) 0 0;
+  background: var(--muted);
+}
+.flow-arrow::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: var(--flow-head);
+  height: var(--flow-head);
+  transform: translateY(-50%);
+  background: var(--muted);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+/* Branch down: the same link rotated a quarter turn. */
+.flow > .flow-step--down { grid-row: 3; grid-column: 2; padding-top: var(--flow-drop); }
+.flow-arrow--down {
+  top: 0;
+  right: auto;
+  left: 50%;
+  width: var(--rule);
+  height: var(--flow-drop);
+  transform: translateX(-50%);
+}
+/* Pointing down, the arrowhead sits ON the node border, not over it. The
+   border is a quiet color too, and a shared pixel would read as a thicker line. */
+.flow-arrow--down::before { inset: 0 0 calc(var(--flow-head) + var(--rule)) 0; }
+.flow-arrow--down::after {
+  top: auto;
+  right: auto;
+  bottom: var(--rule);
+  left: 50%;
+  transform: translateX(-50%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+/* Back link: a rectangular detour over the top from the last node to the first. */
+.flow-return {
+  grid-row: 1;
+  grid-column: 1 / -1;
+  position: relative;
+  height: var(--flow-return);
+  margin-inline: calc((100% - 2 * var(--flow-gap)) / 6);
+}
+.flow-return::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--rule);
+  background: var(--muted);
+}
+.flow-return::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: var(--rule);
+  background: var(--muted);
+}
+.flow-return > i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--rule);
+}
+.flow-return > i::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 calc(var(--flow-head) + var(--rule)) 0;
+  background: var(--muted);
+}
+.flow-return > i::after {
+  content: "";
+  position: absolute;
+  bottom: var(--rule);
+  left: 50%;
+  width: var(--flow-head);
+  height: var(--flow-head);
+  transform: translateX(-50%);
+  background: var(--muted);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* --- visual comparison: the same comparison, with an image in the body --- */
+/* The image takes the full usable height, so it needs room below the
+   title and above the page number. Centered text is fine with 6cqh, text
+   pressed to the block edges is not. There is one gap for every layout
+   where the content stretches to full height: figure, resource, comparison
+   halves, wipe, iterations, bento and charts with a plot area. */
+.s-figure .pad,
+.pad:has(> .column-chart, > .line-chart, > .pie-chart, > .bento, > .iterations, > .wipe),
+.s-visual-compare .comparison-side {
+  padding-block: calc(var(--pad-y) + 10cqh) calc(var(--pad-y) + 8cqh);
+}
+.s-visual-compare .comparison-body { flex: 1; min-height: 0; align-content: stretch; }
+.s-visual-compare .frame { width: 100%; height: 100%; aspect-ratio: auto; }
+
+/* --- title break: a cover without the motif and service elements --- */
+.s-title-card .pad { justify-content: center; }
+/* --- about me: who on the left, photo on the right --- */
+.about {
+  display: grid; grid-template-columns: 1fr auto; gap: 5cqw; align-items: center;
+}
+.about .name { font: 600 4.4cqw/1.1 var(--font-display); letter-spacing: -.03em; margin: 0 0 2cqh; }
+.about p { font: 400 2.1cqw/1.45 var(--font-text); margin: 0 0 1cqh; max-width: 34ch; }
+.about .handle { font: 500 2.1cqw/1.45 var(--font-text); color: var(--accent); margin-top: 2cqh; }
+.photo {
+  margin: 0; width: 26cqw; aspect-ratio: 3/4;
+  overflow: hidden;
+}
+
+/* --- summary: the same type scale as the items of the main list --- */
+.takeaways { font: 600 2.25cqw/1.25 var(--font-display); letter-spacing: -.02em; }
+
+/* --- QR: one block for a resource inside the talk and for the final slide ---
+   The square with an accent border and the address next to it are one element. --- */
+.qr {
+  width: 12cqw;
+  aspect-ratio: 1;
+  border: .24cqw solid var(--accent-mark);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  font: 500 1.4cqw/1.4 var(--font-text);
+  color: var(--muted);
+}
+.qr img, .qr svg { width: 100%; height: 100%; object-fit: contain; }
+.qr svg { color: var(--accent-mark); }
+.qr-link { display: grid; gap: 1cqh; justify-items: start; }
+.qr-link a { color: inherit; text-decoration: none; }
+.where {
+  font: 500 1.8cqw/1.25 var(--font-text);
+  color: var(--accent);
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* --- full-slide media: a screenshot, a recording or a long page ---
+   No margins, the media is the content. The title hangs from the top edge
+   in the middle like a tab, the number and the caption sit on backings at
+   their edges. */
+.s-shot .pad { padding: 0; }
+.shot {
+  position: absolute; inset: 0; margin: 0;
+  display: grid; place-items: center;
+  background: var(--surface-sunken);
+}
+.shot .placeholder { --placeholder-inset: 3cqh; }
+.shot > video { width: 100%; height: 100%; display: block; }
+.s-shot .slide-title, .s-shot .slide-number, .shot figcaption {
+  z-index: 2;
+  isolation: isolate;
+}
+/* The title sits top left on a backing from the slide edge. When it would
+   cover the part of the media that matters, .s-shot--title-center hangs it
+   from the top edge in the middle instead. */
+.s-shot .slide-title { max-width: none; white-space: nowrap; }
+.s-shot--title-center .slide-title { left: 50%; translate: -50% 0; }
+.s-shot .slide-title::before,
+.s-shot .slide-number::before,
+.shot figcaption::before {
+  content: "";
+  position: absolute;
+  inset-block: -.8cqh;
+  z-index: -1;
+  background: var(--bg);
+}
+.s-shot .slide-title::before {
+  left: calc(-1 * var(--pad-x));
+  right: -1.4cqw;
+}
+.s-shot--title-center .slide-title::before {
+  top: calc(-1 * var(--pad-y));
+  inset-inline: -1.4cqw;
+}
+.shot figcaption::before {
+  left: calc(-1 * var(--pad-x));
+  right: -1.4cqw;
+}
+.s-shot .slide-number::before {
+  left: -1.4cqw;
+  right: calc(-1 * var(--pad-x));
+}
+.shot figcaption {
+  position: absolute; left: var(--pad-x); bottom: var(--pad-y);
+  font: 400 1.6cqw/1.4 var(--font-text); color: var(--muted); max-width: 55cqw;
+}
+/* With motion off, or when autoplay is refused, media.js turns on the
+   video's native controls. The frame moves above the number row so the
+   control bar does not go under the number. */
+@media screen {
+  .shot > video[controls] { height: calc(100% - var(--pad-y) * 2 - 2.9cqw); }
+}
+
+/* Entering forward, the media settles from a slight zoom. A title with
+   data-exit="intended" leaves upward after three seconds, so it does not
+   cover the media for the whole slide. Static mode and print show the
+   final frame with the title in place. */
+@keyframes shot-media-in { from { scale: 1.04; } }
+@keyframes shot-title-out { to { transform: translateY(-250%); visibility: hidden; } }
+@media screen {
+  :root[data-motion-state="on"] [data-reveal].s-shot .shot > :is(img, video) {
+    animation: shot-media-in 700ms cubic-bezier(.16, 1, .3, 1) both;
+  }
+  :root[data-motion-state="on"] [data-reveal].s-shot .slide-title[data-exit="intended"] {
+    animation: shot-title-out 600ms cubic-bezier(.7, 0, .84, 0) 3s forwards;
+  }
+}
+
+/* data-rewind: after the end the recording runs back to the start. The
+   frame dims and a rewind mark blinks in the middle until it plays again. */
+.s-shot.is-rewinding .shot > video { filter: brightness(.7); transition: filter 150ms ease-out; }
+.s-shot.is-rewinding::after {
+  content: "";
+  position: absolute; left: 50%; top: 50%; z-index: 3;
+  width: 9cqw; height: 5cqw;
+  translate: -50% -50%;
+  background: var(--accent-mark);
+  clip-path: polygon(50% 0, 0 50%, 50% 100%, 50% 50%, 100% 100%, 100% 0, 50% 50%);
+  animation: shot-rewind-blink 260ms steps(2, jump-none) infinite;
+}
+@keyframes shot-rewind-blink { from { opacity: 1; } to { opacity: .25; } }
+
+/* --- 14 final slide --- */
+.s-end .pad { justify-content: center; gap: 4cqh; }
+/* The QR block floats on the right, so the final text leaves room for it
+   in advance. The browser wraps the text, not a manual <br>. */
+.s-end .pad > :not(.qr-link) { max-width: 62cqw; text-wrap: balance; }
+.s-end .handle {
+  font: 600 3.2cqw/1.1 var(--font-display); letter-spacing: -.03em;
+  color: var(--accent); margin: 0;
+}
+/* The QR code sits in the bottom right corner, its address to the left on
+   the code's bottom edge. The author byline takes the bottom left, as on the cover. */
+.s-end .qr-link {
+  position: absolute;
+  right: var(--pad-x);
+  bottom: var(--pad-y);
+  grid-auto-flow: column;
+  align-items: end;
+  gap: 2cqw;
+}
+.s-end .qr { order: 2; }
+.s-end .where { font-size: 1.5cqw; text-align: right; margin: 0; line-height: 1; }
+/* the end needs no number, like the cover */
+.s-end .slide-number { display: none; }
+
+/* ============================================================
+   Reveal motion
+
+   Motion shows what the step adds and where it comes from: a chart grows
+   to its value, a counter counts, an arrow draws toward the node it
+   delivers to, a time axis reaches the new event, a rule or an underline
+   draws under what it marks, a chapter change sweeps a curtain. Each move
+   plays once and ends at rest. Content never fades, slides or wipes in:
+   it is drawn, like a line, or simply there.
+
+   deck.js grants motion with the data-reveal attribute. What the forward
+   transition revealed gets it. So on later steps, on going back and on
+   the first frame of a page the column already stands at its value, and
+   print turns animations off completely (base.css).
+   ============================================================ */
+
+/* Slow down toward the end, so the value reads at rest, not mid-motion.
+   A per-row delay sets the reading order from top to bottom. */
+@keyframes chart-track-grow { from { width: 0; } }
+
+[data-reveal] .chart-track i {
+  animation: chart-track-grow 900ms cubic-bezier(.22, 1, .36, 1) var(--chart-delay, 0ms) both;
+}
+.chart-row:nth-child(2) { --chart-delay: 90ms; }
+.chart-row:nth-child(3) { --chart-delay: 180ms; }
+.chart-row:nth-child(4) { --chart-delay: 270ms; }
+.chart-row:nth-child(n+5) { --chart-delay: 360ms; }
+
+/* A column grows up from the baseline. It is the same motion, rotated
+   along with the chart. There is no delay between columns. Periods are
+   compared as a whole, and growing them one by one would add half a
+   second for nothing. */
+@keyframes column-track-grow { from { height: 0; } }
+
+[data-reveal] .column-track i {
+  animation: column-track-grow 900ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* The ring reveals all shares at once. Each share draws from its own
+   start at its own pace and slows down at the end, like a growing column.
+   This shows the makeup of the whole, not a trip around the circle. The
+   shares move at different angular speeds and reach their borders at the
+   same time, so the proportions are visible from the first frame and a
+   small sector does not flash by in a hundred milliseconds.
+
+   The timing matches the column growth, 900 ms. */
+@keyframes pie-slice-draw { from { stroke-dasharray: 0px 100px; } }
+
+[data-reveal] .pie-slices > circle {
+  animation: pie-slice-draw 900ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* The line appears left to right, the way people read it, together with
+   the baseline and the moment mark. They sit under the same clip and
+   open each at its own point along the path. The curve is even and slows
+   down at the end. The overshoot a column uses to slide in does not suit
+   motion over distance, it eats almost the whole path in the first
+   hundred milliseconds.
+
+   Both clip ends are explicit. The base value of the property is none,
+   and inset() does not interpolate with none, so it would jump halfway. */
+@keyframes line-plot-draw {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0); }
+}
+/* Series names wait for their lines. A label at the end of a path that
+   does not exist yet is a promise instead of a fact. */
+@keyframes line-key-in { from { opacity: 0; } to { opacity: 1; } }
+
+[data-reveal] .line-plot svg {
+  animation: line-plot-draw 900ms cubic-bezier(.35, .35, .65, 1) both;
+}
+[data-reveal] .line-key { animation: line-key-in 200ms linear 900ms both; }
+
+/* Process diagram. The arrow draws from the previous node, the head lands,
+   and the node fades in where the arrow points. A whole diagram revealed
+   at once plays its links in order. */
+@keyframes node-arrive { from { opacity: 0; } }
+@keyframes draw-x-plain { from { scale: 0 1; } }
+@keyframes draw-y-plain { from { scale: 1 0; } }
+@keyframes head-in { from { opacity: 0; } }
+/* A node is simply there once its arrow arrives: hidden until then. */
+@keyframes land { from { visibility: hidden; } }
+.flow { --flow-delay: 0ms; }
+.slide[data-reveal] .flow > :nth-child(2) { --flow-delay: 500ms; }
+.slide[data-reveal] .flow > :nth-child(3) { --flow-delay: 1000ms; }
+.slide[data-reveal] .flow > :nth-child(4) { --flow-delay: 1500ms; }
+.slide[data-reveal] .flow > :nth-child(n+5) { --flow-delay: 2000ms; }
+.flow-arrow::before { transform-origin: 0 50%; }
+.flow-arrow--down::before { transform-origin: 50% 0; }
+:is(.flow-step[data-reveal], [data-reveal] .flow-step) > .flow-arrow::before {
+  animation: draw-x-plain 260ms cubic-bezier(.4, 0, .2, 1) var(--flow-delay) both;
+}
+:is(.flow-step[data-reveal], [data-reveal] .flow-step) > .flow-arrow--down::before {
+  animation-name: draw-y-plain;
+}
+:is(.flow-step[data-reveal], [data-reveal] .flow-step) > .flow-arrow::after {
+  animation: head-in 80ms linear calc(var(--flow-delay) + 220ms) both;
+}
+:is(.flow-step[data-reveal], [data-reveal] .flow-step) > .flow-node {
+  animation: node-arrive 300ms ease-out calc(var(--flow-delay) + 300ms) both;
+}
+/* The back link runs up from the last node, across the top, down to the first. */
+.flow-return::after { transform-origin: 50% 100%; }
+.flow-return::before { transform-origin: 100% 50%; }
+.flow-return > i::before { transform-origin: 50% 0; }
+:is(.flow-return[data-reveal], [data-reveal] .flow-return)::after {
+  animation: draw-y-plain 180ms cubic-bezier(.4, 0, 1, 1) var(--flow-delay) both;
+}
+:is(.flow-return[data-reveal], [data-reveal] .flow-return)::before {
+  animation: draw-x-plain 420ms linear calc(var(--flow-delay) + 180ms) both;
+}
+:is(.flow-return[data-reveal], [data-reveal] .flow-return) > i::before {
+  animation: draw-y-plain 180ms cubic-bezier(0, 0, .2, 1) calc(var(--flow-delay) + 600ms) both;
+}
+:is(.flow-return[data-reveal], [data-reveal] .flow-return) > i::after {
+  animation: head-in 80ms linear calc(var(--flow-delay) + 760ms) both;
+}
+
+/* Timeline. The axis reaches out from the previous event, then the new
+   dot lands on it. */
+.timeline li > i::before { transform-origin: 0 50%; }
+@keyframes dot-in { from { scale: 0; } }
+.timeline > li:has(+ [data-reveal]) > i::before {
+  animation: draw-x-plain 260ms cubic-bezier(.4, 0, .2, 1) both;
+}
+.timeline > li[data-reveal] > i::after {
+  animation: dot-in 220ms cubic-bezier(.34, 1.56, .64, 1) var(--event-delay, 200ms) both;
+}
+/* The first event has no axis to wait for. */
+.timeline > li:first-child { --event-delay: 0ms; }
+/* The event's words wait for its dot: a label ahead of its axis reads as
+   a promise. */
+.timeline > li[data-reveal] > :not(i) { animation: land var(--event-delay, 200ms) steps(1, end) both; }
+
+/* Steps. The rule over the new step draws from the left. */
+@keyframes rule-draw { from { background-size: 0 var(--rule-strong); } }
+:is(.steps > [data-reveal], [data-reveal] .steps > div) {
+  animation: rule-draw 420ms cubic-bezier(.4, 0, .2, 1) both;
+}
+
+/* Statement. The underline draws under the words it marks. */
+@keyframes underline-draw { from { background-size: 0 .08em; } }
+[data-reveal].s-statement u {
+  animation: underline-draw 500ms cubic-bezier(.4, 0, .2, 1) 300ms both;
+}
+
+/* ============================================================
+   Showreel layer
+
+   A chapter change sweeps an accent curtain across the screen, and the
+   diagonal lanes on the cover and dividers drift while the slide is open.
+   Pictures settle from a slow zoom. Nothing fades or wipes in: content is
+   either drawn, like a line, or simply there.
+   ============================================================ */
+
+/* Large headings and quotes rise line by line, each line from under its
+   own mask; a statement's note and a quote's author follow as the next lines. The mask leaves room
+   for descenders and the statement underline. */
+.word {
+  --line: 0;
+  display: inline-block;
+  overflow: clip;
+  overflow-clip-margin: content-box .12em;
+  vertical-align: top;
+}
+.word > span { display: inline-block; }
+@keyframes line-up { from { translate: 0 125%; } }
+.slide[data-reveal]:not(.s-section) .word > span {
+  animation: line-up 800ms cubic-bezier(.16, 1, .3, 1) calc(var(--line) * 140ms) both;
+}
+
+@keyframes settle { from { scale: 1.08; } }
+.slide[data-reveal] :is(.frame, .photo) > img { animation: settle 1600ms cubic-bezier(.16, 1, .3, 1) both; }
+
+/* Chapter change, in and out: the slide we left stays on screen, an
+   accent curtain slides over it, and when the curtain moves on the next
+   slide is already behind it. This plays on entering a divider and on
+   leaving one. The entering slide stays hidden for the first half; only
+   its curtain is visible. */
+@keyframes curtain { 0% { translate: -100% 0; } 45%, 55% { translate: 0 0; } 100% { translate: 100% 0; } }
+@keyframes behind-curtain { from { visibility: hidden; } }
+@media screen {
+  .deck:not([data-mode="grid"], [data-mode="strip"]) .slides:is(:has(> .s-section[data-active][data-reveal]), :has(> .s-section[data-leaving])) > .slide:is([data-leaving], [data-active][data-reveal]) {
+    display: block;
+    grid-area: 1 / 1;
+  }
+  .deck:not([data-mode="grid"], [data-mode="strip"]) .slides:is(:has(> .s-section[data-active][data-reveal]), :has(> .s-section[data-leaving])) > .slide[data-active][data-reveal] {
+    z-index: 1;
+    animation: behind-curtain 500ms steps(1, end) both;
+  }
+  .deck:not([data-mode="grid"], [data-mode="strip"]) .slides:is(:has(> .s-section[data-active][data-reveal]), :has(> .s-section[data-leaving])) > .slide[data-active][data-reveal] > .slide-canvas::after {
+    content: "";
+    position: absolute; inset: 0; z-index: 5;
+    visibility: visible;
+    background: var(--accent-fill);
+    animation: curtain 1000ms cubic-bezier(.76, 0, .24, 1) both;
+    pointer-events: none;
+  }
+}
+
+@keyframes lanes-drift { to { transform: translateX(-100px); } }
+/* The leaving divider keeps drifting under the curtain instead of jumping back. */
+.slide:is([data-active], [data-leaving]) .lanes path { animation: lanes-drift 16s linear infinite; }
+
+/* ============================================================
+   Compositions that kept coming up in talks
+
+   They all follow the shared motion contract. The base state is the
+   final frame, the animation sets only the start and plays on [data-reveal].
+   ============================================================ */
+
+/* --- bento: a set of equal topics on one page ---
+   One topic per tile, no descriptions. Tiles in a row share a height and
+   differ in width: --span out of twelve columns. Tiles appear in a short
+   sequence on a forward transition. deck.js sets the --order. */
+.bento {
+  flex: 1; min-height: 0;
+  display: grid; grid-auto-rows: minmax(0, 1fr); gap: 1.1cqw;
+}
+.bento-row {
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1.1cqw;
+  min-height: 0; margin: 0; padding: 0; list-style: none;
+}
+.bento-tile {
+  grid-column: span var(--span, 3);
+  min-width: 0; display: grid; place-items: center; text-align: center;
+  padding: 1cqh 1cqw;
+  border: var(--rule) solid var(--edge-strong);
+  background: var(--surface);
+  font: 600 2.4cqw/1.15 var(--font-display); letter-spacing: -.025em;
+}
+.bento-tile.is-accent { background: var(--accent-fill); border-color: var(--accent-fill); color: var(--on-accent); }
+@keyframes bento-tile-in { from { opacity: 0; transform: translateY(1.2cqh) scale(.98); } }
+[data-reveal] .bento-tile {
+  animation: bento-tile-in 280ms cubic-bezier(.16, 1, .3, 1) calc(var(--order, 0) * 45ms) both;
+}
+
+/* --- iterations of one interface: the current one large, earlier ones beside it ---
+   Labels sit above the frames. Frames follow the image proportions. */
+.iterations {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: repeat(var(--past, 2), minmax(0, 1fr));
+  column-gap: 2.5cqw; row-gap: 3cqh;
+}
+/* Earlier iterations split the right column evenly. */
+.iterations:has(> .iteration:nth-child(2):last-child) { --past: 1; }
+.iterations:has(> .iteration:nth-child(4):last-child) { --past: 3; }
+.iterations:has(> .iteration:nth-child(5):last-child) { --past: 4; }
+.iteration { margin: 0; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 1cqh; }
+.iteration:not(.is-current) { grid-column: 2; }
+.iteration.is-current { grid-column: 1; grid-row: 1 / -1; }
+.iteration figcaption { font: 500 1.6cqw/1.3 var(--font-text); color: var(--muted); }
+.iteration.is-current figcaption { color: var(--text); }
+.iteration .frame { aspect-ratio: auto; }
+
+/* --- wipe: two frames of one view, the border moves to the comparison point ---
+   Both frames take one area with one fit, so the scale does not jump.
+   --wipe sets the final border position. */
+/* The wipe area follows the frame proportions and starts at the left
+   edge, so labels sit on the frame and the border splits the frame itself. */
+.wipe {
+  position: relative; flex: 1; min-height: 0; margin: 0; overflow: hidden;
+  align-self: flex-start; max-width: 100%; aspect-ratio: var(--media-ratio, 16 / 9);
+  /* Border like any frame. Otherwise a light screenshot on the light theme
+     blends into the slide background, and you cannot see where the image ends. */
+  border: var(--rule) solid var(--edge-strong);
+}
+.wipe-before, .wipe-after { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.wipe-after { clip-path: inset(0 0 0 var(--wipe, 50%)); }
+.wipe::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: var(--wipe, 50%);
+  width: .24cqw; transform: translateX(-50%);
+  background: var(--accent-mark);
+}
+.wipe-label {
+  position: absolute; top: 1.4cqh; z-index: 1;
+  padding: .4cqh .8cqw; background: var(--bg);
+  font: 500 1.6cqw/1.2 var(--font-text); color: var(--muted);
+}
+.wipe-label.is-before { left: 1cqw; }
+.wipe-label.is-after { right: 1cqw; color: var(--text); }
+@keyframes wipe-in { from { clip-path: inset(0 0 0 100%); } }
+@keyframes wipe-edge-in { from { left: 100%; } }
+[data-reveal] .wipe-after { animation: wipe-in 900ms cubic-bezier(.65, 0, .35, 1) 200ms both; }
+[data-reveal] .wipe::after { animation: wipe-edge-in 900ms cubic-bezier(.65, 0, .35, 1) 200ms both; }
+
+/* --- long screenshot: the header stays, the content scrolls ---
+   The static frame shows the top of the page. On a forward transition the
+   picture moves to the end over --scroll-duration. */
+.shot--scroll { grid-template-rows: auto minmax(0, 1fr); place-items: stretch; }
+.shot-head { display: block; width: 100%; height: auto; }
+.shot-body { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; display: block; }
+@keyframes shot-scroll { to { object-position: 50% 100%; } }
+[data-reveal] .shot--scroll .shot-body { animation: shot-scroll var(--scroll-duration, 8s) ease-in-out 1s forwards; }
+
+/* --- command typing: the command types out, the output comes line by line ---
+   code-highlight.js marks up the lines of pre.code-run. Commands from
+   data-run-commands get --chars, other lines get a --run-delay after
+   their command. */
+.code-run .run-type {
+  display: inline-block; overflow: hidden; white-space: pre; vertical-align: bottom;
+  width: calc(var(--chars) * 1ch);
+}
+@keyframes run-type { from { width: 0; } }
+@keyframes run-appear { from { opacity: 0; } }
+[data-reveal] .code-run .run-type {
+  animation: run-type calc(var(--chars) * 40ms) steps(var(--chars), end) var(--run-delay, 0ms) both;
+}
+[data-reveal] .code-run .code-line.is-output { animation: run-appear 1ms linear var(--run-delay, 0ms) both; }
+
+/* Digits use tabular width wherever they are compared. */
+.slide-number, .type-metric, .comparison-value, .bullets > li::before,
+.steps .n, .timeline-key, .chart-row > strong, .data-table .num,
+.s-section .jersey {
+  font-variant-numeric: tabular-nums;
+}

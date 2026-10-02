@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Craft</title>
+  <meta name="description" content="An agent skill for standalone HTML pages and slide decks in one style, checked in a browser">
+  <link rel="icon" href="../assets/shared/favicon-interface.svg" type="image/svg+xml">
+  <script src="../assets/interfaces/theme.js"></script>
+  <link rel="stylesheet" href="../assets/shared/tokens.css">
+  <link rel="stylesheet" href="../assets/interfaces/theme.css">
+  <style>
+    /* A documentation sidebar: a full-height column behind one rule with the
+       contents. The current section marker runs on the same rule. */
+    .docs { display: grid; grid-template-columns: var(--docs-side-width) minmax(0, 1fr); flex: 1; }
+    /* The contents column is filled as a whole; the links inside stay paintless.
+       On desktop the header's rule sets it off. */
+    .docs-side { min-width: 0; border-inline-end: 1px solid var(--line); background: var(--raise-solid); }
+    .shell:has(.docs) { --docs-side-width: 15rem; }
+
+    .docs-side__inner { position: sticky; top: var(--site-head-height); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-6); padding-block: var(--space-2); }
+    .docs-side .section-nav__links { border-inline-end: 0; }
+    .docs-side .section-nav__links::after { inset-inline-end: -1px; }
+    .docs-main { min-width: 0; padding: var(--space-6) var(--gutter) var(--space-7) var(--space-7); }
+    .docs-body { min-width: 0; max-width: 72ch; }
+    .docs-body > section { padding-block: var(--space-5); scroll-margin-top: calc(var(--site-head-height) + var(--space-5)); }
+    .docs-body > section + section { border-top: 1px solid var(--craft-line); }
+    .docs-body > section:first-child { padding-top: 0; }
+    .docs-body h2 { margin-bottom: var(--space-3); }
+    .docs-body p, .docs-body ul, .docs-body ol { margin-block: 0 var(--space-3); }
+    .docs-body .code-block { margin-block: var(--space-3) var(--space-4); }
+    .samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: var(--space-5); margin: var(--space-4) 0 0; padding: 0; list-style: none; }
+    .sample { display: grid; align-content: start; gap: var(--space-2); }
+    .sample img { display: block; width: 100%; height: auto; border: 1px solid var(--craft-line); }
+    .sample h3 { margin: var(--space-2) 0 0; }
+    .sample h3 a { display: inline-block; padding-block: var(--space-1); }
+    .sample p { margin: 0; color: var(--muted); }
+    /* The site header is the theme's single bar, pinned to the top. */
+    .site-head { position: sticky; top: 0; z-index: 3; box-sizing: border-box; height: var(--site-head-height); }
+    .shell:has(.docs) { --site-head-height: 4.25rem; min-height: 100dvh; display: flex; flex-direction: column; }
+    @media (max-width: 860px) {
+      .docs { grid-template-columns: minmax(0, 1fr); }
+      .docs-side { border-inline-end: 0; }
+      .docs-side__inner { position: static; padding-block: 0; gap: 0; }
+      /* On a phone the contents strip stays on screen under the header. */
+      /* The strip continues the header the same way; the text starts under its rule. */
+      .docs-side { position: sticky; top: var(--site-head-height); z-index: 2; }
+      /* On a phone the strip continues the header with no rule between them. */
+      .site-head { border-bottom: 0; }
+      .docs-body > section { scroll-margin-top: calc(var(--site-head-height) + 3.5rem); }
+      .docs-main { padding: var(--space-5) var(--gutter) var(--space-7); }
+    }
+  </style>
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol>
+  </svg>
+  <main class="shell" data-craft-layout="interface" data-craft-shell="app">
+    <header class="workspace-head workspace-head--compact site-head">
+      <div class="workspace-head__main">
+        <h1>Craft</h1>
+      </div>
+      <div class="workspace-head__tools">
+        <a class="button" href="https://github.com/OWNER/REPO">GitHub</a>
+        <button class="button button--stable button--icon theme-switch" type="button" data-theme-toggle aria-pressed="false">
+          <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
+          <span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="docs">
+      <aside class="docs-side">
+        <div class="docs-side__inner">
+          <nav class="section-nav" aria-label="On this page">
+            <div class="section-nav__links" data-section-nav>
+              <a href="#about">What it is</a>
+              <a href="#install">Install</a>
+              <a href="#usage">Usage</a>
+              <a href="#formats">Formats</a>
+              <a href="#samples">Samples</a>
+              <a href="#checks">Checks</a>
+              <a href="#manual">Without an agent</a>
+            </div>
+          </nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+      <div class="docs-body">
+        <section id="about" aria-labelledby="about-title">
+          <h2 id="about-title">What it is</h2>
+          <p>Craft is an agent skill in the Agent Skills format: a folder with <code>SKILL.md</code>, reference docs, CSS, markup fragments and scripts. With it, an agent builds a report, a dashboard, a small tool or a talk deck on request.</p>
+          <p>The result is one folder with an <code>index.html</code>. It opens with a double click over <code>file://</code>, with no server, build step or network. Both formats have a light and a dark theme.</p>
+          <p>The agent does not write markup from scratch. It starts from ready fragments, reads only the references for what the material contains, and runs a check in Chromium. The skill is tested with Claude Code and pi.</p>
+        </section>
+
+        <section id="install" aria-labelledby="install-title">
+          <h2 id="install-title">Install</h2>
+          <p>With the <a href="https://github.com/vercel-labs/skills">skills CLI</a>, which finds the skill folders of your installed agents:</p>
+          <figure class="code-block">
+            <figcaption class="code-block__head">
+              <span>Install the skill</span>
+              <button class="button button--stable code-block__copy" type="button" data-copy="#install-skills" aria-pressed="false">
+                <span class="button__label button__label--rest">Copy</span>
+                <span class="button__label button__label--pressed">Copied</span>
+              </button>
+            </figcaption>
+            <pre id="install-skills"><code class="language-shell">npx skills add OWNER/REPO --global</code></pre>
+          </figure>
+          <p>Or clone the repository into your skills folder by hand. For Claude Code that is <code>~/.claude/skills</code>:</p>
+          <figure class="code-block">
+            <figcaption class="code-block__head">
+              <span>Clone into the skills folder</span>
+              <button class="button button--stable code-block__copy" type="button" data-copy="#install-git" aria-pressed="false">
+                <span class="button__label button__label--rest">Copy</span>
+                <span class="button__label button__label--pressed">Copied</span>
+              </button>
+            </figcaption>
+            <pre id="install-git"><code class="language-shell">git clone https://github.com/OWNER/REPO ~/.claude/skills/craft</code></pre>
+          </figure>
+          <p>Restart the agent after installing. The scripts need Python 3. The browser check needs Chromium and Node.js 22 or newer, and QR codes in slides also need <code>qrencode</code> and <code>zbarimg</code>. If Chromium is not on <code>PATH</code>, set <code>CHROMIUM</code> to its path.</p>
+        </section>
+
+        <section id="usage" aria-labelledby="usage-title">
+          <h2 id="usage-title">Usage</h2>
+          <p>Ask the agent directly and give it your data:</p>
+          <figure class="code-block">
+            <figcaption class="code-block__head"><span>Example requests</span></figcaption>
+            <pre><code data-language="text">Build a Craft page from this data: …
+Make a Craft deck for a 20-minute talk: …
+Add a summary block to my site, Craft styles only: …</code></pre>
+          </figure>
+          <p>From there the agent:</p>
+          <ol>
+            <li>picks the format, a page or a slide deck;</li>
+            <li>creates the project from a starter and adds fragments;</li>
+            <li>reads references only for what the material has, such as a table, chart, form or video;</li>
+            <li>runs the check and fixes what it finds.</li>
+          </ol>
+          <p>Numbers, sources and quotes come from your data. If data is missing, the agent should ask instead of making it up.</p>
+        </section>
+
+        <section id="formats" aria-labelledby="formats-title">
+          <h2 id="formats-title">Formats</h2>
+          <ul>
+            <li><strong>Page with a shell</strong> (<code>blank</code>). A header, a theme toggle and behavior rules. For a report, dashboard or tool that stands on its own.</li>
+            <li><strong>Styles only</strong> (<code>bare</code>). No header or toggle. For a block on another site or a page with its own frame.</li>
+            <li><strong>Slides</strong>. A 16:9 deck with a cover, chapters, step reveal, charts, code, video, QR codes, PDF printing and an archive for organizers.</li>
+          </ul>
+          <p>Each format has a live sample below.</p>
+        </section>
+
+        <section id="samples" aria-labelledby="samples-title">
+          <h2 id="samples-title">Samples</h2>
+          <p>Live pages built with Craft. They open in the browser as they are; switch the theme with the button in their header or <kbd>T</kbd> in a deck.</p>
+          <ul class="samples">
+            <li class="sample">
+              <a href="catalog/interfaces/showcase.html" aria-label="Open the showcase dashboard" tabindex="-1"><img src="images/interface-showcase-dark.webp" alt="A dashboard built from Craft components, dark theme" width="720" height="450" loading="lazy"></a>
+              <h3><a href="catalog/interfaces/showcase.html">Showcase dashboard</a></h3>
+              <p>A page with a shell: filters, metrics, a line chart, a table and a side panel</p>
+            </li>
+            <li class="sample">
+              <a href="catalog/interfaces/index.html" aria-label="Open the interface catalog" tabindex="-1"><img src="images/interface-catalog-dark.webp" alt="The interface catalog with component examples" width="720" height="450" loading="lazy"></a>
+              <h3><a href="catalog/interfaces/index.html">Interface catalog</a></h3>
+              <p>Every component and state, from tokens to finished pages</p>
+            </li>
+            <li class="sample">
+              <a href="catalog/slides/index.html" aria-label="Open the slide catalog" tabindex="-1"><img src="images/slides-catalog-grid.webp" alt="Overview of slide layouts" width="720" height="450" loading="lazy"></a>
+              <h3><a href="catalog/slides/index.html">Slide catalog</a></h3>
+              <p>Every deck layout with its reveals; the arrow keys page through it</p>
+            </li>
+            <li class="sample">
+              <a href="catalog/slides/case-study.html" aria-label="Open the mini deck" tabindex="-1"><img src="images/slides-case-study-cover.webp" alt="Cover of the mini deck" width="720" height="405" loading="lazy"></a>
+              <h3><a href="catalog/slides/case-study.html">Mini deck</a></h3>
+              <p>The same layouts put together as a short talk</p>
+            </li>
+          </ul>
+        </section>
+
+        <section id="checks" aria-labelledby="checks-title">
+          <h2 id="checks-title">Checks</h2>
+          <p><code>check_project.py</code> has three levels. <code>--static-only</code> checks sources and resources without a browser. The default, which the agent runs after every edit, opens the result in Chromium at 1440, 390 and 320 px in both themes. <code>--full</code>, run once before handing the material over, adds the PDF and, for a deck, motion, video and the control panel. Together they look for:</p>
+          <ul>
+            <li>external and broken resources, horizontal scrolling;</li>
+            <li>unnamed buttons and fields, skipped heading levels;</li>
+            <li>on pages: overlapping text, contrast below WCAG AA, text under 12 px, tap targets under 24 px;</li>
+            <li>in decks: every step of every slide, layout shifts on reveal, video, QR codes and the PDF.</li>
+          </ul>
+          <p>You still need to check the meaning, contrast on a projector and behavior on a real phone yourself.</p>
+        </section>
+
+        <section id="manual" aria-labelledby="manual-title">
+          <h2 id="manual-title">Without an agent</h2>
+          <p>You can run the same scripts by hand from the skill folder:</p>
+          <figure class="code-block">
+            <figcaption class="code-block__head">
+              <span>Create, extend and check a page</span>
+              <button class="button button--stable code-block__copy" type="button" data-copy="#manual-commands" aria-pressed="false">
+                <span class="button__label button__label--rest">Copy</span>
+                <span class="button__label button__label--pressed">Copied</span>
+              </button>
+            </figcaption>
+            <pre id="manual-commands"><code class="language-shell">python3 scripts/scaffold.py ./output/report --surface interface --title "Report"
+python3 scripts/compose.py ./output/report --list-fragments
+python3 scripts/check_project.py ./output/report --full</code></pre>
+          </figure>
+          <p>Other commands, the repository layout and development are in the <a href="https://github.com/OWNER/REPO#readme">README</a>.</p>
+        </section>
+      </div>
+      </div>
+    </div>
+  </main>
+  <script src="../assets/interfaces/copy.js"></script>
+  <script src="../assets/interfaces/code-highlight.js"></script>
+  <script src="../assets/interfaces/section-nav.js" defer></script>
+</body>
+</html>

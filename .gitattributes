@@ -1,0 +1,3 @@
+# Keep third-party code and generated baselines out of the language stats.
+assets/slides/vendor/** linguist-vendored
+tests/visual/baseline/** linguist-generated

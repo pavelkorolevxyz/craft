@@ -1,0 +1,16 @@
+<section class="workbench" aria-label="{{WORKSPACE_LABEL}}">
+  <section class="workbench__primary" aria-labelledby="{{PRIMARY_ID}}-title">
+    <header class="panel-head">
+      <div><h2 id="{{PRIMARY_ID}}-title">{{PRIMARY_TITLE}}</h2><p>{{PRIMARY_SUMMARY}}</p></div>
+      {{PRIMARY_ACTION}}
+    </header>
+    <div class="scroll-region" tabindex="0">{{PRIMARY_CONTENT}}</div>
+  </section>
+  <aside class="workbench__aside" aria-labelledby="{{ASIDE_ID}}-title">
+    <header class="panel-head">
+      <div><h2 id="{{ASIDE_ID}}-title">{{ASIDE_TITLE}}</h2><p>{{ASIDE_SUMMARY}}</p></div>
+      {{ASIDE_ACTION}}
+    </header>
+    <div class="scroll-region" tabindex="0">{{ASIDE_CONTENT}}</div>
+  </aside>
+</section>

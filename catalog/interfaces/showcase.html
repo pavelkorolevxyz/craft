@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Craft · Showcase</title>
+  <link rel="icon" href="../../assets/shared/favicon-interface.svg" type="image/svg+xml">
+  <script src="../../assets/interfaces/theme.js"></script>
+  <link rel="stylesheet" href="../../assets/shared/tokens.css">
+  <link rel="stylesheet" href="../../assets/interfaces/theme.css">
+  <link rel="stylesheet" href="catalog.css">
+  <script src="../../assets/interfaces/tabs.js" defer></script>
+  <style>
+    /* Showcase for the README screenshot. Two columns: chart and table on the left, current work on the right. */
+    .showcase-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--space-5); margin: var(--space-5) var(--gutter) var(--space-7); }
+    .showcase-main, .showcase-aside { display: grid; gap: var(--space-5); align-content: start; min-width: 0; }
+    .showcase-grid .chart-y-axis, .showcase-grid .chart-plot { height: 150px; }
+    .showcase-grid .chart-summary { margin-top: var(--space-3); padding-block: var(--space-3); }
+    .showcase-panel { border: 1px solid var(--line); }
+    /* The table shares a column with the bordered chart and metrics, so it gets the same border. */
+    .showcase-main > .table-scroll { border: 1px solid var(--line); }
+    .showcase-main > .table-scroll tbody > tr:last-child > * { border-bottom: 0; }
+    .showcase-panel > h2 { max-width: none; padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--line); font-size: 18px; }
+    .showcase-panel > .progress, .showcase-panel > .notice, .showcase-panel > .timeline { margin: var(--space-4) var(--space-5); }
+    @media (max-width: 1100px) { .showcase-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .showcase-grid .scoreboard { --metrics: 2 !important; } }
+    /* On a narrow screen rows turn into cards with their own border, so the table border goes away. */
+    @media (max-width: 520px) { .showcase-main > .table-scroll { border: 0; } }
+  </style>
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol>
+    <symbol id="icon-down" viewBox="0 0 12 8"><path d="m1 1 5 5 5-5"/></symbol>
+  </svg>
+  <main class="shell" data-craft-layout="interface" data-craft-shell="app">
+    <header class="workspace-head workspace-head--compact">
+      <div class="workspace-head__main">
+        <h1>Deploys</h1>
+        <p class="workspace-head__lede">All services, last 24&nbsp;hours. Updated at 12:40.</p>
+      </div>
+      <div class="workspace-head__tools" aria-label="Actions">
+        <div class="segmented" role="radiogroup" aria-label="Period"><label><input type="radio" name="period" checked><span>24&nbsp;hours</span></label><label><input type="radio" name="period"><span>7&nbsp;days</span></label><label><input type="radio" name="period"><span>30&nbsp;days</span></label></div>
+        <button class="button" type="button">Refresh</button>
+        <button class="button button--primary" type="button">New deploy</button>
+        <button class="button button--stable button--icon theme-switch" type="button" data-theme-toggle aria-pressed="false">
+          <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
+          <span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="tabs tabs--page" data-tabs>
+      <div class="tablist" role="tablist" aria-label="Sections">
+        <button id="tab-overview" type="button" role="tab" aria-selected="true" aria-controls="panel-overview">Overview</button>
+        <button id="tab-services" type="button" role="tab" aria-selected="false" aria-controls="panel-services">Services</button>
+        <button id="tab-log" type="button" role="tab" aria-selected="false" aria-controls="panel-log">Log</button>
+      </div>
+
+      <section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+        <div class="filter-bar" role="group" aria-label="Filters">
+          <label class="field"><span class="field__label">Search</span><input type="search" placeholder="Service or version"></label>
+          <label class="field"><span class="field__label">Environment</span><span class="select-control"><select><option>All</option><option>Production</option><option>Staging</option></select><svg class="select-control__icon" viewBox="0 0 12 8" aria-hidden="true"><use href="#icon-down"/></svg></span></label>
+          <label class="field"><span class="field__label">State</span><span class="select-control"><select><option>Any</option><option>Done</option><option>Rolled back</option></select><svg class="select-control__icon" viewBox="0 0 12 8" aria-hidden="true"><use href="#icon-down"/></svg></span></label>
+          <label class="switch"><input type="checkbox" role="switch"> Mine only</label>
+          <p class="filter-bar__count">48&nbsp;deploys</p>
+        </div>
+
+        <div class="showcase-grid">
+          <div class="showcase-main">
+            <section class="scoreboard scoreboard--compact" aria-label="Last 24 hours summary" style="--metrics: 4">
+              <div class="metric"><strong class="metric__value">48</strong><span class="metric__label">Deploys</span></div>
+              <div class="metric"><strong class="metric__value">94%</strong><span class="metric__label">No rollback</span></div>
+              <div class="metric"><strong class="metric__value">11&nbsp;min</strong><span class="metric__label">Median duration</span></div>
+              <div class="metric metric--accent"><strong class="metric__value">3</strong><span class="metric__label">Rollbacks</span></div>
+            </section>
+
+            <figure class="chart-sample">
+              <figcaption class="chart-sample__head">
+                <div><h2>Deploy duration</h2><p>Minutes, one-hour moving average</p></div>
+                <div class="control-line" aria-label="Chart series">
+                  <span class="series-key" style="--swatch:var(--data-neutral)">Production</span>
+                  <span class="series-key" style="--swatch:var(--data-blue)">Staging</span>
+                </div>
+              </figcaption>
+              <div class="chart-canvas">
+                <div class="chart-y-axis" aria-hidden="true"><span style="--at:0%">20</span><span style="--at:25%">15</span><span style="--at:50%">10</span><span style="--at:75%">5</span><span style="--at:100%">0</span></div>
+                <div class="chart-plot">
+                  <i style="--at:0%"></i><i style="--at:50%"></i><i style="--at:75%"></i><i style="--at:100%"></i>
+                  <svg viewBox="0 0 100 40" preserveAspectRatio="none" role="img" aria-labelledby="duration-title duration-description">
+                    <title id="duration-title">Deploy duration from 12:00 yesterday to 12:00 today</title>
+                    <desc id="duration-description">Production stays near 11 minutes and climbs to 17 minutes at 06:00 because of the search rollback. Staging is faster throughout, at about 6 minutes.</desc>
+                    <path class="chart-line chart-line--neutral" d="M0 19 L8 18 L16 19 L25 17 L33 18 L42 17 L50 18 L58 17 L66 16 L71 11 L75 6 L79 12 L83 17 L92 17 L100 18"/>
+                    <path class="chart-line chart-line--blue" d="M0 29 L8 28 L16 29 L25 28 L33 27 L42 28 L50 28 L58 27 L66 28 L75 29 L83 28 L92 27 L100 28"/>
+                  </svg>
+                  <span class="chart-event" style="left:75%" aria-hidden="true"><b></b></span>
+                  <span class="chart-threshold" style="--at:25%" aria-hidden="true">target 15&nbsp;min</span>
+                </div>
+              </div>
+              <div class="chart-x-axis" aria-hidden="true"><span style="--at:0%">12:00</span><span style="--at:25%">18:00</span><span style="--at:50%">00:00</span><span style="--at:75%">06:00</span><span style="--at:100%">12:00</span></div>
+              <p class="chart-summary"><strong>Production: 17&nbsp;min at 06:00.</strong> The only time it missed the target. It matches the search rollback.</p>
+            </figure>
+
+            <div class="table-scroll" tabindex="0">
+              <table class="data-table data-table--records">
+                <caption class="sr-only">Recent deploys</caption>
+                <thead><tr><th>Service</th><th>Version</th><th>Environment</th><th>Author</th><th class="data-table__num">Duration</th><th>State</th></tr></thead>
+                <tbody>
+                  <tr><td data-label="Service">Payments</td><td data-label="Version">2.14.0</td><td data-label="Environment">Production</td><td data-label="Author">Anna</td><td class="data-table__num" data-label="Duration">running</td><td data-label="State"><span class="tag">In progress</span></td></tr>
+                  <tr><td data-label="Service">Catalog</td><td data-label="Version">5.3.2</td><td data-label="Environment">Production</td><td data-label="Author">Ethan</td><td class="data-table__num" data-label="Duration">9&nbsp;min</td><td data-label="State"><span class="tag tag--ok">Done</span></td></tr>
+                  <tr><td data-label="Service">Search</td><td data-label="Version">4.2.1</td><td data-label="Environment">Production</td><td data-label="Author">Maria</td><td class="data-table__num" data-label="Duration">17&nbsp;min</td><td data-label="State"><span class="tag tag--error">Rolled back</span></td></tr>
+                  <tr><td data-label="Service">Notifications</td><td data-label="Version">1.8.0</td><td data-label="Environment">Staging</td><td data-label="Author">Oliver</td><td class="data-table__num" data-label="Duration">6&nbsp;min</td><td data-label="State"><span class="tag tag--warn">Review</span></td></tr>
+                  <tr><td data-label="Service">Cart</td><td data-label="Version">3.0.4</td><td data-label="Environment">Production</td><td data-label="Author">Anna</td><td class="data-table__num" data-label="Duration">11&nbsp;min</td><td data-label="State"><span class="tag tag--ok">Done</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <aside class="showcase-aside" aria-label="Current work">
+            <section class="showcase-panel" aria-labelledby="now-title">
+              <h2 id="now-title">Running now</h2>
+              <div class="progress"><div class="progress__head"><span>Payments 2.14.0, step 3&nbsp;of 5</span><span>68%</span></div><div class="progress__track"><i class="progress__fill" style="--value: 68%"></i></div></div>
+              <aside class="notice notice--warn"><i class="notice__mark" aria-hidden="true"></i><div><strong class="notice__title">Review needed</strong><p>Notifications 1.8.0 passed staging with two warnings.</p></div></aside>
+            </section>
+            <section class="showcase-panel" aria-labelledby="log-title">
+              <h2 id="log-title">Log</h2>
+              <ol class="timeline">
+                <li><span class="timeline__mark" aria-hidden="true"></span><time class="timeline__time" datetime="12:31">12:31</time><div><span class="timeline__title">Payments 2.14.0</span><p>Production deploy started.</p></div></li>
+                <li><span class="timeline__mark" style="--status: var(--ok)" aria-hidden="true"></span><time class="timeline__time" datetime="11:02">11:02</time><div><span class="timeline__title">Catalog 5.3.2</span><p>Done in 9&nbsp;minutes.</p></div></li>
+                <li><span class="timeline__mark" style="--status: var(--error)" aria-hidden="true"></span><time class="timeline__time" datetime="06:14">06:14</time><div><span class="timeline__title">Search 4.2.1</span><p>Rolled back after errors rose when traffic switched over.</p></div></li>
+              </ol>
+            </section>
+          </aside>
+        </div>
+      </section>
+      <section id="panel-services" role="tabpanel" aria-labelledby="tab-services" hidden><p>Service list.</p></section>
+      <section id="panel-log" role="tabpanel" aria-labelledby="tab-log" hidden><p>Full log.</p></section>
+    </div>
+  </main>
+</body>
+</html>

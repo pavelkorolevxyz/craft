@@ -1,0 +1,60 @@
+const formatTokenValue = (value) => {
+  if (!value.startsWith('rgb')) return value;
+  const channels = value.match(/[\d.]+/g)?.map(Number) || [];
+  if (channels.length < 3) return value;
+  const hex = `#${channels.slice(0, 3).map((channel) => Math.round(channel).toString(16).padStart(2, '0')).join('')}`;
+  // Quiet roles use transparency, so show the alpha. It explains why the
+  // same token looks different on a red background than on the page.
+  const alpha = channels.length > 3 ? channels[3] : 1;
+  return alpha < 1 ? `${hex} · ${Math.round(alpha * 100)}%` : hex;
+};
+
+const syncTokenValues = () => {
+  const styles = getComputedStyle(document.documentElement);
+  document.querySelectorAll('[data-token-value]').forEach((element) => {
+    const value = styles.getPropertyValue(element.dataset.tokenValue).trim();
+    element.textContent = formatTokenValue(value);
+  });
+};
+
+syncTokenValues();
+addEventListener('craft-themechange', syncTokenValues);
+
+/* The type sample label reads font size and line height from the sample itself.
+   Heading tokens shrink on narrow screens, and the label must not
+   promise a size the reader cannot see. */
+const syncTypeSamples = () => {
+  document.querySelectorAll('[data-type-sample]').forEach((label) => {
+    const sample = label.closest('.type-row')?.lastElementChild;
+    if (!sample) return;
+    const style = getComputedStyle(sample);
+    const size = Math.round(parseFloat(style.fontSize));
+    const leading = Math.round(parseFloat(style.lineHeight));
+    if (size && leading) label.textContent = `${size} / ${leading}`;
+  });
+};
+
+syncTypeSamples();
+addEventListener('resize', syncTypeSamples);
+
+const queueRows = [...document.querySelectorAll('.queue-row')];
+const queueDetail = {
+  title: document.querySelector('[data-queue-title]'),
+  summary: document.querySelector('[data-queue-summary]'),
+  group: document.querySelector('[data-queue-group]'),
+  state: document.querySelector('[data-queue-state]'),
+};
+
+const selectQueueRow = (selected) => {
+  for (const row of queueRows) row.setAttribute('aria-pressed', String(row === selected));
+  queueDetail.title.textContent = selected.dataset.title;
+  queueDetail.summary.textContent = selected.dataset.summary;
+  queueDetail.group.textContent = selected.dataset.group;
+  queueDetail.state.textContent = selected.dataset.state;
+};
+
+queueRows.forEach((row) => row.addEventListener('click', () => selectQueueRow(row)));
+
+/* Markup cannot express a partially selected group, so the catalog script
+   sets the state. */
+for (const box of document.querySelectorAll("[data-catalog-mixed]")) box.indeterminate = true;

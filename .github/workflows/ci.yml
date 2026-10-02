@@ -1,0 +1,116 @@
+name: Craft checks
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Fast checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Check contracts
+        run: make check
+
+  browser:
+    name: Browser checks
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install PDF and QR tools
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils qrencode zbar-tools
+      - name: Render catalogs in Chromium
+        run: make smoke
+        env:
+          CHROMIUM: google-chrome
+      - name: Run behavior tests in parallel
+        run: make test
+        env:
+          CHROMIUM: google-chrome
+      - name: Render review images
+        run: make render
+        env:
+          CHROMIUM: google-chrome
+      - name: Upload renders
+        uses: actions/upload-artifact@v7
+        with:
+          name: craft-render-review
+          path: artifacts/render
+          if-no-files-found: error
+
+  visual:
+    name: Visual comparison
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    needs: browser
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install visual comparison tools
+        run: sudo apt-get update && sudo apt-get install -y imagemagick
+      - name: Compare renders with baselines
+        id: visual-comparison
+        continue-on-error: true
+        run: make visual-test
+        env:
+          CHROMIUM: google-chrome
+      - name: Upload differences
+        uses: actions/upload-artifact@v7
+        if: steps.visual-comparison.outcome == 'failure'
+        with:
+          name: craft-visual-diffs
+          path: artifacts/diff
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    needs: browser
+    permissions:
+      contents: write
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Build archives
+        run: python3 scripts/build.py --clean
+      - name: Publish the release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.zip
+            dist/manifest.json
+            dist/SHA256SUMS

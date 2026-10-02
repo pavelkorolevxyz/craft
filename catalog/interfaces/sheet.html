@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Craft · Interface catalog</title>
+  <link rel="icon" href="../../assets/shared/favicon-interface.svg" type="image/svg+xml">
+  <script src="../../assets/interfaces/theme.js"></script>
+  <link rel="stylesheet" href="../../assets/shared/tokens.css">
+  <link rel="stylesheet" href="../../assets/interfaces/theme.css">
+  <link rel="stylesheet" href="catalog.css">
+  <script src="../../assets/interfaces/section-nav.js" defer></script>
+  <script src="../../assets/interfaces/tabs.js" defer></script>
+  <script src="../../assets/interfaces/dialog.js" defer></script>
+  <script src="../../assets/interfaces/copy.js" defer></script>
+  <script src="../../assets/interfaces/code-highlight.js" defer></script>
+  <script src="../../assets/interfaces/range.js" defer></script><script src="catalog.js" defer></script>
+</head>
+<body>
+  <div class="sheet-layout">
+
+    <main class="system-main" id="top" data-craft-layout="interface">
+      <header class="system-intro">
+        <div>
+          <h1>Local interfaces</h1>
+          <p class="system-intro__lede">Tokens and components for reports, dashboards and small work tools.</p>
+        </div>
+        <dl class="system-meta">
+          <div><dt>Format</dt><dd>HTML + CSS + JavaScript</dd></div>
+          <div><dt>Dependencies</dt><dd>None</dd></div>
+          <div><dt>Minimum width</dt><dd>320&nbsp;px</dd></div>
+        </dl>
+      </header>
+
+      <section class="system-section" id="foundation">
+        <div class="system-section__head">
+          <h2>Rules</h2>
+          <p>These rules make different tools look like one system.</p>
+        </div>
+        <div class="rule-list" role="list">
+          <article role="listitem"><h3>Use the whole screen</h3><p>The work area takes the available width and at least the height of the browser window.</p><span>No outer limit</span></article>
+          <article role="listitem"><h3>Limit the text, not the interface</h3><p>A long line stays within 65 to 75&nbsp;characters. Tables and charts use the space available.</p><span>65 to 75&nbsp;characters</span></article>
+          <article role="listitem"><h3>Separate sections with lines</h3><p>Only a standalone component gets a full border.</p><span>Line is always 1&nbsp;px</span></article>
+          <article role="listitem"><h3>Label the state</h3><p>Color marks the signal, text explains it.</p><span>Text + color</span></article>
+        </div>
+      </section>
+
+      <section class="system-section" id="layouts">
+        <div class="system-section__head">
+          <h2>Layout modes</h2>
+          <p>A mode sets the geometry of the page. It does not set the structure of the content.</p>
+        </div>
+        <div class="layout-map" role="list">
+          <article class="layout-row" role="listitem">
+            <div><h3>Document</h3><p>A readable column inside full-width sections, with normal page scrolling.</p><span class="tag">Page flow</span></div>
+            <div class="layout-diagram layout-diagram--document" aria-label="Document diagram"><i></i><i></i><i></i></div>
+          </article>
+          <article class="layout-row" role="listitem">
+            <div><h3>Data view</h3><p>Full width for tables, charts, filters and close comparison of values.</p><span class="tag">Full width</span></div>
+            <div class="layout-diagram layout-diagram--data" aria-label="Data view diagram"><i></i><i></i><i></i><i></i></div>
+          </article>
+          <article class="layout-row" role="listitem">
+            <div><h3>Work view</h3><p>Compact controls and linked panes that scroll on their own.</p><span class="tag">Linked panes</span></div>
+            <div class="layout-diagram layout-diagram--workspace" aria-label="Work view diagram"><i></i><i></i><i></i></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="system-section" id="fragments">
+        <div class="system-section__head">
+          <h2>Base fragments</h2>
+          <p>This sheet shows the geometry of every main building block. The sections below cover the fragments for forms, data, messages and navigation.</p>
+        </div>
+        <div class="fragment-showcase">
+          <article class="fragment-stage">
+            <p class="fragment-stage__label">Page title · <code>page-head</code></p>
+            <header class="page-head catalog-page-head">
+              <div class="page-head__main">
+                <h3>Page title</h3>
+                <p class="page-head__lede">A short note sits right under the title and adds to it.</p>
+              </div>
+            </header>
+          </article>
+
+          <article class="fragment-stage">
+            <p class="fragment-stage__label">Workspace header · <code>workspace-head</code></p>
+            <header class="workspace-head catalog-workspace-head">
+              <div class="workspace-head__main">
+                <h3>Tool name</h3>
+                <p class="workspace-head__lede">These controls apply to the whole area and stay next to the name.</p>
+              </div>
+              <div class="workspace-head__tools" aria-label="Workspace actions">
+                <button class="button" type="button">Refresh</button>
+                <button class="button button--primary" type="button">Save</button>
+              </div>
+            </header>
+          </article>
+
+          <article class="fragment-stage">
+            <p class="fragment-stage__label">Metric strip · <code>metric-strip</code></p>
+            <section class="scoreboard" aria-label="Key values" style="--metrics:3">
+              <div class="metric metric--accent"><strong class="metric__value">24</strong><span class="metric__label">Priority value</span></div>
+              <div class="metric"><strong class="metric__value">68%</strong><span class="metric__label">Share of total</span></div>
+              <div class="metric"><strong class="metric__value">1.4&nbsp;s</strong><span class="metric__label">Operation time</span></div>
+            </section>
+          </article>
+
+          <article class="fragment-stage">
+            <p class="fragment-stage__label">Workspace · <code>split-workspace</code></p>
+            <div class="workbench catalog-workbench" aria-label="Main pane and related details">
+              <section class="workbench__primary" aria-labelledby="catalog-primary-title">
+                <header class="panel-head"><div><h3 id="catalog-primary-title">Main pane</h3><p>Content that scrolls on its own on a wide screen</p></div><button class="button" type="button">Action</button></header>
+                <div class="scroll-region" tabindex="0"><div class="catalog-workbench__content"><strong>Selected record</strong><p>A list, editor, chart or other main work goes here.</p></div></div>
+              </section>
+              <aside class="workbench__aside" aria-labelledby="catalog-aside-title">
+                <header class="panel-head"><div><h3 id="catalog-aside-title">Related details</h3><p>Standalone values of the selected item</p></div></header>
+                <div class="scroll-region" tabindex="0"><dl class="kv-list kv-list--lined"><dt>Field</dt><dd>Value</dd><dt>State</dt><dd>Available</dd><dt>Version</dt><dd>2.4.1</dd></dl></div>
+              </aside>
+            </div>
+          </article>
+
+          <div class="fragment-pair">
+            <article class="fragment-stage">
+              <p class="fragment-stage__label">Data table · <code>data-table</code></p>
+              <div class="table-scroll" tabindex="0" role="region" aria-label="Value table">
+                <table class="data-table">
+                  <caption>Value comparison</caption>
+                  <thead><tr><th>Name</th><th class="data-table__num">January</th><th class="data-table__num">February</th><th class="data-table__num">March</th><th>State</th></tr></thead>
+                  <tbody><tr><td>First row</td><td class="data-table__num">1,204</td><td class="data-table__num">986</td><td class="data-table__num">1,318</td><td><span class="status status--ok">Available</span></td></tr><tr><td>Second row</td><td class="data-table__num">42</td><td class="data-table__num">318</td><td class="data-table__num">96</td><td><span class="status status--warn">Check</span></td></tr></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="fragment-stage">
+              <p class="fragment-stage__label">Empty state · <code>empty-state</code></p>
+              <div class="catalog-empty-state">
+                <div class="empty-state"><strong>Nothing selected</strong><span>Select a row to see its details.</span><button class="button" type="button">Select first</button></div>
+              </div>
+            </article>
+          </div>
+
+          <article class="fragment-stage">
+            <p class="fragment-stage__label">Section navigation · <code>section-nav</code></p>
+            <nav class="section-nav section-nav--row catalog-section-nav" aria-label="Catalog sections">
+              <div class="section-nav__links" data-section-nav>
+                <a href="#foundation">Rules</a><a href="#fragments">Fragments</a><a href="#forms">Forms</a><a href="#data">Data</a>
+              </div>
+            </nav>
+          </article>
+        </div>
+      </section>
+
+      <section class="system-section" id="color">
+        <div class="system-section__head">
+          <h2>Color</h2>
+          <p>Red has four roles: accent text, a saturated mark, a fill under white text and a translucent signal background. The rest of the palette is neutral.</p>
+        </div>
+        <div class="token-table" role="list" aria-label="Color tokens">
+          <div class="token-row" role="listitem"><i style="--swatch:var(--bg)"></i><strong>Background</strong><code>--bg</code><em>page background</em><span data-token-value="--bg">#111111</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--surface)"></i><strong>Surface</strong><code>--surface</code><em>a group set apart by meaning</em><span data-token-value="--surface">#1a1a1a</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--line)"></i><strong>Line</strong><code>--line</code><em>divider for sections and tables</em><span data-token-value="--line">#eeeeee · 10%</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--text)"></i><strong>Text</strong><code>--text</code><em>headings and values</em><span data-token-value="--text">#eeeeee</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--muted)"></i><strong>Muted</strong><code>--muted</code><em>labels, units, notes</em><span data-token-value="--muted">#eeeeee · 66%</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--accent)"></i><strong>Accent</strong><code>--accent</code><em>accent text and links</em><span data-token-value="--accent">#ff5a67</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-mark)"></i><strong>Mark</strong><code>--accent-mark</code><em>dot, bar, chart line, focus</em><span data-token-value="--accent-mark">#ff3f4d</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-fill)"></i><strong>Fill</strong><code>--accent-fill</code><em>fill under white text</em><span data-token-value="--accent-fill">#c5303d</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--accent-tint)"></i><strong>Signal background</strong><code>--accent-tint</code><em>quiet highlight under regular text</em><span data-token-value="--accent-tint">#ff3f4d · 9%</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--ok)"></i><strong>OK</strong><code>--ok</code><em>everything is normal</em><span data-token-value="--ok">#23cc70</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--warn)"></i><strong>Warning</strong><code>--warn</code><em>needs attention</em><span data-token-value="--warn">#ffae1a</span></div>
+          <div class="token-row" role="listitem"><i style="--swatch:var(--error)"></i><strong>Error</strong><code>--error</code><em>failure, same red as the mark</em><span data-token-value="--error">#ff3f4d</span></div>
+        </div>
+        <div class="series-palette">
+          <p class="control-label">Data series: the priority series is red, the others differ by tone and label</p>
+          <div class="control-line">
+            <span class="series-key" style="--swatch: var(--data-red)">Priority</span>
+            <span class="series-key" style="--swatch: var(--data-neutral)">Neutral</span>
+            <span class="series-key" style="--swatch: var(--data-blue)">Blue</span>
+            <span class="series-key" style="--swatch: var(--data-amber)">Amber</span>
+            <span class="series-key" style="--swatch: var(--data-green)">Green</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="system-section" id="type">
+        <div class="system-section__head">
+          <h2>Typography</h2>
+          <p>Geologica sets headings and key numbers. Onest sets text and controls. The scale is fixed. On a narrow screen only the page and section headings get smaller.</p>
+        </div>
+        <div class="type-specimens">
+          <div class="type-row"><span>Page heading · <span data-type-sample>32 / 34</span></span><strong class="sample-page">Weekly summary</strong></div>
+          <div class="type-row"><span>Section heading · <span data-type-sample>24 / 27</span></span><strong class="sample-section">What needs a decision</strong></div>
+          <div class="type-row"><span>Local heading · <span data-type-sample>18 / 23</span></span><strong class="sample-local">Stream stability</strong></div>
+          <div class="type-row"><span>Body text · <span data-type-sample>14 / 22</span></span><p class="sample-body">The interface shows the state, explains the change and suggests the next action.</p></div>
+          <div class="type-row"><span>Meta text · <span data-type-sample>12 / 18</span></span><p class="sample-meta">Updated Aug&nbsp;14 · source: local data</p></div>
+        </div>
+      </section>
+
+      <section class="system-section rhythm-section" id="spacing">
+        <div>
+          <h2>Spacing</h2>
+          <p>Seven steps, 4 to 32&nbsp;px. Use 8 to 16&nbsp;px inside a group and 24 to 32&nbsp;px between groups.</p>
+        </div>
+        <div class="space-scale">
+          <div><span>4</span><i style="--space:var(--space-1)"></i></div>
+          <div><span>8</span><i style="--space:var(--space-2)"></i></div>
+          <div><span>12</span><i style="--space:var(--space-3)"></i></div>
+          <div><span>16</span><i style="--space:var(--space-4)"></i></div>
+          <div><span>20</span><i style="--space:var(--space-5)"></i></div>
+          <div><span>24</span><i style="--space:var(--space-6)"></i></div>
+          <div><span>32</span><i style="--space:var(--space-7)"></i></div>
+        </div>
+      </section>
+
+      <section class="system-section" id="controls">
+        <div class="system-section__head">
+          <h2>Controls</h2>
+          <p>Controls have hover, focus and disabled states.</p>
+        </div>
+        <div class="control-demo">
+          <div class="control-group">
+            <span class="control-label">Actions</span>
+            <div class="control-line"><button class="button button--primary">Generate</button><button class="button">Export</button><button class="button" disabled>Unavailable</button></div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="period">Period</label>
+            <span class="select-control">
+              <select id="period"><option>Last 7&nbsp;days</option><option>Last 30&nbsp;days</option></select>
+              <svg class="select-control__icon" viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
+            </span>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="search">Search</label>
+            <input id="search" type="search" placeholder="Name or code">
+          </div>
+          <div class="control-group">
+            <span class="control-label">States</span>
+            <div class="control-line"><span class="status status--ok">Stable</span><span class="status status--warn">Check</span><span class="status status--error">Blocker</span></div>
+          </div>
+          <div class="control-group">
+            <span class="control-label" id="mode-label">Mode switch: pick one of several</span>
+            <div class="segmented" role="radiogroup" aria-labelledby="mode-label">
+              <label><input type="radio" name="catalog-mode" value="all" checked><span>All</span></label>
+              <label><input type="radio" name="catalog-mode" value="warn"><span>Warnings</span></label>
+              <label><input type="radio" name="catalog-mode" value="error"><span>Errors</span></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="system-section" id="forms">
+        <div class="system-section__head">
+          <h2>Forms</h2>
+          <p>A field stacks the label, control, hint and error in one column. The markup stays the same when an error appears.</p>
+        </div>
+        <div class="demo-grid" style="--demo-cols: 3">
+          <div class="demo-cell">
+            <span class="demo-label">Field with hint</span>
+            <div class="field">
+              <label class="field__label" for="threshold">Alert threshold</label>
+              <input id="threshold" type="number" value="120" aria-describedby="threshold-hint">
+              <p class="field__hint" id="threshold-hint">Value in milliseconds.</p>
+              <p class="field__error"></p>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Field with error</span>
+            <div class="field">
+              <label class="field__label" for="window">Averaging window</label>
+              <input id="window" type="number" value="-5" aria-invalid="true" aria-describedby="window-error">
+              <p class="field__hint"></p>
+              <p class="field__error" id="window-error">The window cannot be less than zero.</p>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Checkbox and radio</span>
+            <fieldset class="field-set">
+              <legend>What to show</legend>
+              <div class="check-group">
+                <label class="check"><input type="checkbox" checked><span>Errors</span></label>
+                <label class="check"><input type="checkbox" data-catalog-mixed><span>Warnings</span></label>
+                <label class="check"><input type="checkbox" disabled><span>Debug unavailable</span></label>
+                <label class="check"><input type="radio" name="catalog-scope" checked><span>All streams</span></label>
+                <label class="check"><input type="radio" name="catalog-scope"><span>Main only</span></label>
+              </div>
+            </fieldset>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Switch and slider</span>
+            <label class="switch"><input type="checkbox" role="switch" checked><span>Auto refresh</span></label>
+            <label class="switch"><input type="checkbox" role="switch" disabled><span>Unavailable without access</span></label>
+            <label class="field__label" for="interval">Interval</label>
+            <input class="range" id="interval" type="range" min="1" max="60" value="15" aria-describedby="interval-value">
+            <output class="muted" id="interval-value">15&nbsp;minutes</output>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Button states</span>
+            <div class="control-line">
+              <button class="button button--primary" type="button">Save</button>
+              <button class="button" type="button">Cancel</button>
+              <button class="button button--quiet" type="button">Reset</button>
+            </div>
+            <div class="control-line">
+              <button class="button" type="button" aria-busy="true">Refreshing</button>
+              <button class="button" type="button" disabled>Unavailable</button>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Disabled fields</span>
+            <input value="Read only" readonly aria-label="Read-only field">
+            <input value="Unavailable" disabled aria-label="Disabled field">
+            <textarea rows="2" disabled aria-label="Disabled text area">Editing is locked</textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="system-section" id="records">
+        <div class="system-section__head">
+          <h2>Records</h2>
+          <p>A tag names a group or a state. A timeline shows the order of events. Progress always comes with a number.</p>
+        </div>
+        <div class="demo-grid">
+          <div class="demo-cell">
+            <span class="demo-label">Tags and states</span>
+            <div class="tag-list"><span class="tag">Interface</span><span class="tag">Security</span><span class="tag tag--accent">Priority</span></div>
+            <div class="control-line">
+              <span class="tag tag--ok">Passed</span>
+              <span class="tag tag--warn">In review</span>
+              <span class="tag tag--error">Rejected</span>
+              <span class="tag">Draft</span>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Key-value pairs</span>
+            <div class="kv-block">
+              <h3 class="kv-block__title">Run settings</h3>
+              <dl class="kv-list kv-list--lined">
+                <dt>Version</dt><dd>2.4.1</dd>
+                <dt>Environment</dt><dd>Staging</dd>
+                <dt>Started</dt><dd>14:02</dd>
+              </dl>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Progress</span>
+            <div class="progress">
+              <div class="progress__head"><span>Processed</span><strong>420&nbsp;of 900</strong></div>
+              <div class="progress__track"><span class="progress__fill" style="--value: 47%"></span></div>
+            </div>
+            <div class="progress progress--indeterminate">
+              <div class="progress__head"><span>Waiting for source</span><strong>share unknown</strong></div>
+              <div class="progress__track"><span class="progress__fill"></span></div>
+            </div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Event timeline</span>
+            <ol class="timeline" aria-label="Task history">
+              <li>
+                <span class="timeline__mark" style="--status: var(--ok)" aria-hidden="true"></span>
+                <span class="timeline__time">14:02</span>
+                <div><span class="timeline__title">Check started</span><p>The queue accepted 42&nbsp;records.</p></div>
+              </li>
+              <li>
+                <span class="timeline__mark" style="--status: var(--warn)" aria-hidden="true"></span>
+                <span class="timeline__time">14:11</span>
+                <div><span class="timeline__title">Source retry</span><p>One source answered on the second try.</p></div>
+              </li>
+              <li>
+                <span class="timeline__mark" aria-hidden="true"></span>
+                <span class="timeline__time">14:20</span>
+                <div><span class="timeline__title">Done</span><p>No errors.</p></div>
+              </li>
+            </ol>
+          </div>
+          <div class="demo-cell demo-cell--wide">
+            <span class="demo-label">Code block</span>
+            <figure class="code-block">
+              <figcaption class="code-block__head">
+                <span>Check command</span>
+                <button class="button button--stable code-block__copy" type="button" data-copy="#catalog-code" aria-pressed="false">
+                  <span class="button__label button__label--rest">Copy</span>
+                  <span class="button__label button__label--pressed">Copied</span>
+                </button>
+              </figcaption>
+              <pre id="catalog-code"><code>python3 scripts/check.py</code></pre>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="system-section" id="messages">
+        <div class="system-section__head">
+          <h2>Messages</h2>
+          <p>Put a notice next to the content it is about. A modal dialog interrupts work only when a decision is needed.</p>
+        </div>
+        <div class="demo-grid" style="--demo-cols: 2">
+          <div class="demo-cell demo-cell--tall">
+            <span class="demo-label">Notices</span>
+            <aside class="notice notice--ok" role="status">
+              <span class="notice__mark" aria-hidden="true"></span>
+              <div><strong class="notice__title">Export finished</strong><p>Data for last week is ready.</p></div>
+            </aside>
+            <aside class="notice notice--warn" role="status">
+              <span class="notice__mark" aria-hidden="true"></span>
+              <div><strong class="notice__title">Yesterday's data is incomplete</strong><p>Three of twelve sources have not sent their export yet.</p></div>
+            </aside>
+            <aside class="notice notice--error" role="status">
+              <span class="notice__mark" aria-hidden="true"></span>
+              <div>
+                <strong class="notice__title">Report not built</strong>
+                <p>The source returned an access error.</p>
+                <div class="notice__actions"><button class="button" type="button">Retry</button></div>
+              </div>
+            </aside>
+            <aside class="notice notice--action">
+              <span class="notice__mark" aria-hidden="true"></span>
+              <div><strong class="notice__title">Next step</strong><p>Assign an owner and a due date.</p></div>
+            </aside>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Loading data</span>
+            <div class="table-scroll" aria-busy="true"><table class="data-table"><caption class="sr-only">Loading summary</caption><tbody><tr><td>Loading records...</td></tr></tbody></table></div>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Disclosure</span>
+            <details class="disclosure">
+              <summary>
+                <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>
+                How latency is calculated
+              </summary>
+              <div class="disclosure__body"><p>Median response time over a five-minute window.</p></div>
+            </details>
+          </div>
+          <div class="demo-cell">
+            <span class="demo-label">Dialog</span>
+            <button class="button" type="button" data-dialog-open="#catalog-dialog">Revoke access</button>
+            <dialog class="dialog" id="catalog-dialog" aria-labelledby="catalog-dialog-title">
+              <header class="dialog__head">
+                <h3 id="catalog-dialog-title">Revoke access</h3>
+                <button class="button button--icon" type="button" data-dialog-close aria-label="Close dialog">
+                  <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+                </button>
+              </header>
+              <div class="dialog__body"><p>Access ends right away. Only the stream owner can restore it.</p></div>
+              <footer class="dialog__foot">
+                <button class="button" type="button" data-dialog-close>Cancel</button>
+                <button class="button button--primary" type="button" data-dialog-close>Revoke</button>
+              </footer>
+            </dialog>
+          </div>
+        </div>
+      </section>
+
+      <section class="system-section" id="navigation">
+        <div class="system-section__head">
+          <h2>Navigation</h2>
+          <p>Tabs split views of equal rank. Steps show a finite sequence. The filter bar sits above the data.</p>
+        </div>
+        <nav aria-label="Breadcrumb">
+          <ol class="breadcrumbs">
+            <li><a href="#top">Catalog</a></li>
+            <li><a href="#controls">Controls</a></li>
+            <li><span aria-current="page">Navigation</span></li>
+          </ol>
+        </nav>
+        <div class="tabs" data-tabs>
+          <div class="tablist" role="tablist" aria-label="Queue views">
+            <button role="tab" type="button" id="catalog-tab-open" aria-controls="catalog-panel-open" aria-selected="true">Open</button>
+            <button role="tab" type="button" id="catalog-tab-done" aria-controls="catalog-panel-done" aria-selected="false">Closed</button>
+            <button role="tab" type="button" id="catalog-tab-archive" aria-controls="catalog-panel-archive" aria-selected="false" disabled>Archive</button>
+          </div>
+          <div role="tabpanel" id="catalog-panel-open" aria-labelledby="catalog-tab-open" tabindex="0">
+            <div class="filter-bar" role="group" aria-label="Queue filters">
+              <label class="field">
+                <span class="field__label">Stream</span>
+                <span class="select-control">
+                  <select id="catalog-stream"><option>All streams</option><option>Main</option></select>
+                  <svg class="select-control__icon" viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg>
+                </span>
+              </label>
+              <p class="filter-bar__count" role="status">Showing 18&nbsp;of 84</p>
+            </div>
+            <table class="data-table data-table--sticky">
+              <caption>Open queue records</caption>
+              <thead><tr>
+                <th>Record</th>
+                <th class="data-table__num" aria-sort="ascending"><button class="data-table__sort" type="button">Latency<svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4"/></svg></button></th>
+                <th>State</th>
+              </tr></thead>
+              <tbody>
+                <tr data-interactive tabindex="0" aria-selected="false"><td>Saving search filters</td><td class="data-table__num">18&nbsp;ms</td><td><span class="tag tag--ok">Passed</span></td></tr>
+                <tr data-interactive tabindex="0" aria-selected="true"><td>Access management</td><td class="data-table__num">64&nbsp;ms</td><td><span class="tag tag--warn">In review</span></td></tr>
+                <tr class="data-table__detail"><td colspan="3">The check is waiting for a second approval from the stream owner.</td></tr>
+              </tbody>
+            </table>
+            <nav class="pagination" aria-label="Queue pages">
+              <a class="pagination__page" href="#navigation" aria-label="Previous page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></a>
+              <a class="pagination__page" href="#navigation">1</a>
+              <a class="pagination__page" href="#navigation" aria-current="page">2</a>
+              <a class="pagination__page" href="#navigation">3</a>
+              <span class="pagination__gap" aria-hidden="true">…</span>
+              <a class="pagination__page" href="#navigation">5</a>
+              <a class="pagination__page" href="#navigation" aria-label="Next page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+            </nav>
+          </div>
+          <div role="tabpanel" id="catalog-panel-done" aria-labelledby="catalog-tab-done" tabindex="0" hidden>
+            <p class="muted">No closed records for the selected period.</p>
+          </div>
+          <div role="tabpanel" id="catalog-panel-archive" aria-labelledby="catalog-tab-archive" tabindex="0" hidden>
+            <p class="muted">Only the stream owner can open the archive.</p>
+          </div>
+        </div>
+        <ol class="steps" aria-label="Publishing progress">
+          <li data-state="done"><span class="steps__index">01</span><span class="steps__title">Build</span></li>
+          <li data-state="done"><span class="steps__index">02</span><span class="steps__title">Check</span></li>
+          <li data-state="current"><span class="steps__index">03</span><span class="steps__title">Review</span></li>
+          <li><span class="steps__index">04</span><span class="steps__title">Publish</span></li>
+        </ol>
+      </section>
+
+      <section class="system-section" id="charts">
+        <div class="system-section__head">
+          <h2>Charts</h2>
+          <p>The time series tests the data palette, a threshold, an event marker and labels in both themes.</p>
+        </div>
+        <figure class="chart-sample">
+          <figcaption class="chart-sample__head">
+            <div>
+              <h3>Requests by service</h3>
+              <p>Sample data · requests per second</p>
+            </div>
+            <div class="control-line" aria-label="Chart series">
+              <span class="series-key" style="--swatch:var(--data-neutral)">Service A</span>
+              <span class="series-key" style="--swatch:var(--data-blue)">Service B</span>
+              <span class="series-key" style="--swatch:var(--data-green)">Service C</span>
+            </div>
+          </figcaption>
+          <div class="chart-canvas">
+            <div class="chart-y-axis" aria-hidden="true"><span style="--at:0%">1,000</span><span style="--at:25%">750</span><span style="--at:50%">500</span><span style="--at:75%">250</span><span style="--at:100%">0</span></div>
+            <div class="chart-plot">
+              <i style="--at:0%"></i><i style="--at:25%"></i><i style="--at:50%"></i><i style="--at:75%"></i><i style="--at:100%"></i>
+              <svg viewBox="0 0 100 40" preserveAspectRatio="none" role="img" aria-labelledby="chart-title chart-description">
+                <title id="chart-title">Requests by service, 09:00 to 12:00</title>
+                <desc id="chart-description">Load grows over time. Around 11:00 service A has a short dip. After it recovers, traffic returns to the earlier trend.</desc>
+                <path class="chart-line chart-line--neutral" d="M0 32 L5 31 L10 29 L15 28 L20 25 L25 24 L30 22 L35 21 L40 18 L45 19 L50 16 L55 15 L60 17 L64 16 L66 29 L68 27 L70 15 L75 14 L80 12 L85 13 L90 9 L95 7 L100 8"/>
+                <path class="chart-line chart-line--blue" d="M0 35 L5 34 L10 34 L15 32 L20 31 L25 30 L30 28 L35 29 L40 26 L45 25 L50 24 L55 22 L60 23 L65 24 L68 27 L70 24 L75 23 L80 21 L85 22 L90 19 L95 20 L100 18"/>
+                <path class="chart-line chart-line--green" d="M0 38 L10 37 L20 36 L30 36 L40 35 L50 33 L60 34 L66 33 L70 30 L80 31 L90 29 L100 28"/>
+              </svg>
+              <span class="chart-event" style="left:66.667%" aria-hidden="true"><b></b></span>
+              <span class="chart-threshold" style="--at:10%" aria-hidden="true">threshold 900</span>
+            </div>
+          </div>
+          <div class="chart-x-axis" aria-hidden="true"><span style="--at:0%">09:00</span><span style="--at:33.333%">10:00</span><span style="--at:66.667%">11:00</span><span style="--at:100%">12:00</span></div>
+          <p class="chart-summary"><strong>Now 812&nbsp;requests/s.</strong> The dip at 11:00 matched a deploy. Traffic recovered in 6&nbsp;minutes.</p>
+        </figure>
+
+        <div class="chart-pair equal-panels">
+          <figure class="chart-panel equal-panel">
+            <figcaption class="equal-panel__head">
+              <div><h3>Latency by region</h3><p>95th percentile · milliseconds</p></div>
+            </figcaption>
+            <div class="equal-panel__body">
+              <div class="column-chart" role="img" aria-label="Latency in five regions. Only region D is above the 500 millisecond threshold.">
+              <span class="column-chart__axis" aria-hidden="true"><span style="--at:0">0</span><span style="--at:.333">200</span><span style="--at:.667">400</span><span style="--at:1">600</span></span>
+              <span class="column-chart__grid" aria-hidden="true"><i style="--at:.333"></i><i style="--at:.667"></i><i style="--at:1"></i></span>
+              <span class="column-threshold" aria-hidden="true" style="--at:.833">threshold 500</span>
+              <div><strong>318</strong><i style="--value:53%"></i><span>A</span></div>
+              <div><strong>276</strong><i style="--value:46%"></i><span>B</span></div>
+              <div><strong>421</strong><i style="--value:70%"></i><span>C</span></div>
+              <div class="column-chart__alert"><strong>548</strong><i style="--value:91%"></i><span>D</span></div>
+              <div><strong>352</strong><i style="--value:59%"></i><span>E</span></div>
+              </div>
+            </div>
+            <p class="chart-summary equal-panel__foot"><strong>Region D: 548&nbsp;ms.</strong> The only region above the service threshold.</p>
+          </figure>
+
+          <figure class="chart-panel equal-panel">
+            <figcaption class="heatmap-heading equal-panel__head">
+              <div><h3>Latency distribution</h3><p>Share of requests per bucket</p></div>
+              <span class="heatmap-legend" aria-hidden="true">less <i></i><i></i><i></i><i></i> more</span>
+            </figcaption>
+            <div class="equal-panel__body">
+              <div class="heatmap" role="img" aria-label="Most requests fall in the 32 to 128 millisecond buckets. At 11:00 the share of requests at 256 milliseconds and above grew.">
+              <span>512</span><i class="heat-1"></i><i class="heat-1"></i><i class="heat-1"></i><i class="heat-1"></i><i class="heat-1"></i><i class="heat-3"></i><i class="heat-2"></i><i class="heat-1"></i>
+              <span>256</span><i class="heat-1"></i><i class="heat-2"></i><i class="heat-1"></i><i class="heat-2"></i><i class="heat-2"></i><i class="heat-4"></i><i class="heat-3"></i><i class="heat-2"></i>
+              <span>128</span><i class="heat-3"></i><i class="heat-3"></i><i class="heat-4"></i><i class="heat-4"></i><i class="heat-3"></i><i class="heat-4"></i><i class="heat-4"></i><i class="heat-3"></i>
+              <span>64</span><i class="heat-4"></i><i class="heat-5"></i><i class="heat-5"></i><i class="heat-4"></i><i class="heat-5"></i><i class="heat-3"></i><i class="heat-4"></i><i class="heat-5"></i>
+              <span>32</span><i class="heat-3"></i><i class="heat-4"></i><i class="heat-4"></i><i class="heat-5"></i><i class="heat-4"></i><i class="heat-2"></i><i class="heat-3"></i><i class="heat-4"></i>
+              </div>
+              <div class="heatmap-axis" aria-hidden="true"><span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span></div>
+            </div>
+            <p class="chart-summary equal-panel__foot"><strong>Main bucket: 32 to 64&nbsp;ms.</strong> At 11:00 the tail of the distribution got heavier.</p>
+          </figure>
+
+          <figure class="chart-panel equal-panel">
+            <figcaption class="equal-panel__head"><div><h3>Traffic mix</h3><p>Share of requests over 6&nbsp;hours</p></div></figcaption>
+            <div class="equal-panel__body">
+              <div class="donut-layout">
+              <svg class="donut-chart" viewBox="0 0 160 160" role="img" aria-label="Service A 42 percent, service B 27 percent, service C 19 percent, service D 12 percent.">
+                <circle class="donut-chart__base" cx="80" cy="80" r="54" pathLength="100"/>
+                <circle class="donut-chart__segment donut-chart__segment--neutral" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="42 58" stroke-dashoffset="0"/>
+                <circle class="donut-chart__segment donut-chart__segment--blue" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="27 73" stroke-dashoffset="-42"/>
+                <circle class="donut-chart__segment donut-chart__segment--green" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="19 81" stroke-dashoffset="-69"/>
+                <circle class="donut-chart__segment donut-chart__segment--amber" cx="80" cy="80" r="54" pathLength="100" stroke-dasharray="12 88" stroke-dashoffset="-88"/>
+                <text class="donut-chart__value" x="80" y="77" text-anchor="middle">1.8M</text>
+                <text class="donut-chart__label" x="80" y="97" text-anchor="middle">requests</text>
+              </svg>
+              <dl class="donut-legend">
+                <div><dt><span class="series-key" style="--swatch:var(--data-neutral)">Service A</span></dt><dd>42%</dd></div>
+                <div><dt><span class="series-key" style="--swatch:var(--data-blue)">Service B</span></dt><dd>27%</dd></div>
+                <div><dt><span class="series-key" style="--swatch:var(--data-green)">Service C</span></dt><dd>19%</dd></div>
+                <div><dt><span class="series-key" style="--swatch:var(--data-amber)">Service D</span></dt><dd>12%</dd></div>
+                </dl>
+              </div>
+            </div>
+            <p class="chart-summary equal-panel__foot"><strong>Service A: 42%.</strong> The largest share, but not a majority of traffic.</p>
+          </figure>
+        </div>
+      </section>
+
+      <section class="system-section" id="composition">
+        <div class="system-section__head">
+          <h2>Composition</h2>
+          <p>This working sample tests components together: a dense list, row selection, statuses and details on one surface.</p>
+        </div>
+        <div class="queue-sample">
+          <div class="queue-sample__head">
+            <div><strong>Task queue</strong><span>Sample data · 4&nbsp;tasks</span></div>
+            <span class="status status--error">2&nbsp;need a decision</span>
+          </div>
+          <div class="queue-sample__body">
+            <div class="queue-sample__list" aria-label="Tasks">
+              <button class="queue-row" type="button" aria-pressed="true" data-title="Save search filters" data-group="Interface" data-state="Needs a decision" data-summary="When the user comes back to the page, restore the filters, the sort order and the list position.">
+                <span><strong>Save search filters</strong><small>Interface · opened 2&nbsp;days ago</small></span>
+                <span class="status status--error">Decision</span>
+              </button>
+              <button class="queue-row" type="button" aria-pressed="false" data-title="Remove duplicate data loading" data-group="Platform" data-state="Done" data-summary="Load data once after the user session is restored.">
+                <span><strong>Remove duplicate data loading</strong><small>Platform · opened 3&nbsp;days ago</small></span>
+                <span class="status status--ok">Done</span>
+              </button>
+              <button class="queue-row" type="button" aria-pressed="false" data-title="Add access management" data-group="Product" data-state="In review" data-summary="The screen separates active and revoked access and confirms that changes are saved.">
+                <span><strong>Add access management</strong><small>Product · opened 10&nbsp;hours ago</small></span>
+                <span class="status">Review</span>
+              </button>
+              <button class="queue-row" type="button" aria-pressed="false" data-title="Check bulk role changes" data-group="Security" data-state="Needs a decision" data-summary="A bulk role change must recheck permissions before saving.">
+                <span><strong>Check bulk role changes</strong><small>Security · opened 6&nbsp;days ago</small></span>
+                <span class="status status--error">Decision</span>
+              </button>
+            </div>
+            <article class="queue-detail" aria-live="polite">
+              <span class="queue-detail__meta">Selected task</span>
+              <h3 data-queue-title>Save search filters</h3>
+              <p data-queue-summary>When the user comes back to the page, restore the filters, the sort order and the list position.</p>
+              <dl>
+                <div><dt>Area</dt><dd data-queue-group>Interface</dd></div>
+                <div><dt>State</dt><dd data-queue-state>Needs a decision</dd></div>
+              </dl>
+              <button class="button" type="button">Open task</button>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="system-section" id="data">
+        <div class="data-heading">
+          <h2>Data</h2>
+          <p>How to write numbers and units in an English interface.</p>
+        </div>
+        <div class="format-metrics" aria-label="Number format examples">
+          <div><strong>1,240</strong><span>integer</span></div>
+          <div><strong>98.7%</strong><span>percent</span></div>
+          <div><strong>18&nbsp;ms</strong><span>time</span></div>
+        </div>
+        <table class="data-table format-table">
+          <thead><tr><th>Type</th><th>Rule</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Count</td><td>Comma between thousands</td><td>1,240</td></tr>
+            <tr><td>Share</td><td>One decimal place if it matters</td><td>98.7%</td></tr>
+            <tr><td>Duration</td><td>Non-breaking space before the unit</td><td>18&nbsp;ms</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>{{TITLE}}</title>
+  <link rel="icon" href="../shared/favicon-interface.svg" type="image/svg+xml">
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8 8 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></symbol>
+  </svg>
+  <main class="shell" data-craft-layout="interface" data-craft-shell="app">
+    <header class="workspace-head workspace-head--compact">
+      <div class="workspace-head__main"><h1>{{TITLE}}</h1></div>
+      <div class="workspace-head__tools">
+        <button class="button button--stable button--icon theme-switch" type="button" data-theme-toggle aria-pressed="false">
+          <span class="button__label button__label--rest"><svg class="icon" aria-hidden="true"><use href="#icon-sun"/></svg></span>
+          <span class="button__label button__label--pressed"><svg class="icon" aria-hidden="true"><use href="#icon-moon"/></svg></span>
+        </button>
+      </div>
+    </header>
+    <div id="craft-content"></div>
+  </main>
+</body>
+</html>

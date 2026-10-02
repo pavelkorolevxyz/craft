@@ -1,0 +1,244 @@
+/* Craft core. Shared identity tokens for every format. */
+@font-face {
+  font-family: "Geologica";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("fonts/geologica-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: "Geologica";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("fonts/geologica-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Onest";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("fonts/onest-cyrillic.woff2") format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: "Onest";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("fonts/onest-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces. The page sits on --craft-bg, and components sit on it too.
+     An accent needs a fill, a shape does not. --craft-surface marks a
+     group of related content and paints hover, --craft-surface-muted is its
+     quiet version, --craft-sunken is the fill under a code listing on a slide. */
+  --craft-bg: #111;
+  --craft-surface: #1a1a1a;
+  --craft-surface-muted: #161616;
+  --craft-sunken: #0d0d0d;
+  /* Experiment. Nested block. A translucent paint instead of a fixed gray.
+     The browser handles nesting. A block inside a block lays the paint a
+     second time and moves one more step away from the background. One token
+     covers both themes, and its color sets the direction. White lightens
+     the dark theme, dark darkens the light one. */
+  --craft-raise: rgb(238 238 238 / .07);
+  /* Scale rail. The remainder of a progress bar, a bar or a slider is a fill,
+     not a line. In the line color it read as a stray border under the value. */
+  --craft-track: rgb(238 238 238 / .12);
+
+  /* Lines. --craft-line is the regular divider and border. Use
+     --craft-line-strong where the line itself carries data, such as an axis,
+     a cursor or a scale. */
+  --craft-line: rgb(238 238 238 / .14);
+  --craft-line-strong: #eee;
+
+  /* Text. --craft-text is for headings and values, --craft-text-body for
+     paragraphs meant for reading, --craft-muted for labels, units and
+     service notes. The quiet roles use white with transparency, not a fixed
+     gray. On an accent background they let it show through and stay part of it.
+     A solid gray there would look like a dirty patch on top of the red. */
+  --craft-text: #eee;
+  --craft-text-body: rgb(238 238 238 / .82);
+  --craft-muted: rgb(238 238 238 / .66);
+
+  /* Red has four different roles, and they are not interchangeable.
+     --craft-accent is accent TEXT, such as a link, a priority number or a
+     threshold label. It is muted on purpose, because people read it.
+     --craft-accent-mark is a saturated MARK, such as a status dot, a bar, a
+     chart line or a focus ring. It is brighter than the text, because nobody
+     reads it.
+     --craft-accent-fill is the FILL under white text, such as a button, a
+     callout or a total row. It is darker than the text, or white loses
+     contrast. White on the mark gives 3.5, on the fill 5.4, and the
+     threshold is 4.5.
+     --craft-accent-tint is a faint signal BACKGROUND with no white text.
+     It keeps the regular text color and does not replace a state label.
+     --craft-accent-base is the original identity red, for large type on a
+     light background. --craft-accent-fill-hover is hover on the fill. */
+  --craft-accent: #ff6672;
+  --craft-accent-mark: #ff3f4d;
+  --craft-accent-fill: #c5303d;
+  --craft-accent-fill-hover: #a92633;
+  --craft-accent-tint: rgb(255 63 77 / .14);
+  --craft-accent-base: #e63946;
+
+  /* On top of the accent fill. White text, its quiet version, a line that
+     divides content inside the red area, and a disabled control. There is
+     no gray here and there can't be. On top of the accent only transparent
+     white or black works. Otherwise a quiet role drops out of the color and
+     reads as dirt. */
+  --craft-on-accent: #fff;
+  --craft-on-accent-muted: rgb(255 255 255 / .78);
+  --craft-on-accent-line: rgb(255 255 255 / .28);
+  --craft-on-accent-disabled: rgb(255 255 255 / .45);
+
+  /* Quiet chip. A transparent fill slightly lighter than any background.
+     Inline code needs it so a token name does not get lost in the line.
+     It is transparent for the same reason as quiet text. The chip shows up
+     the same way on the page background, on a surface and on the accent
+     tone, and never turns into a gray patch. */
+  --craft-fill-quiet: rgb(238 238 238 / .07);
+
+  /* Text selection tints the line instead of painting over it. The original
+     letter color shows through the fill, so size and weight do not "jump".
+     On the accent fill there is nothing to tint red, the text there is white. */
+  --craft-selection: rgb(230 57 70 / .32);
+  --craft-selection-on-accent: rgb(255 255 255 / .3);
+
+  /* Utility. --craft-overlay-line outlines a color swatch on any background,
+     --craft-disabled is a disabled control, --craft-scrim darkens the page
+     under a modal dialog. */
+  --craft-overlay-line: rgb(255 255 255 / .16);
+  --craft-disabled: rgb(238 238 238 / .38);
+  --craft-scrim: rgb(0 0 0 / .64);
+
+  /* Code, and only code. Syntax highlighting lives apart from the interface
+     palette so bright status colors stay out of listings. The roles are the
+     same on a slide and on a page. The accent paints the element name, gold
+     paints attributes and strings, blue paints numbers, and everything else
+     uses the base listing color. */
+  --craft-code-text: #d4d0cc;
+  --craft-code-gold: #c9a96e;
+  --craft-code-blue: #7a9ab5;
+
+  /* Statuses. Three states and no more: ok, warning, error.
+     Error is the same red as any mark, with no separate shade.
+     A word always goes with the color. The color speeds up reading, it does
+     not replace the label. The value paints the mark and the label inside
+     it, the status chip border together with its text. That is why the light
+     theme uses darker tones, since a small label must pass contrast. Regular
+     page text does not use these values. The quiet error background uses a
+     separate --craft-error-tint. */
+  --craft-ok: #23cc70;
+  --craft-warn: #ffae1a;
+  --craft-error: var(--craft-accent-mark);
+  --craft-error-tint: var(--craft-accent-tint);
+
+  /* Data series. Assign them in order: the priority series is red, then
+     neutral, blue, amber, green. Five series is the whole set. If there are
+     more, merge them or show them one at a time. */
+  --craft-data-red: var(--craft-accent-mark);
+  --craft-data-neutral: var(--craft-text);
+  --craft-data-blue: #4ea6ff;
+  --craft-data-amber: var(--craft-warn);
+  --craft-data-green: var(--craft-ok);
+
+  /* Print. Same roles, values flipped for light paper. Screen brightness does
+     not read on white, so marks and series turn dark. The format applies
+     these values itself, do not apply them by hand. */
+  --craft-print-bg: #f8f8f8;
+  --craft-print-surface: #eaeaea;
+  --craft-print-line: rgb(17 17 17 / .2);
+  --craft-print-text: #111;
+  --craft-print-text-body: rgb(17 17 17 / .82);
+  --craft-print-muted: rgb(17 17 17 / .7);
+  --craft-print-accent: #a92633;
+  --craft-print-accent-tint: rgb(169 38 51 / .09);
+  --craft-print-data-red: #a92633;
+  --craft-print-data-neutral: #111;
+  --craft-print-data-blue: #1f5c99;
+  --craft-print-data-amber: #8a5a00;
+  --craft-print-data-green: #1f7a45;
+  --craft-print-code-text: #2d2a27;
+  --craft-print-code-gold: #73521f;
+  --craft-print-code-blue: #365f7d;
+
+  /* Craft light theme. Warm paper neutrals cut glare and keep contrast for
+     text, tables and charts. */
+  --craft-light-bg: #f7f6f3;
+  --craft-light-surface: #eae8e3;
+  --craft-light-surface-muted: #f1efea;
+  --craft-light-sunken: #dedbd4;
+  --craft-light-raise: rgb(32 32 30 / .06);
+  --craft-light-track: rgb(32 32 30 / .11);
+  --craft-light-line: rgb(32 32 30 / .22);
+  --craft-light-line-strong: #3b3a37;
+  --craft-light-text: #20201e;
+  --craft-light-text-body: rgb(32 32 30 / .82);
+  --craft-light-muted: rgb(32 32 30 / .72);
+  --craft-light-accent: #b21c2a;
+  --craft-light-accent-mark: #e12b3a;
+  --craft-light-accent-fill: #c5303d;
+  --craft-light-accent-fill-hover: #a81f2c;
+  --craft-light-accent-tint: rgb(225 43 58 / .1);
+  --craft-light-fill-quiet: rgb(32 32 30 / .07);
+  --craft-light-selection: rgb(225 43 58 / .22);
+  --craft-light-overlay-line: rgb(32 32 30 / .16);
+  --craft-light-disabled: rgb(32 32 30 / .5);
+  --craft-light-scrim: rgb(32 32 30 / .48);
+  --craft-light-ok: var(--craft-light-data-green);
+  --craft-light-warn: var(--craft-light-data-amber);
+  --craft-light-data-blue: #0b62ad;
+  --craft-light-data-amber: #8c5000;
+  --craft-light-data-green: #126e3a;
+
+  /* Fonts. Geologica for short headings and key numbers, Onest for text and
+     controls, monospace only for real code. */
+  --craft-font-display: "Geologica", "Liberation Sans", system-ui, sans-serif;
+  --craft-font-text: "Onest", "Liberation Sans", system-ui, sans-serif;
+  --craft-font-mono: "JetBrains Mono", "JetBrainsMono NF", ui-monospace, monospace;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --craft-bg: var(--craft-light-bg);
+  --craft-surface: var(--craft-light-surface);
+  --craft-surface-muted: var(--craft-light-surface-muted);
+  --craft-sunken: var(--craft-light-sunken);
+  --craft-raise: var(--craft-light-raise);
+  --craft-track: var(--craft-light-track);
+  --craft-line: var(--craft-light-line);
+  --craft-line-strong: var(--craft-light-line-strong);
+  --craft-text: var(--craft-light-text);
+  --craft-text-body: var(--craft-light-text-body);
+  --craft-muted: var(--craft-light-muted);
+  --craft-accent: var(--craft-light-accent);
+  --craft-accent-mark: var(--craft-light-accent-mark);
+  --craft-accent-fill: var(--craft-light-accent-fill);
+  --craft-accent-fill-hover: var(--craft-light-accent-fill-hover);
+  --craft-accent-tint: var(--craft-light-accent-tint);
+  --craft-fill-quiet: var(--craft-light-fill-quiet);
+  --craft-selection: var(--craft-light-selection);
+  --craft-overlay-line: var(--craft-light-overlay-line);
+  --craft-disabled: var(--craft-light-disabled);
+  --craft-scrim: var(--craft-light-scrim);
+  --craft-code-text: #383532;
+  --craft-code-gold: #73521f;
+  --craft-code-blue: #365f7d;
+  --craft-data-red: var(--craft-light-accent-mark);
+  --craft-data-neutral: var(--craft-light-text);
+  --craft-ok: var(--craft-light-ok);
+  --craft-warn: var(--craft-light-warn);
+  --craft-data-blue: var(--craft-light-data-blue);
+  --craft-data-amber: var(--craft-light-data-amber);
+  --craft-data-green: var(--craft-light-data-green);
+  --craft-error: var(--craft-light-accent);
+  --craft-error-tint: var(--craft-light-accent-tint);
+}

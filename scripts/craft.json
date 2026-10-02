@@ -1,0 +1,2170 @@
+{
+  "name": "Craft",
+  "version": "1.0.0",
+  "language": "en",
+  "surfaces": {
+    "interface": {
+      "templates": [
+        "blank",
+        "bare"
+      ],
+      "entrypoints": [
+        "assets/interfaces/starter-index.html",
+        "assets/interfaces/starter-bare.html"
+      ],
+      "fragments": [
+        {
+          "id": "page-head",
+          "path": "assets/interfaces/fragments/page-head.html",
+          "purpose": "Document title with a short summary",
+          "placeholders": {
+            "TITLE": "text",
+            "SUMMARY": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "workspace-head",
+          "path": "assets/interfaces/fragments/workspace-head.html",
+          "purpose": "Compact working header: title and tools on one bar",
+          "placeholders": {
+            "TITLE": "text",
+            "TOOLS_LABEL": "text",
+            "TOOLS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "metric-strip",
+          "path": "assets/interfaces/fragments/metric-strip.html",
+          "purpose": "Horizontal group of key values",
+          "placeholders": {
+            "METRIC_COUNT": "number",
+            "METRICS_LABEL": "text",
+            "LABEL": "text",
+            "VALUE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "section",
+          "path": "assets/interfaces/fragments/section.html",
+          "purpose": "Section with a heading",
+          "placeholders": {
+            "SECTION_ID": "id",
+            "SECTION_TITLE": "text",
+            "SECTION_SUMMARY": "text",
+            "SECTION_CONTENT": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "split-workspace",
+          "path": "assets/interfaces/fragments/split-workspace.html",
+          "purpose": "Linked main and secondary work areas",
+          "placeholders": {
+            "WORKSPACE_LABEL": "text",
+            "PRIMARY_ID": "id",
+            "PRIMARY_TITLE": "text",
+            "PRIMARY_SUMMARY": "text",
+            "PRIMARY_ACTION": "html",
+            "PRIMARY_CONTENT": "html",
+            "ASIDE_ID": "id",
+            "ASIDE_TITLE": "text",
+            "ASIDE_SUMMARY": "text",
+            "ASIDE_ACTION": "html",
+            "ASIDE_CONTENT": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "data-table",
+          "path": "assets/interfaces/fragments/data-table.html",
+          "purpose": "Data table with a caption and an accessible container",
+          "placeholders": {
+            "TABLE_LABEL": "text",
+            "TABLE_CAPTION": "text",
+            "TABLE_HEADINGS": "html",
+            "TABLE_ROWS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "empty-state",
+          "path": "assets/interfaces/fragments/empty-state.html",
+          "purpose": "Empty state with an explanation and an optional action",
+          "placeholders": {
+            "EMPTY_TITLE": "text",
+            "EMPTY_EXPLANATION": "text",
+            "EMPTY_ACTION": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "section-nav",
+          "path": "assets/interfaces/fragments/section-nav.html",
+          "purpose": "Navigation between sections of the current page",
+          "placeholders": {
+            "NAV_LABEL": "text",
+            "NAV_LINKS": "html"
+          },
+          "dependencies": [
+            "assets/interfaces/section-nav.js"
+          ]
+        },
+        {
+          "id": "field",
+          "path": "assets/interfaces/fragments/field.html",
+          "purpose": "Form field with a label, hint and error message",
+          "placeholders": {
+            "FIELD_ID": "id",
+            "FIELD_LABEL": "text",
+            "FIELD_CONTROL": "html",
+            "FIELD_HINT": "text",
+            "FIELD_ERROR": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "filter-bar",
+          "path": "assets/interfaces/fragments/filter-bar.html",
+          "purpose": "Parameter bar above a data area, with a record count",
+          "placeholders": {
+            "FILTER_LABEL": "text",
+            "FILTER_CONTROLS": "html",
+            "FILTER_COUNT": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "notice",
+          "path": "assets/interfaces/fragments/notice.html",
+          "purpose": "In-page notice with a tone mark",
+          "placeholders": {
+            "NOTICE_TONE": "token",
+            "NOTICE_TITLE": "text",
+            "NOTICE_TEXT": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "dialog",
+          "path": "assets/interfaces/fragments/dialog.html",
+          "purpose": "Modal dialog with a header, content and action bar",
+          "placeholders": {
+            "DIALOG_ID": "id",
+            "DIALOG_TITLE": "text",
+            "DIALOG_CLOSE_LABEL": "text",
+            "DIALOG_CONTENT": "html",
+            "DIALOG_ACTIONS": "html"
+          },
+          "dependencies": [
+            "assets/interfaces/dialog.js"
+          ]
+        },
+        {
+          "id": "kv-list",
+          "path": "assets/interfaces/fragments/kv-list.html",
+          "purpose": "List of \"field: value\" pairs with a heading",
+          "placeholders": {
+            "KV_TITLE": "text",
+            "KV_ROWS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "timeline",
+          "path": "assets/interfaces/fragments/timeline.html",
+          "purpose": "Vertical event feed with status marks",
+          "placeholders": {
+            "TIMELINE_LABEL": "text",
+            "TIMELINE_ITEMS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "code-block",
+          "path": "assets/interfaces/fragments/code-block.html",
+          "purpose": "Code block with a source label and a copy button",
+          "placeholders": {
+            "CODE_ID": "id",
+            "CODE_LABEL": "text",
+            "CODE": "text"
+          },
+          "dependencies": [
+            "assets/interfaces/copy.js",
+            "assets/interfaces/code-highlight.js"
+          ]
+        },
+        {
+          "id": "tabs",
+          "path": "assets/interfaces/fragments/tabs.html",
+          "purpose": "Tab list and linked panels",
+          "placeholders": {
+            "TABS_LABEL": "text",
+            "TAB_BUTTONS": "html",
+            "TAB_PANELS": "html"
+          },
+          "dependencies": [
+            "assets/interfaces/tabs.js"
+          ]
+        },
+        {
+          "id": "pagination",
+          "path": "assets/interfaces/fragments/pagination.html",
+          "purpose": "Pagination that shows the position in the set",
+          "placeholders": {
+            "PAGINATION_LABEL": "text",
+            "PAGINATION_LINKS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "breadcrumbs",
+          "path": "assets/interfaces/fragments/breadcrumbs.html",
+          "purpose": "Breadcrumb trail up to the current page",
+          "placeholders": {
+            "TRAIL_LABEL": "text",
+            "TRAIL_ITEMS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "steps",
+          "path": "assets/interfaces/fragments/steps.html",
+          "purpose": "Process steps with the current one marked",
+          "placeholders": {
+            "STEPS_LABEL": "text",
+            "STEPS_ITEMS": "html"
+          },
+          "dependencies": []
+        }
+      ],
+      "fragmentTarget": "#craft-content",
+      "catalog": "catalog/interfaces/index.html",
+      "components": [
+        {
+          "id": "icon",
+          "title": "Icon",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "icon",
+          "dependencies": [],
+          "summary": "Line icon for UI controls",
+          "level": "atom"
+        },
+        {
+          "id": "page-head",
+          "title": "Page title",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/page-head.html",
+          "rootClass": "page-head",
+          "dependencies": [],
+          "summary": "Page name with a short summary",
+          "level": "organism"
+        },
+        {
+          "id": "section",
+          "title": "Section",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/section.html",
+          "rootClass": "section",
+          "dependencies": [],
+          "summary": "A self-contained part of the document",
+          "level": "organism"
+        },
+        {
+          "id": "workspace-head",
+          "title": "Workspace header",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/workspace-head.html",
+          "rootClass": "workspace-head",
+          "dependencies": [],
+          "summary": "Work area name with shared actions",
+          "level": "organism"
+        },
+        {
+          "id": "metric-strip",
+          "title": "Metric strip",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/metric-strip.html",
+          "rootClass": "scoreboard",
+          "dependencies": [],
+          "summary": "Group of key values",
+          "level": "organism"
+        },
+        {
+          "id": "split-workspace",
+          "title": "Workspace",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/split-workspace.html",
+          "rootClass": "workbench",
+          "dependencies": [],
+          "summary": "Two linked areas that scroll independently",
+          "level": "organism"
+        },
+        {
+          "id": "section-nav",
+          "title": "Section navigation",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/section-nav.html",
+          "rootClass": "section-nav__links",
+          "dependencies": [
+            "assets/interfaces/section-nav.js"
+          ],
+          "summary": "Navigation for a long document",
+          "level": "molecule"
+        },
+        {
+          "id": "button",
+          "title": "Button",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "button",
+          "dependencies": [],
+          "summary": "Starts an action",
+          "level": "atom"
+        },
+        {
+          "id": "segmented",
+          "title": "Segmented control",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "segmented",
+          "dependencies": [],
+          "summary": "Pick one mode from a short set",
+          "level": "molecule"
+        },
+        {
+          "id": "disclosure",
+          "title": "Disclosure",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "disclosure",
+          "dependencies": [],
+          "summary": "Shows extra content on request",
+          "level": "molecule"
+        },
+        {
+          "id": "field",
+          "title": "Field",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/field.html",
+          "rootClass": "field",
+          "dependencies": [],
+          "summary": "Label, control, hint and error",
+          "level": "molecule"
+        },
+        {
+          "id": "input",
+          "title": "Text input",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": null,
+          "dependencies": [],
+          "summary": "Enter a short text value",
+          "level": "atom"
+        },
+        {
+          "id": "textarea",
+          "title": "Text area",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": null,
+          "dependencies": [],
+          "summary": "Enter text over several lines",
+          "level": "atom"
+        },
+        {
+          "id": "select",
+          "title": "Select",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "select-control",
+          "dependencies": [],
+          "summary": "Pick one known value",
+          "level": "atom"
+        },
+        {
+          "id": "checkbox",
+          "title": "Checkbox",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "check",
+          "dependencies": [],
+          "summary": "Independent yes/no choice",
+          "level": "atom"
+        },
+        {
+          "id": "radio",
+          "title": "Radio group",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "check-group",
+          "dependencies": [],
+          "summary": "Pick one value from a group",
+          "level": "molecule"
+        },
+        {
+          "id": "switch",
+          "title": "Switch",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "switch",
+          "dependencies": [],
+          "summary": "Turns a mode on or off right away",
+          "level": "atom"
+        },
+        {
+          "id": "range",
+          "title": "Slider",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "range",
+          "dependencies": [
+            "assets/interfaces/range.js"
+          ],
+          "summary": "Pick a number within a range",
+          "level": "atom"
+        },
+        {
+          "id": "filter-bar",
+          "title": "Filter bar",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/filter-bar.html",
+          "rootClass": "filter-bar",
+          "dependencies": [],
+          "summary": "Filter parameters above a data area",
+          "level": "organism"
+        },
+        {
+          "id": "breadcrumbs",
+          "title": "Breadcrumbs",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/breadcrumbs.html",
+          "rootClass": "breadcrumbs",
+          "dependencies": [],
+          "summary": "Where the page sits in the hierarchy",
+          "level": "molecule"
+        },
+        {
+          "id": "tabs",
+          "title": "Tabs",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/tabs.html",
+          "rootClass": "tabs",
+          "dependencies": [
+            "assets/interfaces/tabs.js"
+          ],
+          "summary": "Switch between linked panels",
+          "level": "molecule"
+        },
+        {
+          "id": "pagination",
+          "title": "Pagination",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/pagination.html",
+          "rootClass": "pagination",
+          "dependencies": [],
+          "summary": "Move between pages of a set",
+          "level": "molecule"
+        },
+        {
+          "id": "steps",
+          "title": "Steps",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/steps.html",
+          "rootClass": "steps",
+          "dependencies": [],
+          "summary": "Position in a short process",
+          "level": "molecule"
+        },
+        {
+          "id": "data-table",
+          "title": "Data table",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/data-table.html",
+          "rootClass": "data-table",
+          "dependencies": [],
+          "summary": "Compare records of the same kind",
+          "level": "organism"
+        },
+        {
+          "id": "kv-list",
+          "title": "Description list",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/kv-list.html",
+          "rootClass": "kv-list",
+          "dependencies": [],
+          "summary": "Compact description of one entity",
+          "level": "organism"
+        },
+        {
+          "id": "timeline",
+          "title": "Timeline",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/timeline.html",
+          "rootClass": "timeline",
+          "dependencies": [],
+          "summary": "Sequence of events over time",
+          "level": "organism"
+        },
+        {
+          "id": "code-block",
+          "title": "Code block",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/code-block.html",
+          "rootClass": "code-block",
+          "dependencies": [
+            "assets/interfaces/copy.js",
+            "assets/interfaces/code-highlight.js"
+          ],
+          "summary": "Local code with a copy button",
+          "level": "molecule"
+        },
+        {
+          "id": "series-key",
+          "title": "Series key",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "series-key",
+          "dependencies": [],
+          "summary": "Label for a data series",
+          "level": "atom"
+        },
+        {
+          "id": "empty-state",
+          "title": "Empty state",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/empty-state.html",
+          "rootClass": "empty-state",
+          "dependencies": [],
+          "summary": "Explains why there is no result",
+          "level": "molecule"
+        },
+        {
+          "id": "notice",
+          "title": "Notice",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/notice.html",
+          "rootClass": "notice",
+          "dependencies": [],
+          "summary": "Message inside the current flow",
+          "level": "molecule"
+        },
+        {
+          "id": "status",
+          "title": "Status",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "status",
+          "dependencies": [],
+          "summary": "Short state as a dot next to a word",
+          "level": "atom"
+        },
+        {
+          "id": "tag",
+          "title": "Tag",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "tag",
+          "dependencies": [],
+          "summary": "Category, attribute or state in a border",
+          "level": "atom"
+        },
+        {
+          "id": "progress",
+          "title": "Progress",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "progress",
+          "dependencies": [],
+          "summary": "Determinate or indeterminate progress of work",
+          "level": "molecule"
+        },
+        {
+          "id": "dialog",
+          "title": "Dialog",
+          "kind": "fragment",
+          "source": "assets/interfaces/fragments/dialog.html",
+          "rootClass": "dialog",
+          "dependencies": [
+            "assets/interfaces/dialog.js"
+          ],
+          "summary": "Modal confirmation of a short action",
+          "level": "organism"
+        },
+        {
+          "id": "chart",
+          "title": "Chart",
+          "kind": "primitive",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": "bar-list",
+          "dependencies": [],
+          "summary": "Accessible chart whose form fits the data task, with a text summary",
+          "level": "organism"
+        }
+      ],
+      "testPage": "catalog/interfaces/sheet.html",
+      "foundations": [
+        {
+          "id": "colors",
+          "title": "Color roles",
+          "kind": "foundation",
+          "source": "assets/shared/tokens.css",
+          "rootClass": null,
+          "dependencies": [],
+          "summary": "Semantic color roles for themes and print"
+        },
+        {
+          "id": "spacing",
+          "title": "Spacing",
+          "kind": "foundation",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": null,
+          "dependencies": [],
+          "summary": "Scale of distances between elements and groups"
+        },
+        {
+          "id": "typography",
+          "title": "Typography",
+          "kind": "foundation",
+          "source": "assets/interfaces/theme.css",
+          "rootClass": null,
+          "dependencies": [],
+          "summary": "Scale for text and headings"
+        }
+      ]
+    },
+    "slides": {
+      "templates": [
+        "deck"
+      ],
+      "entrypoints": [
+        "assets/slides/starter/index.html"
+      ],
+      "layouts": [
+        "cover",
+        "title",
+        "section",
+        "statement",
+        "list",
+        "comparison",
+        "figure",
+        "chart",
+        "table",
+        "code",
+        "flow",
+        "end",
+        "bento",
+        "screenshot",
+        "iterations"
+      ],
+      "fragments": [
+        {
+          "id": "cover",
+          "path": "assets/slides/fragments/cover.html",
+          "purpose": "Talk cover: title and author on an accent fill",
+          "placeholders": {
+            "TITLE": "text",
+            "BYLINE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "title",
+          "path": "assets/slides/fragments/title.html",
+          "purpose": "Deck opening with one dominant title",
+          "placeholders": {
+            "TITLE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "section",
+          "path": "assets/slides/fragments/section.html",
+          "purpose": "Chapter divider with the number from the outline",
+          "placeholders": {
+            "SECTION_NUMBER": "text",
+            "SECTION_TITLE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "statement",
+          "path": "assets/slides/fragments/statement.html",
+          "purpose": "Standalone finding, frame or bridge in one sentence",
+          "placeholders": {
+            "STATEMENT": "text",
+            "QUALIFIER": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "list",
+          "path": "assets/slides/fragments/list.html",
+          "purpose": "Short points united by one question or finding",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "LIST_ITEMS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "comparison",
+          "path": "assets/slides/fragments/split.html",
+          "purpose": "Two states or options on a shared basis",
+          "placeholders": {
+            "LEFT_CONTENT": "html",
+            "RIGHT_CONTENT": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "figure",
+          "path": "assets/slides/fragments/figure.html",
+          "purpose": "Image as evidence, with a short note on what to look at",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "MEDIA": "html",
+            "FINDING": "text",
+            "SOURCE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "chart",
+          "path": "assets/slides/fragments/chart.html",
+          "purpose": "Quantitative relationship with a finding and a source",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "CHART_SUMMARY": "text",
+            "CHART_ROWS": "html",
+            "FINDING": "text",
+            "SOURCE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "table",
+          "path": "assets/slides/fragments/table.html",
+          "purpose": "Exact comparison of records of the same kind",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "TABLE_CAPTION": "text",
+            "TABLE_HEADINGS": "html",
+            "TABLE_ROWS": "html",
+            "SOURCE": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "code",
+          "path": "assets/slides/fragments/code.html",
+          "purpose": "Source code whose specific lines prove a technical finding",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "CODE_LANGUAGE": "token",
+            "HIGHLIGHT_LINES": "text",
+            "CODE": "text",
+            "FINDING": "text"
+          },
+          "dependencies": [
+            "assets/slides/vendor/highlight.min.js",
+            "assets/slides/code-highlight.js"
+          ]
+        },
+        {
+          "id": "flow",
+          "path": "assets/slides/fragments/flow.html",
+          "purpose": "Handoff, dependency or transformation between nodes",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "FLOW_NODES": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "end",
+          "path": "assets/slides/fragments/end.html",
+          "purpose": "Closing line, author with event and one contact as a QR code",
+          "placeholders": {
+            "FINAL_STATEMENT": "text",
+            "QR_LINK": "html",
+            "AUTHOR": "text",
+            "EVENT": "text"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "bento",
+          "path": "assets/slides/fragments/bento.html",
+          "purpose": "Set of equal topics on one page: tiles of equal height in a row",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "BENTO_ROWS": "html"
+          },
+          "dependencies": []
+        },
+        {
+          "id": "screenshot",
+          "path": "assets/slides/fragments/screenshot.html",
+          "purpose": "Full-slide screenshot, screen recording or long page with a title that leaves",
+          "placeholders": {
+            "MEDIA": "html",
+            "SLIDE_TITLE": "text"
+          },
+          "dependencies": [
+            "assets/slides/media.js"
+          ]
+        },
+        {
+          "id": "iterations",
+          "path": "assets/slides/fragments/iterations.html",
+          "purpose": "Current interface version large, earlier iterations beside it",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "ITERATIONS": "html"
+          },
+          "dependencies": []
+        }
+      ],
+      "fragmentTarget": ".slides",
+      "catalog": "catalog/slides/index.html",
+      "catalogPages": 68,
+      "catalogPrintPages": 68,
+      "catalogLayouts": [
+        "title",
+        "cover",
+        "context",
+        "section",
+        "list",
+        "statement",
+        "comparison",
+        "quote",
+        "metrics",
+        "code",
+        "figure",
+        "screenshot",
+        "table",
+        "steps",
+        "chart",
+        "timeline",
+        "flow",
+        "visual-comparison",
+        "resource",
+        "end",
+        "bento",
+        "iterations"
+      ],
+      "catalogCssClasses": [
+        "about",
+        "byline",
+        "chart-keys--inline",
+        "column-track",
+        "is-down",
+        "is-rest",
+        "jersey",
+        "lanes",
+        "line-key",
+        "line-keys",
+        "line-mark",
+        "line-plot",
+        "line-scale",
+        "line-series",
+        "pie-cuts",
+        "pie-plot",
+        "pie-slices",
+        "pie-track",
+        "range-row",
+        "range-track",
+        "s-cover",
+        "s-quote",
+        "s-shot",
+        "svg-defs",
+        "takeaways",
+        "timeline-key"
+      ],
+      "layoutGuidance": {
+        "title": {
+          "job": "Open the talk with its topic instead of proving a claim",
+          "useWhen": [
+            "first slide of material without a speaker: a handout deck, a recording, an internal review"
+          ],
+          "avoidWhen": [
+            "this is a public talk; use cover for that",
+            "you need a transition between sections",
+            "the title already states a substantive finding"
+          ],
+          "variable": [
+            "title length up to two lines",
+            "local fill and a meta line when needed"
+          ],
+          "fixed": [
+            "one dominant title",
+            "no list, diagram or secondary argument"
+          ],
+          "slots": {
+            "TITLE": "Title of the talk or standalone material"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "The title slide shows in full."
+          },
+          "alternatives": {
+            "cover": "for a talk with an author",
+            "section": "for a transition between parts",
+            "statement": "for a claim inside the story"
+          },
+          "signature": [
+            ".s-title-card",
+            ".type-hero"
+          ]
+        },
+        "cover": {
+          "job": "Open the talk with the title, the author and the character of the topic",
+          "useWhen": [
+            "this is the public cover of a talk",
+            "the audience should see the author or event name before the talk starts"
+          ],
+          "avoidWhen": [
+            "you need a neutral title card inside the material",
+            "the slide must already prove a claim"
+          ],
+          "variable": [
+            "title on one or two lines",
+            "author, or author and event"
+          ],
+          "fixed": [
+            "the title dominates",
+            "meta details do not compete with the topic"
+          ],
+          "slots": {
+            "TITLE": "Talk title",
+            "BYLINE": "Author, optionally followed by a dot and the event"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "The cover shows in full."
+          },
+          "alternatives": {
+            "title": "for a neutral opening without an author line",
+            "section": "for a transition inside the talk"
+          },
+          "signature": [
+            ".s-cover",
+            ".type-hero"
+          ]
+        },
+        "context": {
+          "job": "Briefly explain who is speaking and why their experience matters for the topic",
+          "useWhen": [
+            "the audience does not know the speaker",
+            "role or hands-on experience affects trust in the material"
+          ],
+          "avoidWhen": [
+            "the bio does not help understand the talk",
+            "the context fits in one spoken sentence"
+          ],
+          "variable": [
+            "name, role and one reason for expertise",
+            "portrait or subject image",
+            "contact line"
+          ],
+          "fixed": [
+            "only facts related to the topic",
+            "one visual anchor"
+          ],
+          "slots": {
+            "identity": "Name and role",
+            "relevance": "Why this experience matters for the topic",
+            "media": "Portrait or related image"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "The context slide shows in full."
+          },
+          "alternatives": {
+            "figure": "if the project or result matters more than the person",
+            "title": "if no introduction is needed"
+          },
+          "signature": [
+            ".about"
+          ]
+        },
+        "section": {
+          "job": "Mark the move to a new part of the story",
+          "useWhen": [
+            "the question or scale of the story changes",
+            "the audience needs a short pause between blocks"
+          ],
+          "avoidWhen": [
+            "the slide holds a standalone argument",
+            "the section is just the next single slide"
+          ],
+          "variable": [
+            "section title",
+            "chapter number"
+          ],
+          "fixed": [
+            "minimum content",
+            "no evidence and no explanatory lists"
+          ],
+          "slots": {
+            "SECTION_NUMBER": "Chapter number from the outline: 01, 02",
+            "SECTION_TITLE": "Chapter title, word for word as in the outline"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "The divider has no reveal steps."
+          },
+          "alternatives": {
+            "title": "for the start of the whole deck",
+            "statement": "for a substantive finding"
+          },
+          "signature": [
+            ".s-section",
+            ".type-hero"
+          ]
+        },
+        "list": {
+          "job": "Group a few short points that together support one heading",
+          "useWhen": [
+            "the points are equal or follow a simple spoken order",
+            "each point makes sense without axes or links"
+          ],
+          "avoidWhen": [
+            "the points have dates",
+            "the points are steps of an instruction",
+            "causal or spatial links between items matter"
+          ],
+          "variable": [
+            "two to six points",
+            "short notes on some points",
+            "step reveal during the talk"
+          ],
+          "fixed": [
+            "all points are of one kind",
+            "one heading explains how they relate"
+          ],
+          "slots": {
+            "SLIDE_TITLE": "Finding or question that unites the points",
+            "LIST_ITEMS": "List items with the same internal structure"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "For reading together, show everything. If the speaker goes through the points one by one, the first frame shows the heading, with the first point if needed. The remaining points get .frag; a label and its note appear together."
+          },
+          "alternatives": {
+            "flow": "for links and transformations",
+            "steps": "for a prescribed sequence",
+            "timeline": "for events over time"
+          },
+          "signature": [
+            ".bullets, .plain-list"
+          ]
+        },
+        "statement": {
+          "job": "State one finding or turn in the argument",
+          "useWhen": [
+            "the wording must land on its own",
+            "the evidence is already shown or comes on the next slide"
+          ],
+          "avoidWhen": [
+            "the claim needs several caveats",
+            "the slide is only a section title"
+          ],
+          "variable": [
+            "the claim wording",
+            "one short qualifier",
+            "a neutral fill for a frame, a bridge or a fact; `surface-accent` for the finding the audience takes away"
+          ],
+          "fixed": [
+            "one thought",
+            "the claim stays the main object on the slide"
+          ],
+          "slots": {
+            "STATEMENT": "Self-contained claim",
+            "QUALIFIER": "Optional qualifier or source"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "The claim shows in full."
+          },
+          "alternatives": {
+            "section": "for a navigation transition",
+            "figure": "if an image must back the finding right away"
+          },
+          "signature": [
+            ".s-statement",
+            ".type-hero"
+          ]
+        },
+        "comparison": {
+          "job": "Compare two states or two options on a shared basis",
+          "useWhen": [
+            "both sides answer one question",
+            "the difference reads through the same criteria or images"
+          ],
+          "avoidWhen": [
+            "the columns hold unrelated topics",
+            "you need to show more than two options",
+            "a numeric scale shows the change better"
+          ],
+          "variable": [
+            "text, metrics or images inside the sides",
+            "side names",
+            "accent on the side the claim singles out; equal options stay neutral"
+          ],
+          "fixed": [
+            "two comparable areas",
+            "both sides read the same way",
+            "the shared criterion and comparable values are named; use Before / After only for a change in one object",
+            "two independent topics do not become a comparison just because there are two columns"
+          ],
+          "slots": {
+            "LEFT_CONTENT": "First state with its own label",
+            "RIGHT_CONTENT": "Second state with the same structure"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "Reveal the second side later only if the speaker goes through the first one first."
+          },
+          "alternatives": {
+            "table": "for three or more options or exact values",
+            "chart": "for a quantitative difference"
+          },
+          "signature": [
+            ".s-comparison",
+            ".comparison-side"
+          ]
+        },
+        "quote": {
+          "job": "Give a short outside quote weight of its own",
+          "useWhen": [
+            "the exact words of the source matter more than a paraphrase",
+            "the quote turns the argument or confirms a conflict"
+          ],
+          "avoidWhen": [
+            "the phrase is trite",
+            "the author or source is unknown",
+            "the quote needs a long explanation"
+          ],
+          "variable": [
+            "quote on one or two lines",
+            "author and short context"
+          ],
+          "fixed": [
+            "verified, word-for-word wording",
+            "visible attribution"
+          ],
+          "slots": {
+            "quote": "Word-for-word text",
+            "attribution": "Author, source and circumstances"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "Quote and author appear together."
+          },
+          "alternatives": {
+            "statement": "for the author's own wording",
+            "figure": "for a screenshot of the original source"
+          },
+          "signature": [
+            ".s-quote"
+          ]
+        },
+        "metrics": {
+          "job": "Show a few big numbers that together prove one finding",
+          "useWhen": [
+            "each metric makes sense without a shared axis",
+            "two, three or four numbers describe one scale or result"
+          ],
+          "avoidWhen": [
+            "the metrics cannot be compared or tied to one claim",
+            "change over periods matters",
+            "the numbers are only for reference"
+          ],
+          "variable": [
+            "two to four metrics",
+            "units, short labels and a source",
+            "one highlighted metric when needed"
+          ],
+          "fixed": [
+            "one heading ties all numbers together",
+            "each label explains what the value means"
+          ],
+          "slots": {
+            "title": "Shared finding",
+            "metrics": "Values with units and short labels",
+            "source": "Source and period"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "If the metrics are revealed, the first frame shows the heading, with the first metric if needed. The rest get .frag."
+          },
+          "alternatives": {
+            "chart": "for relationships on a shared scale",
+            "table": "for an exact set of many values"
+          },
+          "signature": [
+            ".scoreboard"
+          ]
+        },
+        "code": {
+          "job": "Show the source lines a technical finding rests on",
+          "useWhen": [
+            "the audience must see specific syntax or a condition",
+            "the snippet fits without shrinking the font"
+          ],
+          "avoidWhen": [
+            "the code is only a backdrop",
+            "how the interface works matters, not the implementation",
+            "the snippet needs long line-by-line reading"
+          ],
+          "variable": [
+            "language",
+            "meaningful context around the line",
+            "highlight ranges across slides",
+            "short finding"
+          ],
+          "fixed": [
+            "the code stays readable",
+            "highlighting points to the lines of the argument"
+          ],
+          "slots": {
+            "SLIDE_TITLE": "Technical finding",
+            "CODE_LANGUAGE": "Language for highlighting",
+            "HIGHLIGHT_LINES": "Focus lines",
+            "CODE": "Full readable snippet",
+            "FINDING": "What the highlighted lines prove"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "To shift focus, use neighboring slides with the same code, but never an empty first frame."
+          },
+          "alternatives": {
+            "figure": "for the result of running the code",
+            "flow": "for architectural interaction"
+          },
+          "signature": [
+            ".code"
+          ]
+        },
+        "figure": {
+          "job": "Make an image, diagram or screenshot the main evidence",
+          "useWhen": [
+            "the finding is visible in the image",
+            "a short caption helps notice the right detail"
+          ],
+          "avoidWhen": [
+            "the image is decoration",
+            "the caption retells the whole image",
+            "the media reads better full-slide"
+          ],
+          "variable": [
+            "media type and aspect ratio",
+            "short finding",
+            "source",
+            "local annotations on top of the media"
+          ],
+          "fixed": [
+            "the media takes the main area",
+            "the text says where to look"
+          ],
+          "slots": {
+            "SLIDE_TITLE": "Finding or context of the image",
+            "MEDIA": "Image, diagram or standalone visualization",
+            "FINDING": "What to notice",
+            "SOURCE": "Source or limitation"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "Annotations may be revealed, but the image is visible on the first frame."
+          },
+          "alternatives": {
+            "comparison": "for before and after images",
+            "custom-full-media": "if no explanation is needed"
+          },
+          "signature": [
+            ".s-figure",
+            ".frame, .photo"
+          ]
+        },
+        "screenshot": {
+          "job": "Show a screen, a screen recording or a long page across the whole slide",
+          "useWhen": [
+            "interface details must be large",
+            "the result is visible only in motion: use a recording",
+            "a long page does not shrink into a readable frame: use .shot--scroll"
+          ],
+          "avoidWhen": [
+            "the media needs a long explanation beside it",
+            "you need to compare two states",
+            "the recording runs longer than twenty seconds without editing"
+          ],
+          "variable": [
+            "image, video or long page",
+            "cover or contain",
+            "one caption",
+            "a title that leaves after three seconds or stays"
+          ],
+          "fixed": [
+            "the media covers the whole slide",
+            "the title hangs from the top edge in the middle",
+            "a video has a poster and preload=\"none\""
+          ],
+          "slots": {
+            "MEDIA": "<img class=\"media-cover\">, <video class=\"media-cover\" preload=\"none\" poster loop> or a .shot--scroll pair, plus an optional <figcaption>",
+            "SLIDE_TITLE": "What the audience is looking at"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "The media shows on the first frame. A title with data-exit=\"intended\" leaves after three seconds; keep the attribute unless the title must stay."
+          },
+          "alternatives": {
+            "figure": "for an explanatory column",
+            "visual-comparison": "for two states",
+            "iterations": "for versions of one screen"
+          },
+          "signature": [
+            ".s-shot",
+            ".shot"
+          ]
+        },
+        "table": {
+          "job": "Give an exact comparison of records of the same kind",
+          "useWhen": [
+            "specific values matter",
+            "the reader must cross-check rows and columns"
+          ],
+          "avoidWhen": [
+            "one visual finding is enough",
+            "the table needs small text",
+            "rows have different internal structure"
+          ],
+          "variable": [
+            "number of rows and columns within readability",
+            "total row",
+            "numeric and text fields"
+          ],
+          "fixed": [
+            "column headings",
+            "dataset caption",
+            "every row follows the same logic"
+          ],
+          "slots": {
+            "SLIDE_TITLE": "Finding from the table",
+            "TABLE_CAPTION": "Exact dataset name",
+            "TABLE_HEADINGS": "Column headings",
+            "TABLE_ROWS": "Rows of the same kind",
+            "SOURCE": "Source, period and unit"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "Show the table in full as a rule. Revealing rows gets in the way of comparison."
+          },
+          "alternatives": {
+            "chart": "if the shape of the difference matters more than each number",
+            "comparison": "for two compact options"
+          },
+          "signature": [
+            ".data-table"
+          ]
+        },
+        "steps": {
+          "job": "Show a prescribed sequence of actions",
+          "useWhen": [
+            "the stages must be done in the given order",
+            "each step has an action and a short result"
+          ],
+          "avoidWhen": [
+            "these are past events with dates",
+            "the arrows describe data handoff",
+            "the points can be reordered without losing meaning"
+          ],
+          "variable": [
+            "three to five steps",
+            "title and short description for each step",
+            "current or key step"
+          ],
+          "fixed": [
+            "the order is part of the meaning",
+            "all items describe actions of one process"
+          ],
+          "slots": {
+            "title": "Result of the sequence",
+            "steps": "Numbered actions with short notes"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "If the steps are revealed, the first frame shows the heading, with the first step if needed. The remaining steps get .frag."
+          },
+          "alternatives": {
+            "timeline": "for events over time",
+            "flow": "for handoff between nodes",
+            "list": "for independent points"
+          },
+          "signature": [
+            ".steps"
+          ]
+        },
+        "chart": {
+          "job": "Show a quantitative relationship that proves the finding",
+          "useWhen": [
+            "the data can be shown honestly on a shared scale",
+            "the shape or difference matters more than the full set of exact values"
+          ],
+          "avoidWhen": [
+            "the data is not numeric",
+            "geography, a network or a distribution loses meaning in a standard chart",
+            "the reader needs exact values for many rows"
+          ],
+          "variable": [
+            "chart type",
+            "number of categories and series within readability",
+            "scales, labels, source and the highlighted item",
+            "a local subject-specific visualization instead of a ready-made form"
+          ],
+          "fixed": [
+            "the heading or a nearby block states one finding",
+            "the visualization has an accessible text description",
+            "color and accent follow Craft roles"
+          ],
+          "slots": {
+            "SLIDE_TITLE": "Finding or measured question",
+            "CHART_SUMMARY": "Text description of the data and the finding",
+            "CHART_ROWS": "Markup of a fitting visualization",
+            "FINDING": "Short finding next to the chart",
+            "SOURCE": "Source, period and unit"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "If the finding is revealed later, the chart is already visible on the first frame."
+          },
+          "alternatives": {
+            "table": "for reading exact values",
+            "comparison": "for two qualitative states",
+            "figure": "for a subject diagram or map"
+          },
+          "signature": [
+            ".s-chart"
+          ]
+        },
+        "timeline": {
+          "job": "Show how events changed the state over time",
+          "useWhen": [
+            "the events have dates or periods",
+            "chronological order explains the outcome"
+          ],
+          "avoidWhen": [
+            "the points are an instruction",
+            "time does not affect the finding",
+            "you need to show numeric change"
+          ],
+          "variable": [
+            "three to five events",
+            "dates, periods and short consequences",
+            "current checkpoint"
+          ],
+          "fixed": [
+            "time marks",
+            "chronological order"
+          ],
+          "slots": {
+            "title": "Finding from the timeline",
+            "events": "Events with dates and consequences"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "If the events are revealed, the first frame shows only the heading. Every event, including the first, gets .frag."
+          },
+          "alternatives": {
+            "steps": "for an instruction",
+            "flow": "for how a system is built",
+            "chart": "for numeric change"
+          },
+          "signature": [
+            ".timeline"
+          ]
+        },
+        "flow": {
+          "job": "Show handoff, dependency or transformation between nodes",
+          "useWhen": [
+            "the arrow has a concrete meaning",
+            "the node order describes the path of an object or signal"
+          ],
+          "avoidWhen": [
+            "the items are just listed",
+            "the nodes are events in time",
+            "the links do not matter for the finding"
+          ],
+          "variable": [
+            "three to five nodes",
+            "direction and branching",
+            "optional accent on the node the claim singles out, wherever it sits",
+            "concrete link labels in a local composition"
+          ],
+          "fixed": [
+            "each link means handoff, dependency or transformation; spoken order is not a link",
+            "nodes on one level read as parts of one system",
+            "all nodes are neutral by default; a central position does not earn an accent",
+            "flow-node--accent is a fixed highlight; deck.js does not move it during reveal"
+          ],
+          "slots": {
+            "SLIDE_TITLE": "Finding about the path or the structure of the system",
+            "FLOW_NODES": "Nodes and links with explicit direction"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "For an overview, show everything. To explain a path, the first frame shows the heading and the start node. Each next .frag combines the incoming link with the next node. A branch appears after its source, a return link after both ends. Never leave an arrow pointing at nothing."
+          },
+          "alternatives": {
+            "list": "for unrelated points",
+            "steps": "for an instruction",
+            "timeline": "for a history of changes"
+          },
+          "signature": [
+            ".flow"
+          ]
+        },
+        "visual-comparison": {
+          "job": "Compare two images on a shared basis",
+          "useWhen": [
+            "the difference is visible directly in two frames",
+            "both sides can be shown at the same scale"
+          ],
+          "avoidWhen": [
+            "the images show different objects",
+            "the difference needs a table of criteria",
+            "annotating one frame is enough"
+          ],
+          "variable": [
+            "side labels",
+            "cropping and fit mode",
+            "late reveal of the second side"
+          ],
+          "fixed": [
+            "both halves follow the same logic",
+            "comparable image scale"
+          ],
+          "slots": {
+            "before": "First image with a caption",
+            "after": "Second image with a caption"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "The second side may be revealed later if the first already makes a meaningful frame."
+          },
+          "alternatives": {
+            "comparison": "for text and metrics",
+            "screenshot": "for one large screen"
+          },
+          "signature": [
+            ".s-visual-compare"
+          ]
+        },
+        "resource": {
+          "job": "Hand the audience one specific resource",
+          "useWhen": [
+            "the resource is needed right after the related part of the talk",
+            "a working QR code opens the address"
+          ],
+          "avoidWhen": [
+            "the slide has several unrelated links",
+            "the resource is unverified or unavailable",
+            "this is the final contact slide with no separate material"
+          ],
+          "variable": [
+            "screenshot or short description of the resource",
+            "short address",
+            "working QR code"
+          ],
+          "fixed": [
+            "one resource",
+            "the address is repeated as text"
+          ],
+          "slots": {
+            "title": "What the audience gets",
+            "preview": "Image or short description",
+            "url": "Short working address",
+            "qr": "QR code for the same address"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "Resource, address and QR code appear together."
+          },
+          "alternatives": {
+            "end": "for the final contact",
+            "figure": "if the resource is evidence rather than a handout"
+          },
+          "signature": [
+            ".qr-link"
+          ]
+        },
+        "end": {
+          "job": "Close the story with a final statement and give the next contact",
+          "useWhen": [
+            "this is the last slide of the deck",
+            "the audience should take away one statement or address"
+          ],
+          "avoidWhen": [
+            "arguments still remain",
+            "someone tries to fit several resources on the slide"
+          ],
+          "variable": [
+            "closing line",
+            "author and an optional event",
+            "one contact as a QR code with its address"
+          ],
+          "fixed": [
+            "closing line in the middle, author bottom left, QR code bottom right",
+            "no slide number",
+            "one contact"
+          ],
+          "slots": {
+            "FINAL_STATEMENT": "Closing line, for example \"Thank you\"",
+            "QR_LINK": "Output of scripts/qr.py <address> --link",
+            "AUTHOR": "Author as on the cover",
+            "EVENT": "Event name, empty if there is none"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "The final slide shows in full."
+          },
+          "alternatives": {
+            "statement": "for a finding before the end of the talk",
+            "figure": "for a separate resource slide"
+          },
+          "signature": [
+            ".s-end",
+            ".type-hero"
+          ]
+        },
+        "bento": {
+          "job": "Show a whole set on one page: a stack, a set of topics, areas of work",
+          "useWhen": [
+            "there are more than six equal topics",
+            "the size and makeup matter, not a walk through each topic"
+          ],
+          "avoidWhen": [
+            "the topics are covered one by one",
+            "the items have an order or links",
+            "a tile needs a description"
+          ],
+          "variable": [
+            "number of rows and tiles",
+            "tile width --span out of twelve columns",
+            "one .is-accent tile if the claim singles it out"
+          ],
+          "fixed": [
+            "one topic per tile, no descriptions",
+            "tiles in a row have equal height",
+            "one page without .frag"
+          ],
+          "slots": {
+            "SLIDE_TITLE": "What unites the tiles",
+            "BENTO_ROWS": "Rows <ul class=\"bento-row\"> with <li class=\"bento-tile\" style=\"--span:3\">"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "No reveal steps. Tiles appear in a short stagger when entering forward; on return and in print they show at once."
+          },
+          "alternatives": {
+            "list": "for three to five topics covered one by one",
+            "table": "if the topics share fields"
+          },
+          "signature": [
+            ".bento-row .bento-tile"
+          ]
+        },
+        "iterations": {
+          "job": "Show how the interface changed, with the current version in focus",
+          "useWhen": [
+            "three or more versions of one screen",
+            "the path matters, not a before/after pair"
+          ],
+          "avoidWhen": [
+            "there are two versions; use visual-comparison for them",
+            "the screens are different"
+          ],
+          "variable": [
+            "number of earlier iterations",
+            "captions with a date or stage",
+            "reveal order of earlier versions"
+          ],
+          "fixed": [
+            "current version large on the left",
+            "captions above the frames",
+            "frames of one screen at one scale"
+          ],
+          "slots": {
+            "SLIDE_TITLE": "What changed",
+            "ITERATIONS": "<figure class=\"iteration is-current\"> and earlier <figure class=\"iteration\"> with figcaption and .frame"
+          },
+          "reveal": {
+            "default": "optional",
+            "guidance": "Earlier iterations may be revealed one at a time; the current one is visible on the first frame."
+          },
+          "alternatives": {
+            "visual-comparison": "for two states",
+            "timeline": "if dates matter more than looks"
+          },
+          "signature": [
+            ".iterations .iteration.is-current"
+          ]
+        }
+      },
+      "catalogExamples": [
+        {
+          "id": "cover",
+          "name": "Talk cover",
+          "layout": "cover",
+          "job": "Title and author open a public talk",
+          "useWhen": "Use as the first frame of a talk with clear authorship",
+          "variable": "Change the title, author line and brand motif, but do not add arguments"
+        },
+        {
+          "id": "speaker-context",
+          "name": "Speaker context",
+          "layout": "context",
+          "job": "Role and experience explain the author's link to the topic",
+          "useWhen": "Use only when the bio affects trust in the material",
+          "variable": "Change the portrait, role and the one reason for expertise"
+        },
+        {
+          "id": "section-divider",
+          "name": "Divider",
+          "layout": "section",
+          "job": "A short pause marks a new block of the story",
+          "useWhen": "Put it between major parts, not before every subsection",
+          "variable": "Change the title, number and local motif"
+        },
+        {
+          "id": "agenda",
+          "name": "Outline",
+          "layout": "list",
+          "job": "A list shows the route of a long talk up front",
+          "useWhen": "Use when the audience benefits from knowing the talk structure",
+          "variable": "Change the number of points and the reveal, but keep the outline to one level"
+        },
+        {
+          "id": "statement",
+          "name": "Claim",
+          "layout": "statement",
+          "job": "One statement gets the whole slide",
+          "useWhen": "Use for a finding or a turn in the argument",
+          "variable": "Change the fill and the short qualifier"
+        },
+        {
+          "id": "argument-list",
+          "name": "Argument list",
+          "layout": "list",
+          "job": "Several points support a shared heading",
+          "useWhen": "Use for equal arguments with no geometry of their own",
+          "variable": "Change the marker, length and reveal within readability"
+        },
+        {
+          "id": "before-after",
+          "name": "Text comparison",
+          "layout": "comparison",
+          "job": "Two states compared by the same criteria",
+          "useWhen": "Use for states of one object or two options with a shared criterion, not for independent points",
+          "variable": "Change the content of the sides, keep the shared structure"
+        },
+        {
+          "id": "quote",
+          "name": "Quote",
+          "layout": "quote",
+          "job": "A verified outside quote turns or confirms the argument",
+          "useWhen": "Use only when the exact words and the author matter",
+          "variable": "Change the length and attribution, keeping the quote within two lines"
+        },
+        {
+          "id": "metrics",
+          "name": "Big metrics",
+          "layout": "metrics",
+          "job": "Several numbers together describe one result",
+          "useWhen": "Use for two, three or four self-contained metrics",
+          "variable": "Change the count, units and accent, but do not turn the block into a table"
+        },
+        {
+          "id": "code",
+          "name": "Code",
+          "layout": "code",
+          "job": "Specific source lines prove a technical finding",
+          "useWhen": "Use when the audience must see the syntax or a condition",
+          "variable": "Change the language, context and focus lines"
+        },
+        {
+          "id": "figure",
+          "name": "Media with a note",
+          "layout": "figure",
+          "job": "The image is the evidence, the text guides the eye",
+          "useWhen": "Use for a diagram, photo or subject visualization with a short finding",
+          "variable": "Change the column proportions, the media and the annotation"
+        },
+        {
+          "id": "screenshot",
+          "name": "Full-screen screenshot",
+          "layout": "screenshot",
+          "job": "The screen fills the slide, the title stays",
+          "useWhen": "Use when interface details must be as large as possible",
+          "variable": "Change the cropping and the one caption"
+        },
+        {
+          "id": "table",
+          "name": "Data table",
+          "layout": "table",
+          "job": "Rows and columns compare exact values",
+          "useWhen": "Use when the audience needs specific numbers",
+          "variable": "Change rows and columns until the text would have to shrink"
+        },
+        {
+          "id": "steps",
+          "name": "Steps",
+          "layout": "steps",
+          "job": "Actions form a prescribed sequence",
+          "useWhen": "Use for a process that must be done in order",
+          "variable": "Change the number of steps, the descriptions and the current stage"
+        },
+        {
+          "id": "bar-chart-finding",
+          "name": "Categories and finding",
+          "layout": "chart",
+          "job": "A horizontal scale compares categories with long names",
+          "useWhen": "Use when the order or the difference between categories matters",
+          "variable": "Change the number of rows, the scale and the highlight; for other kinds of data pick another form"
+        },
+        {
+          "id": "column-chart",
+          "name": "Value by period",
+          "layout": "chart",
+          "job": "Bars show one value across discrete periods",
+          "useWhen": "Use when the periods have a natural order",
+          "variable": "Change the number of periods, the scale and the accent bar"
+        },
+        {
+          "id": "line-chart",
+          "name": "Continuous change",
+          "layout": "chart",
+          "job": "A line shows the shape of continuous change and the turning point",
+          "useWhen": "Use for sequential observations where the slope matters",
+          "variable": "Change the points, one main and one background series, and the end labels"
+        },
+        {
+          "id": "pie-chart",
+          "name": "Parts of a whole",
+          "layout": "chart",
+          "job": "A ring shows the makeup of one whole",
+          "useWhen": "Use only for two, three or four distinct parts of one total",
+          "variable": "Change the parts, the key order and the highlighted part"
+        },
+        {
+          "id": "stacked-column-chart",
+          "name": "Makeup by period",
+          "layout": "chart",
+          "job": "Stacked bars show how the parts of one whole change",
+          "useWhen": "Use when each period adds up to a total",
+          "variable": "Change the periods and up to four parts, keeping the color order"
+        },
+        {
+          "id": "grouped-column-chart",
+          "name": "Two series by period",
+          "layout": "chart",
+          "job": "Paired bars compare two series within each period",
+          "useWhen": "Use for two comparable values on a shared scale",
+          "variable": "Change the periods, values and the highlighted series"
+        },
+        {
+          "id": "range-chart",
+          "name": "Change between measurements",
+          "layout": "chart",
+          "job": "Each row shows how a value moved between two points",
+          "useWhen": "Use for a before/after comparison across several categories",
+          "variable": "Change the categories, both measurements and the focus row"
+        },
+        {
+          "id": "timeline",
+          "name": "Timeline",
+          "layout": "timeline",
+          "job": "Dated events explain the current state",
+          "useWhen": "Use when time is part of the argument",
+          "variable": "Change the number of events, the periods and the current point"
+        },
+        {
+          "id": "flow",
+          "name": "Flow diagram",
+          "layout": "flow",
+          "job": "Arrows show handoff or transformation between nodes",
+          "useWhen": "Use when every link has a concrete meaning",
+          "variable": "Change the direction, branching and nodes to match the real links. Neutral nodes are the default; the accent is not tied to the center"
+        },
+        {
+          "id": "visual-comparison",
+          "name": "Image comparison",
+          "layout": "visual-comparison",
+          "job": "Two frames show the visual difference before and after",
+          "useWhen": "Use for comparable images at the same scale",
+          "variable": "Change the captions, cropping and reveal order"
+        },
+        {
+          "id": "title-card",
+          "name": "Title card",
+          "layout": "title",
+          "job": "A neutral card opens standalone material or a short deck",
+          "useWhen": "Use without an author line or a decorative cover",
+          "variable": "Change the title and the fill"
+        },
+        {
+          "id": "takeaways",
+          "name": "Takeaways",
+          "layout": "list",
+          "job": "A short list brings the main findings back to the audience",
+          "useWhen": "Use near the end, after the evidence",
+          "variable": "Change the number of takeaways and the reveal, keeping each one self-contained"
+        },
+        {
+          "id": "resource",
+          "name": "Resource",
+          "layout": "resource",
+          "job": "A preview, an address and a QR code hand over one piece of material",
+          "useWhen": "Use for a verified link the audience needs",
+          "variable": "Change the preview and the address, but do not combine several resources"
+        },
+        {
+          "id": "bento",
+          "name": "Bento",
+          "layout": "bento",
+          "job": "A whole set on one page: tiles appear in a stagger",
+          "useWhen": "Use for a stack or a set of topics you will not cover one by one",
+          "variable": "Change the number of rows and the tile widths"
+        },
+        {
+          "id": "iterations",
+          "name": "Interface iterations",
+          "layout": "iterations",
+          "job": "Current version large, earlier ones beside it",
+          "useWhen": "Use for three or more versions of one screen",
+          "variable": "Change the number of earlier iterations and the captions"
+        },
+        {
+          "id": "code-run",
+          "name": "Typed command",
+          "layout": "code",
+          "job": "The command types itself, the output comes out line by line",
+          "useWhen": "Use when running a command and its result matter",
+          "variable": "Change the command lines in data-run-commands"
+        },
+        {
+          "id": "wipe",
+          "name": "Wipe",
+          "layout": "visual-comparison",
+          "job": "A boundary slides across one frame from the old look to the new one",
+          "useWhen": "Use for two states of one screen at one scale",
+          "variable": "Change the final boundary position --wipe"
+        },
+        {
+          "id": "scroll-shot",
+          "name": "Long screenshot",
+          "layout": "screenshot",
+          "job": "The header stays put while the content scrolls",
+          "useWhen": "Use for a long page that cannot shrink into a readable frame",
+          "variable": "Change the --scroll-duration"
+        },
+        {
+          "id": "end",
+          "name": "Ending",
+          "layout": "end",
+          "job": "The last thought and one contact close the talk",
+          "useWhen": "Use as the last slide",
+          "variable": "Change the final statement, the contact and the working QR code"
+        }
+      ]
+    }
+  },
+  "dynamicCssProperties": [
+    "--at",
+    "--column-ratio",
+    "--columns",
+    "--from",
+    "--metrics",
+    "--nav-marker-h",
+    "--nav-marker-w",
+    "--nav-marker-x",
+    "--nav-marker-y",
+    "--space",
+    "--stack-gap",
+    "--start",
+    "--swatch",
+    "--to",
+    "--value",
+    "--media-ratio",
+    "--chars",
+    "--order",
+    "--run-delay",
+    "--scroll-duration",
+    "--span",
+    "--wipe",
+    "--past"
+  ],
+  "requirements": {
+    "fontFiles": 4,
+    "offline": true,
+    "buildRequired": false
+  },
+  "dynamicCssClasses": [
+    "chart-row",
+    "chart-track",
+    "is-focus",
+    "comparison-title",
+    "comparison-body",
+    "comparison-label",
+    "comparison-value",
+    "comparison-points",
+    "flow-node",
+    "flow-node--accent",
+    "flow-step",
+    "flow-step--down",
+    "flow-arrow",
+    "flow-arrow--down",
+    "flow-return",
+    "num",
+    "hljs-comment",
+    "hljs-quote",
+    "hljs-meta",
+    "hljs-keyword",
+    "hljs-selector-tag",
+    "hljs-name",
+    "hljs-literal",
+    "hljs-type",
+    "hljs-string",
+    "hljs-regexp",
+    "hljs-template-tag",
+    "hljs-template-variable",
+    "hljs-number",
+    "hljs-symbol",
+    "hljs-bullet",
+    "hljs-title",
+    "hljs-built_in",
+    "hljs-attr",
+    "hljs-attribute",
+    "hljs-variable",
+    "hljs-params",
+    "hljs-tag",
+    "hljs-punctuation",
+    "class_",
+    "function_"
+  ],
+  "readingRoutes": {
+    "limits": {
+      "fileChars": 6500,
+      "routeChars": 32000
+    },
+    "routes": {
+      "interface-dashboard": [
+        "SKILL.md",
+        "references/identity.md",
+        "references/workflow.md",
+        "references/interfaces/shell.md",
+        "references/interfaces/layout.md",
+        "references/interfaces/design-language.md",
+        "references/interfaces/components.md",
+        "references/interfaces/components/metrics.md",
+        "references/interfaces/components/tables.md",
+        "references/interfaces/components/tags.md",
+        "references/interfaces/components/filter-bar.md",
+        "references/interfaces/components/tabs.md",
+        "references/interfaces/components/charts.md"
+      ],
+      "interface-tool": [
+        "SKILL.md",
+        "references/identity.md",
+        "references/workflow.md",
+        "references/interfaces/shell.md",
+        "references/interfaces/layout.md",
+        "references/interfaces/design-language.md",
+        "references/interfaces/components.md",
+        "references/interfaces/components/master-detail.md",
+        "references/interfaces/components/field.md",
+        "references/interfaces/components/choice.md",
+        "references/interfaces/components/buttons.md",
+        "references/interfaces/components/notice.md",
+        "references/interfaces/components/loading.md",
+        "references/interfaces/components/empty-state.md",
+        "references/interfaces/components/dialog.md",
+        "references/interfaces/components/shortcuts.md"
+      ],
+      "interface-report": [
+        "SKILL.md",
+        "references/identity.md",
+        "references/workflow.md",
+        "references/interfaces/layout.md",
+        "references/interfaces/design-language.md",
+        "references/interfaces/components.md",
+        "references/interfaces/components/document.md",
+        "references/interfaces/components/section-nav.md",
+        "references/interfaces/components/kv-list.md",
+        "references/interfaces/components/progress.md",
+        "references/interfaces/components/code.md",
+        "references/interfaces/components/charts.md",
+        "references/interfaces/print.md"
+      ],
+      "interface-embed": [
+        "SKILL.md",
+        "references/identity.md",
+        "references/workflow.md",
+        "references/interfaces/layout.md",
+        "references/interfaces/design-language.md",
+        "references/interfaces/components.md",
+        "references/interfaces/components/tables.md",
+        "references/interfaces/components/pagination.md",
+        "references/interfaces/components/breadcrumbs.md",
+        "references/interfaces/components/steps.md",
+        "references/interfaces/components/disclosure.md",
+        "references/interfaces/components/icons.md"
+      ],
+      "slides-talk": [
+        "SKILL.md",
+        "references/identity.md",
+        "references/workflow.md",
+        "references/slides/narrative.md",
+        "references/slides/selection.md",
+        "references/slides/design-language.md",
+        "references/slides/authoring.md",
+        "references/slides/charts.md",
+        "references/slides/motion.md",
+        "references/slides/media.md",
+        "references/slides/code.md",
+        "references/slides/qr.md"
+      ],
+      "slides-talk-ru": [
+        "SKILL.md",
+        "references/identity.md",
+        "references/workflow.md",
+        "references/russian.md",
+        "references/slides/narrative.md",
+        "references/slides/selection.md",
+        "references/slides/design-language.md",
+        "references/slides/authoring.md",
+        "references/slides/charts.md",
+        "references/slides/code.md"
+      ],
+      "slides-review": [
+        "SKILL.md",
+        "references/identity.md",
+        "references/workflow.md",
+        "references/slides/authoring.md",
+        "references/slides/review.md"
+      ],
+      "extend": [
+        "SKILL.md",
+        "references/surfaces.md",
+        "references/extending.md",
+        "references/interfaces/layout.md",
+        "references/interfaces/components.md",
+        "references/interfaces/atomic-design.md"
+      ]
+    }
+  }
+}

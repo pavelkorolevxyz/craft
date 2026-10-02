@@ -1,0 +1,890 @@
+/* Craft interface format. Reports, dashboards and local tools. */
+:root {
+  /* Interface roles. On the left is what the role means on the page, on the
+     right is the shared token. Compositions refer only to roles. Change a
+     line here and the format changes the meaning without touching components. */
+
+  /* Fills. The page sits on --bg. Lines still build the shape, and only the
+     accent gets a saturated fill. A nested block now also steps away from
+     the page by one step of paint: a field, a button, a callout, a listing,
+     a panel. The direction is the same in both themes. Closer to the viewer
+     means lighter in the dark theme and darker in the light one.
+     EXPERIMENT. The rule is new. To roll it back, set --craft-raise: transparent. */
+  --bg: var(--craft-bg);
+  --surface: var(--craft-surface);
+  --surface-sunken: var(--craft-sunken);
+  /* Nesting experiment. --raise is the paint for one step deeper. It is
+     translucent, so a block inside a block gets it twice and steps away from
+     its neighbor on its own. --raise-solid is the same step as an opaque
+     patch. Use it for cells on a grid of lines and for the sticky table
+     header, where a line would show through translucent paint. */
+  --raise: var(--craft-raise);
+  --raise-solid: linear-gradient(var(--raise), var(--raise)) var(--bg);
+  /* Scale rail. The remainder of a progress bar, a bar or a slider. */
+  --track: var(--craft-track);
+
+  /* Lines. The divider for sections and tables. The strong one is for an axis, a cursor, a scale. */
+  --line: var(--craft-line);
+  --line-strong: var(--craft-line-strong);
+
+  /* Text. Headings and values, paragraphs, labels and units. */
+  --text: var(--craft-text);
+  --text-body: var(--craft-text-body);
+  --muted: var(--craft-muted);
+
+  /* Red by role. --accent paints text, such as a link, a priority number or
+     a threshold label. --accent-mark paints a mark, such as a status dot, a
+     bar, a chart line or a focus ring. --accent-fill fills the area under
+     white text, such as a button, a callout, a total row or the selected mode.
+     A dot next to an accent number uses --accent-mark, not --accent. */
+  --accent: var(--craft-accent);
+  --accent-mark: var(--craft-accent-mark);
+  --accent-fill: var(--craft-accent-fill);
+  --accent-tint: var(--craft-accent-tint);
+  --on-accent: var(--craft-on-accent);
+  --fill-quiet: var(--craft-fill-quiet);
+  --scrim: var(--craft-scrim);
+  --selection: var(--craft-selection);
+
+  /* Statuses. Ok, warning, error. Always together with a label. */
+  --ok: var(--craft-ok);
+  --warn: var(--craft-warn);
+  --error: var(--craft-error);
+  --error-tint: var(--craft-error-tint);
+
+  /* Data series in assignment order: priority, neutral, blue, amber, green.
+     These are chart and legend colors, not surface colors. */
+  --data-red: var(--craft-data-red);
+  --data-neutral: var(--craft-data-neutral);
+  --data-blue: var(--craft-data-blue);
+  --data-amber: var(--craft-data-amber);
+  --data-green: var(--craft-data-green);
+
+  /* Fonts. Headings and numbers, text and controls, real code only. */
+  --font-display: var(--craft-font-display);
+  --font-text: var(--craft-font-text);
+  --font-mono: var(--craft-font-mono);
+
+  /* Fixed scale for interface text. Utility, body, lead, local, section and
+     page levels. */
+  --type-service: 12px;
+  --type-body: 14px;
+  --type-lede: 16px;
+  --type-local: 18px;
+  --type-section: 24px;
+  --type-page: 32px;
+
+  /* One spacing scale for the interface. Compositions use only these seven
+     values. Font sizes, line widths and chart sizes are not part of the scale. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --gutter: var(--space-5);
+  --section-y: var(--space-7);
+  --document-width: calc(72ch + 30rem + var(--space-7));
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+}
+
+
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: var(--font-text);
+  font-size: var(--type-body);
+  line-height: 1.5;
+  color: var(--text-body);
+  background: var(--bg);
+  overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; }
+/* Monospace ligatures turned <!-- and --space into arrows and dashes.
+   In code every character must read as typed. */
+code, kbd, pre, samp { font-variant-ligatures: none; }
+a { color: var(--accent); text-underline-offset: .18em; transition: color 160ms var(--ease-out); }
+/* Hover everywhere in Craft paints the text with the accent and adds no fill.
+   The fill belongs to a persistent selection, or the two states merge.
+   A link is already accent colored at rest, so under the pointer it takes
+   the saturated mark, the same red but brighter. There is one direction.
+   Hover adds paint, it never removes it. */
+a:hover { color: var(--accent-mark); }
+img, svg { display: block; max-width: 100%; }
+.icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+/* Leave the letter color alone. The fill is translucent, and the text keeps
+   its own color. var() inside ::selection resolves on the element that owns
+   the selection, so an accent fill only needs to override --selection on
+   itself. */
+::selection { background: var(--selection); }
+:focus-visible { outline: 2px solid var(--accent-mark); outline-offset: 3px; }
+
+.shell { width: 100%; min-height: 100vh; }
+/* The document limits the content width but keeps section fills and lines
+   full width. The left and right margins grow evenly. */
+.document-block { width: min(calc(100% - var(--gutter) - var(--gutter)), var(--document-width)); margin-inline: auto; }
+/* A block with a border and inner padding aligns its content to the reading
+   column, not its border. So the border sticks out of the column by exactly
+   the inner padding, and numbers line up under the document text. */
+.document-block--framed { width: min(100%, calc(var(--document-width) + var(--gutter) + var(--gutter))); }
+
+.page-head {
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-7) var(--gutter);
+}
+h1, h2, h3 { margin: 0; color: var(--text); font-family: var(--font-display); letter-spacing: -.03em; }
+h1 { max-width: 24ch; font-size: var(--type-page); font-weight: 650; line-height: 1.06; text-wrap: balance; }
+.page-head__lede, .workspace-head__lede { margin: var(--space-2) 0 0; }
+.page-head__lede { max-width: 60ch; font-size: var(--type-lede); color: var(--text-body); }
+
+/* Compact working header for a dashboard or a tool. Controls live next to
+   the title and do not form a separate global toolbar. */
+.workspace-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-6);
+  align-items: end;
+  padding: var(--space-6) var(--gutter);
+  border-bottom: 1px solid var(--line);
+  /* Opaque, so a header pinned with position: sticky does not show the page through. */
+  background: var(--raise-solid);
+}
+/* The lede is optional. A compact head without it is a single bar: title
+   and tools on one centered row with tight padding, on a phone too. With a
+   lede the tools align to its last line. */
+.workspace-head--compact { padding-block: var(--space-3); align-items: center; }
+.workspace-head--compact:has(.workspace-head__lede) { padding-block: var(--space-5); align-items: end; }
+.workspace-head h1 { font-size: var(--type-section); }
+.workspace-head__lede { max-width: 64ch; color: var(--muted); }
+.workspace-head__tools { display: flex; align-items: end; gap: var(--space-3); }
+.workspace-head__tools > label { color: var(--muted); font-size: var(--type-service); }
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(var(--metrics, 4), minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line) padding-box;
+}
+.metric { min-width: 0; padding: var(--space-5) var(--gutter); background: var(--raise-solid); }
+.metric__value { display: block; color: var(--text); font: 700 32px/1 var(--font-display); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.metric--accent .metric__value { color: var(--accent); }
+.metric__label { display: block; max-width: 32ch; overflow-wrap: anywhere; hyphens: auto; margin-top: var(--space-3); color: var(--muted); font-size: var(--type-service); line-height: 1.4; }
+.scoreboard--compact .metric { padding: var(--space-4) var(--gutter); }
+.scoreboard--compact .metric__value { font-size: 24px; }
+.scoreboard--compact .metric__label { margin-top: var(--space-1); font-size: var(--type-service); }
+
+.section { padding: var(--section-y) var(--gutter); border-bottom: 1px solid var(--line); }
+.section--tight { padding-block: var(--space-6); }
+.section--accent { color: var(--text-body); background: var(--accent-fill); }
+.section--accent h2, .section--accent h3 { color: var(--on-accent); }
+.surface-tint { background: var(--accent-tint); }
+.surface-tint--error { background: var(--error-tint); }
+.section-head { margin-bottom: var(--space-6); }
+h2 { max-width: 24ch; font-size: var(--type-section); font-weight: 650; line-height: 1.12; }
+h3 { font-size: var(--type-local); line-height: 1.25; }
+.section-head p { max-width: 64ch; margin: var(--space-2) 0 0; color: var(--muted); }
+
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, .75fr); gap: var(--space-7); }
+.empty-state { align-self: center; display: grid; gap: var(--space-2); max-width: 32rem; margin: auto; padding: var(--space-6); background: var(--raise); text-align: center; }
+.empty-state strong { color: var(--text); font: 600 var(--type-lede)/1.25 var(--font-display); }
+.empty-state span { color: var(--muted); }
+.table-scroll { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+/* The hidden part of a wide table shows at the edge. The side with more
+   columns beyond it fades over 32 px. The fade follows the scroll position
+   of the wrapper itself. A table that fits has no mask, and a table
+   scrolled to the end fades only on the opposite side. A browser without
+   scroll-driven animations shows a regular scrollbar. */
+@property --scroll-fade-start { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --scroll-fade-end { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@keyframes craft-scroll-fade {
+  from { --scroll-fade-start: 0px; --scroll-fade-end: 32px; }
+  10%, 90% { --scroll-fade-start: 32px; --scroll-fade-end: 32px; }
+  to { --scroll-fade-start: 32px; --scroll-fade-end: 0px; }
+}
+@supports (animation-timeline: scroll()) {
+  .table-scroll {
+    mask-image: linear-gradient(to right, transparent, var(--text) var(--scroll-fade-start), var(--text) calc(100% - var(--scroll-fade-end)), transparent);
+    animation: craft-scroll-fade linear both;
+    animation-timeline: scroll(self inline);
+  }
+  /* The mask would clip the focus ring past the wrapper edge. */
+  .table-scroll:focus-visible { mask-image: none; outline-offset: -2px; }
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.workbench { flex: 1; min-height: 30rem; display: grid; grid-template-columns: minmax(20rem, 1.1fr) minmax(20rem, .9fr); margin: var(--space-5) var(--gutter) 0; border: 1px solid var(--line); }
+.workbench__primary, .workbench__aside { min-width: 0; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); }
+.workbench__aside { border-left: 1px solid var(--line); background: var(--raise); }
+/* Headers of neighboring panels share one tone. The details panel already gets its backing from its background. */
+.workbench__aside > .panel-head { background: none; }
+.panel-head { display: flex; justify-content: space-between; gap: var(--space-4); align-items: center; padding: var(--space-4); border-bottom: 1px solid var(--line); background: var(--raise); }
+.panel-head h2 { font-size: var(--type-local); }
+.panel-head p { margin: var(--space-1) 0 0; color: var(--muted); font-size: var(--type-service); }
+/* No overscroll-behavior here. The workbench grows with its content, so a
+   region often has nothing to scroll, and with contain Chromium still keeps
+   the wheel and the page stops scrolling under the pointer. A region with a
+   bounded height adds contain itself. */
+.scroll-region { min-height: 16rem; overflow: auto; }
+/* Matching panels in one row share three rows of meaning: header, content
+   and total. Subgrid takes the tallest height of each row across the
+   neighbors, so an empty subtitle or a short total does not throw off the axes. */
+.equal-panels { display: grid; align-items: stretch; }
+.equal-panel { min-height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
+.equal-panel__head, .equal-panel__body, .equal-panel__foot { min-width: 0; }
+/* Section navigation. The list sits on one guide line, and a moving mark
+   shows the current section. The script puts its coordinates into
+   --nav-marker-*, and CSS does the movement. Without the script a static
+   line next to the link with aria-current replaces the mark. */
+/* The guide line runs along the edge that faces the document. A 2 px mark
+   on it shows the selected section. It is the same shape as the tab
+   underline, only rotated. One rule for the whole system: a selected item
+   gets a double accent line on the content side, not a fill. */
+/* No fill of its own: the list takes the color of the surface it sits on,
+   and the rule on its edge is the rail for the current-section mark. */
+.section-nav__links { position: relative; min-width: 0; display: grid; border-inline-end: 1px solid var(--line); }
+.section-nav__links::after { content: ""; position: absolute; inset-inline-end: -1px; top: 0; width: 2px; height: var(--nav-marker-h, 0px); background: var(--accent-mark); opacity: 0; transform: translateY(var(--nav-marker-y, 0px)); transition: transform 220ms var(--ease-out), height 220ms var(--ease-out), opacity 160ms var(--ease-out); }
+.section-nav__links[data-nav-marker]::after { opacity: 1; }
+.section-nav__links a { position: relative; display: flex; align-items: baseline; gap: var(--space-3); min-width: 0; padding: var(--space-2) var(--space-4); color: var(--muted); text-decoration: none; transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out); }
+.section-nav__links a:hover, .section-nav__links a:focus-visible { color: var(--accent); }
+.section-nav__links a[aria-current="true"] { color: var(--accent); }
+.section-nav__links:not([data-nav-marker]) a[aria-current="true"] { box-shadow: inset -2px 0 0 var(--accent-mark); }
+/* Horizontal strip. The guide line runs under the links, and the mark slides along it. */
+.section-nav--row .section-nav__links { display: flex; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; border-inline-end: 0; border-bottom: 1px solid var(--line); }
+.section-nav--row .section-nav__links::-webkit-scrollbar { display: none; }
+.section-nav--row .section-nav__links a { flex: 0 0 auto; padding-block: var(--space-3); }
+.section-nav--row .section-nav__links::after { inset-inline-start: 0; inset-inline-end: auto; top: auto; bottom: -1px; width: var(--nav-marker-w, 0px); height: 2px; transform: translateX(var(--nav-marker-x, 0px)); transition: transform 220ms var(--ease-out), width 220ms var(--ease-out), opacity 160ms var(--ease-out); }
+.section-nav--row .section-nav__links:not([data-nav-marker]) a[aria-current="true"] { box-shadow: inset 0 -2px 0 var(--accent-mark); }
+@supports (grid-template-rows: subgrid) {
+  .equal-panels { grid-auto-rows: auto; }
+  .equal-panel { grid-row: span 3; grid-template-rows: subgrid; }
+}
+.stack > * { margin-block: 0; }
+.stack > * + * { margin-top: var(--stack-gap, var(--space-5)); }
+
+.data-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.data-table th, .data-table td { padding: var(--space-3); text-align: left; border-bottom: 1px solid var(--line); }
+.data-table th { background: var(--raise); color: var(--muted); font-size: var(--type-service); font-weight: 500; }
+.data-table td:last-child, .data-table th:last-child { text-align: right; }
+.data-table td[colspan] { text-align: left; }
+/* Numeric column anywhere in a table. Digits line up under each other, and
+   a value with a unit does not wrap. Put the class on the th and on every td
+   of the column. The sort arrow moves to the left so the label sits over the numbers. */
+.data-table .data-table__num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.data-table th.data-table__num .data-table__sort { flex-direction: row-reverse; }
+.data-table tbody tr[data-interactive] { cursor: pointer; }
+/* A row under the pointer turns its label red, and the selected row keeps
+   the fill. That way hover and selection show at the same time and do not
+   get mixed up. */
+.data-table tbody tr[data-interactive]:hover { color: var(--accent); }
+.data-table tbody tr[data-interactive][aria-selected="true"] { background: var(--accent-tint); }
+/* A row that opens the details panel is marked like a selected record, with
+   an accent label and a 2 px line on the edge facing the details. */
+.workbench__primary .data-table tbody tr[aria-selected="true"] { color: var(--accent); background: none; }
+.workbench__primary .data-table tbody tr[aria-selected="true"] td:last-child { box-shadow: inset -2px 0 0 var(--accent-mark); }
+.data-table .total td { color: var(--on-accent); background: var(--accent-fill); border-color: var(--accent-fill); font-weight: 600; }
+
+.bar-list { display: grid; gap: var(--space-5); }
+.bar__head { display: flex; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-2); color: var(--text); font-size: var(--type-body); }
+/* The scale remainder is a chip, not a line and not a border. In the line
+   color it got lost on the background and read as a stray stroke under the
+   value. As a border it drew a rectangle around every bar, so three bars in
+   a row looked like three empty table cells instead of one filled scale. */
+.bar__track { height: .55rem; background: var(--track); overflow: hidden; }
+.bar__fill { display: block; height: 100%; width: var(--value); background: var(--accent-mark); transform-origin: left; animation: grow .8s var(--ease-out) both; }
+@keyframes grow { from { transform: scaleX(0); } }
+
+.series-key { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--text); font-size: var(--type-service); }
+.series-key::before { content: ""; flex: none; width: 22px; height: 3px; background: var(--swatch, var(--muted)); }
+
+.status { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--text); font-size: var(--type-service); }
+.status::before { content: ""; flex: none; width: .625rem; height: .625rem; border-radius: 50%; background: var(--status, var(--muted)); }
+.status--ok { --status: var(--ok); }
+.status--warn { --status: var(--warn); }
+.status--error { --status: var(--error); }
+
+/* On top of the accent fill, neutrals are white with transparency.
+   Quiet text, lines and the disabled state let the red show through and
+   stay part of it. A fixed gray would sit on top like a dirty patch.
+   The roles are overridden on the fill itself, so nested components change
+   color with it without knowing about it. */
+.section--accent, .notice--action, .button--primary, .data-table .total td,
+.segmented input:checked + span, .pagination__page[aria-current="page"], .tag--accent {
+  --text: var(--on-accent);
+  --text-body: var(--craft-on-accent-muted);
+  --muted: var(--craft-on-accent-muted);
+  --line: var(--craft-on-accent-line);
+  --accent: var(--on-accent);
+  --accent-mark: var(--on-accent);
+  --craft-disabled: var(--craft-on-accent-disabled);
+  /* There is nothing to tint red on red. On the fill the selection is white. */
+  --selection: var(--craft-selection-on-accent);
+}
+.segmented { display: inline-flex; max-width: 100%; border: 1px solid var(--line); }
+.segmented label { display: inline-flex; flex: 1 1 auto; min-width: 0; }
+.segmented input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; pointer-events: none; }
+/* The group border adds two pixels, so the segment is two pixels shorter and
+   the row of buttons stays even. */
+.segmented span { display: inline-flex; flex: 1 1 auto; justify-content: center; min-height: calc(2.75rem - 2px); align-items: center; padding: var(--space-2) var(--space-3); color: var(--muted); text-align: center; cursor: pointer; }
+.segmented label + label span { border-left: 1px solid var(--line); }
+.segmented input:not(:checked):not(:disabled) + span:hover { color: var(--accent); }
+/* The fill stays inside the frame. Inside the fill --line turns light, so
+   the selected segment's divider takes the frame's own line color and the
+   frame and dividers read as one unbroken grid. */
+.segmented input:checked + span { color: var(--on-accent); background: var(--accent-fill) padding-box; border-left-color: var(--craft-line); }
+.segmented input:focus-visible + span { outline: 2px solid var(--accent-mark); outline-offset: -3px; }
+.segmented input:disabled + span { color: var(--craft-disabled); cursor: default; }
+
+/* Inline code in text, lists and table cells. A token, class or attribute
+   name opens nothing on click, so the font sets it apart, not the color.
+   In Craft red marks what is clickable. The chip is transparent. It keeps
+   the name's bounds inside the line and shows on any background, including
+   the accent tone, without turning into a gray rectangle. */
+/* A class or attribute name wraps as a whole. A break at a hyphen read as
+   two different tokens. */
+:is(p, li, dd, td, th, figcaption:not(.code-block__head), summary, .notice__title) code { white-space: nowrap; padding: .1em .3em; color: var(--craft-code-text); background: var(--fill-quiet); font-family: var(--font-mono); font-size: max(.9em, var(--type-service)); }
+
+.prose { max-width: 72ch; }
+.prose h2 { max-width: 18ch; margin-top: 1.5em; }
+.prose h3 { margin-top: 2em; }
+.prose p, .prose ul, .prose ol { margin-block: 1.2em; }
+.prose pre { padding: var(--space-5); overflow: auto; color: var(--craft-code-text); background: var(--raise); border: 1px solid var(--line); }
+
+input, select, textarea { width: 100%; min-height: 2.75rem; padding: var(--space-2) var(--space-3); border: 1px solid var(--line); border-radius: 0; color: var(--text); background: var(--raise); transition: border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out); }
+input::placeholder, textarea::placeholder { color: var(--craft-disabled); }
+.button { display: inline-flex; min-height: 2.75rem; align-items: center; justify-content: center; padding: var(--space-2) var(--space-3); border: 1px solid var(--line); color: var(--text); background: var(--raise); text-decoration: none; cursor: pointer; }
+/* A disabled control drops back to the page. The nesting paint goes to live
+   controls, and a disabled one no longer looks brighter than a regular one. */
+.button:disabled { color: var(--craft-disabled); border-color: var(--line); background: transparent; cursor: not-allowed; }
+/* Both labels share one cell, so a state change does not change the button
+   width. visibility also hides the inactive label from screen readers. */
+.button--stable { display: inline-grid; }
+.button--stable .button__label { grid-area: 1 / 1; }
+.button--stable[aria-pressed="false"] .button__label--pressed,
+.button--stable[aria-pressed="true"] .button__label--rest { visibility: hidden; }
+/* Hover recolors the label only. A red frame around a resting control reads as an error. */
+.button:not(:disabled):hover { color: var(--accent); }
+/* A button with two labels shows its state by swapping the label, not by a
+   fill. On the theme toggle the pressed state means the current theme. */
+.button:not(:disabled):not(.button--stable)[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: var(--accent-tint); }
+.button--icon { width: 44px; min-width: 44px; padding: 0; }
+.theme-switch .button__label { place-self: center; }
+.select-control { position: relative; display: block; }
+.select-control select { appearance: none; padding-right: calc(var(--space-3) + 12px + var(--space-2)); cursor: pointer; transition: border-color 160ms var(--ease-out); }
+/* The arrow comes from the sprite through <use>, so the element itself sets
+   the stroke. Rules for the nested path do not reach into the shadow tree. */
+.select-control__icon { position: absolute; top: 50%; right: var(--space-3); width: 12px; height: 8px; color: var(--muted); fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; transform: translateY(-50%); transition: color 160ms var(--ease-out); }
+.select-control select:not(:disabled):not(:focus-visible):not([aria-invalid="true"]):hover,
+.field:hover .select-control select:not(:disabled):not(:focus-visible):not([aria-invalid="true"]) { border-color: var(--muted); }
+.select-control:has(select:not(:disabled):hover) .select-control__icon,
+.field:hover .select-control:has(select:not(:disabled)) .select-control__icon { color: var(--text); }
+.select-control:has(select:focus-visible) .select-control__icon { color: var(--accent); }
+.select-control select:disabled { color: var(--craft-disabled); background: transparent; cursor: not-allowed; }
+.select-control:has(select:disabled) .select-control__icon { color: var(--craft-disabled); }
+.button--primary { color: var(--on-accent); background: var(--accent-fill); border-color: var(--accent-fill); }
+.button--primary:not(:disabled):hover { color: var(--on-accent); background: var(--craft-accent-fill-hover); border-color: var(--craft-accent-fill-hover); }
+
+/* Forms. A field stacks the label, the control, the hint and the error in
+   one column. The hint explains the rule up front, and the error shows up
+   under the same control. An empty paragraph hides itself, so the markup is
+   the same for both states. */
+.field { display: grid; gap: var(--space-2); min-width: 0; }
+.field__label { color: var(--muted); font-size: var(--type-service); }
+.field__hint { margin: 0; color: var(--muted); font-size: var(--type-service); }
+/* --accent paints the error. It is the red of the text role, and people read
+   it. The border of an invalid value takes the saturated mark, and hover
+   does not dim it. A gray border under the pointer would argue with the
+   error label. */
+.field__error { margin: 0; color: var(--accent); font-size: var(--type-service); }
+.field__hint:empty, .field__error:empty { display: none; }
+.field-set { min-width: 0; margin: 0; padding: 0; border: 0; }
+.field-set > legend { margin-bottom: var(--space-2); padding: 0; color: var(--muted); font-size: var(--type-service); }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: var(--space-4) var(--space-5); align-items: start; }
+.form-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+/* The state of a rectangular field changes its own border. It does not add
+   a second line outside or make the border thicker. Hover raises the border
+   to muted text color, and focus paints it with the mark. The width stays
+   the same and only the color changes, so neighboring fields do not shift
+   and the active field does not look heavier than the rest. A focused field
+   ignores hover, or the red border would turn gray.
+
+   Hover belongs to the whole .field cell, not to the control alone.
+   The label is linked to the control, and the browser hovers them together,
+   but the gap between them belongs to neither. Moving from the label to the
+   field, the border went dark and lit up again. One target for the label,
+   the gap, the control and the hint removes that flicker. */
+input:not([type="checkbox"], [type="radio"], [type="range"]):not(:disabled):not(:focus-visible):not([aria-invalid="true"]):hover,
+textarea:not(:disabled):not(:focus-visible):not([aria-invalid="true"]):hover,
+.field:hover :is(input:not([type="checkbox"], [type="radio"], [type="range"]), textarea):not(:disabled):not(:focus-visible):not([aria-invalid="true"]) { border-color: var(--muted); }
+input:not([type="checkbox"], [type="radio"], [type="range"]):focus-visible,
+textarea:focus-visible, select:focus-visible {
+  border-color: var(--accent-mark); outline: none;
+}
+/* A disabled field is the only place where a form gets a fill without the
+   accent. A border has no way to show this state. The old border in
+   --craft-disabled was darker than on a working field, so the disabled
+   field looked heavier than its neighbor. Now the border is regular, the
+   fill is quiet, and the value, label and hint fade together. The whole cell
+   reads as disabled and does not invite typing. */
+input:disabled, textarea:disabled { color: var(--craft-disabled); border-color: var(--line); background: transparent; cursor: not-allowed; }
+.field:has(:disabled) :is(.field__label, .field__hint) { color: var(--craft-disabled); }
+/* :read-only in CSS also matches a disabled field, because the browser
+   treats it as non-editable too. Without :not(:disabled) the read-only rule
+   would override the disabled state and bring back the regular value color
+   and a transparent background. */
+input:read-only:not([type="checkbox"], [type="radio"], [type="range"]):not(:disabled), textarea:read-only:not(:disabled) { color: var(--muted); background: transparent; }
+[aria-invalid="true"] { border-color: var(--accent-mark); }
+textarea { min-height: 6rem; resize: vertical; }
+
+/* The checkbox and the switch are drawn by hand. Native elements have no
+   shared geometry across browsers, and Craft keeps square corners and one
+   line width. Only the radio button stays round, because there the shape
+   means picking a single value. */
+input[type="checkbox"]:not([role="switch"]), input[type="radio"] {
+  flex: none; appearance: none; display: inline-grid; place-content: center;
+  width: 1rem; height: 1rem; min-height: 0; padding: 0; margin: 0;
+  border: 1px solid var(--line-strong); background: transparent; cursor: pointer;
+}
+/* The circle's outline is an inset shadow. Chromium dims a thin border on an
+   arc to gray and breaks the outline where the quarters meet. */
+input[type="radio"] { border: 0; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--line-strong); }
+input[type="checkbox"]:not([role="switch"])::after, input[type="radio"]::after { content: ""; }
+input[type="checkbox"]:not([role="switch"])::after { width: .3125rem; height: .5625rem; border: solid transparent; border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+input[type="radio"]::after { width: .375rem; height: .375rem; border-radius: 50%; background: transparent; }
+input[type="checkbox"]:not([role="switch"]):checked { border-color: var(--accent-fill); background: var(--accent-fill); }
+input[type="radio"]:checked { background: var(--accent-fill); box-shadow: inset 0 0 0 1.5px var(--accent-fill); }
+input[type="checkbox"]:not([role="switch"]):checked::after { border-color: var(--on-accent); }
+input[type="radio"]:checked::after { background: var(--on-accent); }
+input[type="checkbox"]:indeterminate { border-color: var(--accent-fill); background: var(--accent-fill); }
+input[type="checkbox"]:indeterminate::after { width: .5rem; height: 2px; border: 0; background: var(--on-accent); transform: none; }
+input[type="checkbox"]:not(:disabled, :checked, :indeterminate):hover { border-color: var(--muted); }
+input[type="radio"]:not(:disabled, :checked):hover { box-shadow: inset 0 0 0 1.5px var(--muted); }
+input[type="checkbox"]:disabled { border-color: var(--craft-disabled); background: transparent; cursor: not-allowed; }
+input[type="radio"]:disabled { background: transparent; box-shadow: inset 0 0 0 1.5px var(--craft-disabled); cursor: not-allowed; }
+.check { display: inline-flex; align-items: center; gap: var(--space-3); min-height: 2.75rem; color: var(--text); cursor: pointer; }
+.check:has(input:disabled) { color: var(--craft-disabled); cursor: not-allowed; }
+.check-group { display: grid; gap: var(--space-1); }
+
+/* State switch. A capsule track and a round thumb. This shape already
+   means "on or off", and square corners are not worth fighting it. The
+   checkbox keeps the rectangle, where it tells marking a value apart from
+   switching a mode. */
+.switch { display: inline-flex; align-items: center; gap: var(--space-3); min-height: 2.75rem; color: var(--text); cursor: pointer; }
+.switch input {
+  flex: none; appearance: none; display: inline-flex; align-items: center;
+  width: 2.75rem; height: 1.375rem; min-height: 0; padding: 4px; margin: 0; border-radius: 999px;
+  border: 0; box-shadow: inset 0 0 0 1.5px var(--line-strong); background: transparent; cursor: pointer;
+  transition: box-shadow 160ms var(--ease-out), background-color 160ms var(--ease-out);
+}
+/* A height percentage does not resolve inside the field, so the thumb size is explicit. */
+.switch input::after {
+  content: ""; display: block; width: .875rem; height: .875rem; border-radius: 999px; background: var(--muted);
+  transition: transform 160ms var(--ease-out), width 120ms var(--ease-out), background-color 160ms var(--ease-out);
+}
+.switch input:checked { background: var(--accent-fill); box-shadow: inset 0 0 0 1.5px var(--accent-fill); }
+.switch input:checked::after { background: var(--on-accent); transform: translateX(calc(2.75rem - .875rem - 8px)); }
+.switch input:not(:disabled):hover { box-shadow: inset 0 0 0 1.5px var(--accent-mark); }
+.switch input:not(:disabled):hover::after { background: var(--text); }
+.switch input:not(:disabled):checked:hover { background: var(--craft-accent-fill-hover); }
+.switch input:not(:disabled):checked:hover::after { background: var(--on-accent); }
+/* Pressing stretches the thumb into a capsule in the direction of travel,
+   so the switch gives feedback. */
+.switch input:not(:disabled):active::after { width: 1.125rem; }
+.switch input:not(:disabled):checked:active::after { transform: translateX(calc(2.75rem - 1.125rem - 8px)); }
+.switch input:disabled { background: transparent; box-shadow: inset 0 0 0 1.5px var(--craft-disabled); cursor: not-allowed; }
+.switch input:disabled::after { background: var(--craft-disabled); }
+.switch:has(input:disabled) { color: var(--craft-disabled); cursor: not-allowed; }
+
+/* The range slider inherits the look of the progress bar. The rail has the
+   same thickness and paint as .progress__track, the passed part is filled
+   with the mark like .progress__fill, and the same --value property carries
+   the fraction. There are no ticks under the rail. They read as separate
+   markup, argued with the thumb and did not give the precision they were
+   drawn for. assets/interfaces/range.js keeps the fraction. Without the
+   script the rail has no fill, and the slider still works.
+
+   The thumb is round, because hands are used to it. At rest it is neutral,
+   since it shows the value but selects nothing. A gap in the background
+   color separates it from the rail, or the thumb and the line would blur
+   into one blob. */
+.range {
+  --range-track: var(--track); --range-fill: var(--accent-mark); --range-cursor: var(--text);
+  width: 100%; min-height: 2.75rem; appearance: none; padding: 0; border: 0; background: transparent; cursor: pointer;
+}
+.range::-webkit-slider-runnable-track { height: 2.75rem; background: linear-gradient(var(--range-fill) 0 0) no-repeat 0 50% / var(--value, 0%) 6px, linear-gradient(var(--range-track) 0 0) no-repeat 0 50% / 100% 6px; }
+.range::-moz-range-track { height: 2.75rem; background: linear-gradient(var(--range-fill) 0 0) no-repeat 0 50% / var(--value, 0%) 6px, linear-gradient(var(--range-track) 0 0) no-repeat 0 50% / 100% 6px; }
+/* The background-colored gap breaks the rail around the thumb. It sits out
+   of flow, so the pointer hit area stays the same. */
+.range::-webkit-slider-thumb { appearance: none; width: 1rem; height: 1rem; margin-top: .75rem; border-radius: 50%; background: var(--range-cursor); box-shadow: 0 0 0 3px var(--bg); transition: box-shadow 160ms var(--ease-out), background-color 160ms var(--ease-out); }
+.range::-moz-range-thumb { width: 1rem; height: 1rem; border: 0; border-radius: 50%; background: var(--range-cursor); box-shadow: 0 0 0 3px var(--bg); transition: box-shadow 160ms var(--ease-out), background-color 160ms var(--ease-out); }
+/* Hover lives on the thumb itself. The rail never changes under the
+   pointer, because people drag the thumb. Only the fill paint changes, as
+   with a text field border. The thumb does not grow, and a hairline outline
+   in the mark color appears past the gap. Pressing pushes the fill deeper
+   and keeps the outline while the pointer slides off the thumb during a drag. */
+.range:not(:disabled)::-webkit-slider-thumb:hover { background: var(--accent-fill); box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--accent-mark); }
+.range:not(:disabled)::-moz-range-thumb:hover { background: var(--accent-fill); box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--accent-mark); }
+.range:not(:disabled):active::-webkit-slider-thumb { background: var(--craft-accent-fill-hover); box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--accent-mark); }
+.range:not(:disabled):active::-moz-range-thumb { background: var(--craft-accent-fill-hover); box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--accent-mark); }
+.range:disabled { --range-fill: var(--craft-disabled); --range-cursor: var(--craft-disabled); background: transparent; cursor: not-allowed; }
+
+/* Quiet button for a tertiary action next to the content. A busy button
+   changes only its label color. Its size and position stay the same. */
+.button--quiet { border-color: transparent; background: transparent; color: var(--muted); }
+.button--quiet:not(:disabled):hover { color: var(--accent); }
+/* A spinning mark next to the label shows that the button is busy. Muted
+   text alone read as disabled. */
+.button[aria-busy="true"] { gap: var(--space-2); color: var(--muted); cursor: progress; }
+.button[aria-busy="true"]::before { content: ""; width: 12px; height: 12px; border: 1.5px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: craft-spin 800ms linear infinite; }
+@keyframes craft-spin { to { transform: rotate(360deg); } }
+
+/* Category tag. It names what something belongs to, not a state, so it
+   stays neutral and does not take a signal color. */
+/* Bordered tag. One shape for every case. Category, priority and state
+   differ only by the color the tag takes from --status. The border and
+   the label inside it read as one detail, so both get the color. A word in
+   running text does not turn colored. There the .status dot shows the state. */
+.tag-list { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.tag { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: 1.7rem; padding: 2px var(--space-2); border: 1px solid var(--status, var(--line)); color: var(--status, var(--muted)); font-size: var(--type-service); text-decoration: none; white-space: nowrap; transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out); }
+.tag--ok { --status: var(--ok); }
+.tag--warn { --status: var(--warn); }
+.tag--error { --status: var(--error); }
+a.tag:hover, button.tag:hover { --status: var(--accent); }
+/* The accent tag is filled. A red border already means an error, and two
+   tags with different meanings looked the same. The fill and the white
+   label set the selected kind apart from a signal, and the height stays shared. */
+.tag--accent { --status: var(--accent-fill); color: var(--on-accent); background: var(--accent-fill); }
+/* Hover does not change the fill. In Craft the fill belongs to selection.
+   White text on the accent can't turn accent colored, so a tag link gets an
+   underline under the pointer. */
+a.tag--accent:hover { --status: var(--accent-fill); text-decoration: underline; }
+
+/* Field and value pairs. The label and the value share one line while
+   there is room, and split into two lines on a narrow screen. */
+.kv-block { display: grid; gap: var(--space-3); min-width: 0; }
+.kv-block__title { font-size: var(--type-lede); }
+.kv-list { display: grid; grid-template-columns: minmax(7rem, auto) minmax(0, 1fr); gap: var(--space-2) var(--space-5); align-items: baseline; margin: 0; }
+.kv-list dt { color: var(--muted); font-size: var(--type-service); }
+.kv-list dd { margin: 0; min-width: 0; color: var(--text); overflow-wrap: anywhere; hyphens: auto; }
+/* The line runs across the whole row. The column gap lives inside the dt,
+   or the divider would break into two pieces. */
+.kv-list--lined { column-gap: 0; align-items: stretch; }
+.kv-list--lined dt { line-height: calc(var(--type-body) * 1.5); }
+.kv-list--lined dt { padding-right: var(--space-5); }
+.kv-list--lined dt, .kv-list--lined dd { padding-bottom: var(--space-2); border-bottom: 1px solid var(--line); }
+
+/* Progress. A determinate bar repeats the value as a number. An
+   indeterminate one only shows that work is going on, and stops under
+   reduced motion. */
+.progress { display: grid; gap: var(--space-2); }
+.progress__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); color: var(--text); font-size: var(--type-service); font-variant-numeric: tabular-nums; }
+.progress__head > :last-child { flex: none; text-align: right; }
+.progress__track { height: var(--space-2); overflow: hidden; background: var(--track); }
+.progress__fill { display: block; width: var(--value); height: 100%; background: var(--accent-mark); }
+/* The fraction is unknown. This is waiting, not a signal, so the bar is neutral. */
+.progress--indeterminate .progress__fill { width: 30%; background: var(--data-neutral); animation: craft-progress 1.2s linear infinite; }
+@keyframes craft-progress { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+
+/* Timeline. The line connects the marks, not the labels, so an entry of
+   any height does not break the vertical. */
+/* Timeline. The dot sits in its own narrow column and holds the vertical.
+   The rest of the entry goes into one column on the right, whether it is
+   flat or wrapped in a block. A paragraph used to fall into the first
+   column and stretch it, which pushed the time and title toward the middle
+   of the row. */
+.timeline { display: grid; margin: 0; padding: 0; list-style: none; }
+.timeline li { position: relative; display: grid; grid-template-columns: .625rem minmax(0, 1fr); column-gap: var(--space-4); row-gap: var(--space-1); padding-bottom: var(--space-5); }
+.timeline li:last-child { padding-bottom: 0; }
+.timeline li > *:not(.timeline__mark) { grid-column: 2; }
+.timeline li:not(:last-child)::before { content: ""; position: absolute; top: 1.2rem; bottom: 0; left: calc(.3125rem - .5px); width: 1px; background: var(--line); }
+.timeline__mark { grid-column: 1; grid-row: 1 / -1; align-self: start; width: .625rem; height: .625rem; margin-top: .3125rem; border-radius: 50%; background: var(--status, var(--muted)); }
+.timeline__time { color: var(--muted); font-size: var(--type-service); font-variant-numeric: tabular-nums; }
+.timeline__title { display: block; color: var(--text); font-weight: 600; }
+.timeline p { margin: var(--space-1) 0 0; }
+
+/* Code block with copy. The label names the source. The button keeps both
+   labels in one cell and keeps its width after a click. */
+.code-block { margin: 0; border: 1px solid var(--line); background: var(--raise); }
+.code-block__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--line); color: var(--muted); font-size: var(--type-service); }
+/* Copy is a quiet label in the caption bar: no frame, no divider, the
+   label alone answers hover. */
+.code-block__copy { min-height: 2.75rem; margin-block: calc(-1 * var(--space-2)); margin-right: calc(-1 * var(--space-3)); padding: 0 var(--space-3); border: 0; background: transparent; color: var(--muted); font-size: var(--type-service); }
+.code-block pre { margin: 0; padding: var(--space-4); overflow: auto; color: var(--craft-code-text); font-family: var(--font-mono); font-size: 13px; }
+/* code-highlight.js marks up the highlighting. The roles match code on
+   slides. The element name, selector and command use the accent. The
+   attribute, property and string are gold, the number is blue, and the
+   comment is muted. Punctuation keeps the code color, so without the script
+   the listing looks the same, only without color. */
+.syntax-punctuation { color: var(--craft-code-text); }
+.syntax-tag, .syntax-keyword { color: var(--accent); font-weight: 650; }
+.syntax-attr, .syntax-string { color: var(--craft-code-gold); }
+.syntax-number { color: var(--craft-code-blue); }
+.syntax-doctype, .syntax-comment { color: var(--muted); }
+
+/* In-page notice. The color lives in the square mark, the text stays
+   neutral, and only the error gets a quiet background. */
+.notice { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--line); background: var(--raise); }
+.notice__mark { width: .65rem; height: .65rem; margin-top: .42rem; background: var(--status, var(--muted)); }
+.notice__title { display: block; color: var(--text); font-weight: 600; }
+.notice p { margin: var(--space-1) 0 0; }
+.notice__actions { grid-column: 2; display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-3); }
+.notice--ok { --status: var(--ok); }
+.notice--warn { --status: var(--warn); }
+.notice--error { --status: var(--error); border-color: var(--accent-mark); background: var(--error-tint); }
+.notice--action { --status: var(--on-accent); border-color: var(--accent-fill); color: var(--on-accent); background: var(--accent-fill); }
+.notice--action .notice__title { color: var(--on-accent); }
+.notice--action code { color: var(--on-accent); background: var(--craft-on-accent-line); }
+
+/* Disclosure. Native details handles the keyboard and print. The arrow
+   replaces the system marker and rotates when the block opens. */
+.disclosure { border: 1px solid var(--line); background: var(--raise); }
+.disclosure > summary { display: flex; align-items: center; gap: var(--space-3); min-height: 2.75rem; padding: var(--space-2) var(--space-3); background: var(--raise); color: var(--text); list-style: none; cursor: pointer; }
+.disclosure > summary::-webkit-details-marker { display: none; }
+.disclosure > summary:hover { color: var(--accent); }
+.disclosure > summary .icon { flex: none; width: 12px; height: 12px; transition: transform 160ms var(--ease-out); }
+.disclosure[open] > summary .icon { transform: rotate(90deg); }
+.disclosure__body { padding: var(--space-4) var(--space-3); border-top: 1px solid var(--line); }
+
+/* Modal dialog. Native dialog handles focus, the Escape key and the top
+   layer, so the mechanics only open it and return focus to the button that
+   opened it. */
+.dialog { width: min(34rem, calc(100% - var(--space-6))); padding: 0; border: 1px solid var(--line-strong); color: var(--text-body); background: var(--raise-solid); }
+.dialog::backdrop { background: var(--scrim); }
+.dialog__head { display: flex; justify-content: space-between; align-items: start; gap: var(--space-4); padding: var(--space-5); border-bottom: 1px solid var(--line); background: var(--raise); }
+.dialog__head h2 { font-size: var(--type-local); }
+.dialog__body { padding: var(--space-5); }
+.dialog__foot { display: flex; flex-wrap: wrap; justify-content: end; gap: var(--space-3); padding: var(--space-5); border-top: 1px solid var(--line); background: var(--raise); }
+
+/* Tabs. Attributes link the tab list and the panel. The mechanics add
+   arrow keys and move the selection without hiding content from print. */
+.tabs { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
+/* The strip has no paint and no rule of its own: it takes the color of the
+   surface it sits on, and only the selected tab carries a mark. */
+.tablist { display: flex; flex-wrap: nowrap; gap: var(--space-5); overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
+.tablist::-webkit-scrollbar { display: none; }
+.tablist button { flex: 0 0 auto; min-height: 2.75rem; padding: 0; border: 0; border-bottom: 2px solid transparent; color: var(--muted); background: transparent; cursor: pointer; }
+.tablist button:not(:disabled):hover { color: var(--accent); }
+.tablist button:focus-visible { outline-offset: -3px; }
+/* The selected tab has a 2 px accent line on the panel side. The line
+   belongs to both the tab and the content, so it sits on their shared edge.
+   The label takes the accent, and the selection has no fill. */
+.tablist button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent-mark); }
+.tablist button:disabled { color: var(--craft-disabled); cursor: not-allowed; }
+/* Page section tabs continue the header. Same backing from edge to edge,
+   no line between them. The first label lines up vertically with the h1. */
+.tabs--page { gap: 0; }
+/* Page tabs continue the header: its fill, its gutter, and the header's
+   bottom rule moves under the strip. */
+.tabs--page > .tablist { padding-inline: var(--gutter); border-bottom: 1px solid var(--line); background: var(--raise-solid); }
+.workspace-head:has(+ .tabs--page) { border-bottom: 0; }
+
+/* Breadcrumbs. They name where the content sits, so the current level is
+   plain text, not a link. */
+.breadcrumbs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: var(--type-service); }
+.breadcrumbs li { display: flex; align-items: center; gap: var(--space-2); }
+.breadcrumbs li:not(:last-child)::after { content: "/"; color: var(--muted); }
+.breadcrumbs a { display: inline-flex; align-items: center; min-height: 24px; color: var(--muted); text-decoration: none; }
+.breadcrumbs a:hover { color: var(--accent); }
+.breadcrumbs [aria-current="page"] { color: var(--text); }
+
+/* Pagination. A fill marks the current page, and neighboring pages keep
+   the touch target size. */
+/* Pagination. Equal square cells centered in the strip. Page numbers are
+   muted at rest, so the row of digits does not compete with the content
+   being paged. An ellipsis shortens a long row, not a smaller font. */
+.pagination { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: var(--space-2); }
+.pagination__page { display: inline-flex; justify-content: center; align-items: center; width: 2.75rem; min-width: 2.75rem; height: 2.75rem; padding: 0; border: 1px solid var(--line); color: var(--muted); text-decoration: none; font-variant-numeric: tabular-nums; transition: color 160ms var(--ease-out), border-color 160ms var(--ease-out); }
+.pagination__page:hover { color: var(--accent); }
+.pagination__page[aria-current="page"] { color: var(--on-accent); background: var(--accent-fill); border-color: var(--accent-fill); cursor: default; pointer-events: none; }
+.pagination__page[aria-disabled="true"] { color: var(--craft-disabled); pointer-events: none; }
+.pagination__gap { display: inline-flex; justify-content: center; align-items: center; width: 1.5rem; height: 2.75rem; color: var(--muted); }
+.pagination__page .icon { width: 14px; height: 14px; }
+
+/* Filter bar above a data area. It sits next to what it changes and ends
+   with the count of matching records. */
+.filter-bar { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-3) var(--space-4); padding: var(--space-3) var(--gutter); border-bottom: 1px solid var(--line); background: var(--raise); }
+.filter-bar__count { display: flex; align-items: center; min-height: 2.75rem; margin: 0 0 0 auto; color: var(--muted); font-size: var(--type-service); }
+.filter-bar > label:not(.field) { display: flex; align-items: center; min-height: 2.75rem; }
+
+/* Process steps. A fill and an accent number mark the current step. A done
+   step differs from an upcoming one only by text brightness. */
+.steps { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 1px; margin: 0; padding: 0; list-style: none; border: 1px solid var(--line); background: var(--line) padding-box; }
+.steps li { display: grid; gap: var(--space-1); align-content: start; padding: var(--space-4); background: var(--raise-solid); }
+.steps__index { color: var(--muted); font: 650 var(--type-body)/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.steps__title { color: var(--muted); }
+.steps li[data-state="done"] .steps__title { color: var(--text); }
+/* The cell sits on the grid line color, so the translucent tone goes on top
+   of its regular backing. Otherwise the gray divider shows through. */
+.steps li[data-state="current"] { background: linear-gradient(var(--accent-tint), var(--accent-tint)), var(--raise-solid); }
+.steps li[data-state="current"] .steps__index { color: var(--accent); }
+.steps li[data-state="current"] .steps__title { color: var(--text); font-weight: 600; }
+
+/* Sorting and row expansion in a table. The arrow always takes up space,
+   so changing the sort column does not move the headers. */
+.data-table__sort { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 2.25rem; padding: 0; border: 0; color: inherit; background: transparent; font: inherit; cursor: pointer; }
+.data-table th:has(> .data-table__sort) { padding-block: var(--space-1); }
+.data-table__sort:hover { color: var(--accent); }
+.data-table__sort .icon { width: 12px; height: 12px; opacity: 0; }
+.data-table th[aria-sort] .data-table__sort { color: var(--text); }
+.data-table th[aria-sort] .data-table__sort .icon { opacity: 1; }
+.data-table th[aria-sort="ascending"] .data-table__sort .icon { transform: rotate(180deg); }
+.data-table__detail td { color: var(--muted); background: transparent; }
+.data-table--sticky thead th { position: sticky; top: 0; z-index: 1; background: var(--raise-solid); }
+
+/* The utility comes after the components so their padding shorthands do
+   not reset the computed symmetric document padding. */
+.document-band { padding-inline: max(var(--gutter), calc(50% - 36ch - 15rem - 16px)); }
+.footer { display: flex; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--gutter); background: var(--raise); color: var(--muted); font-size: var(--type-service); }
+
+@media (max-width: 860px) {
+  :root { --gutter: var(--space-5); --section-y: var(--space-6); }
+  .scoreboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .scoreboard > .metric:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .workbench__primary .data-table tbody tr[aria-selected="true"] :is(td, td:last-child) { box-shadow: inset 0 -2px 0 var(--accent-mark); }
+  .split { grid-template-columns: 1fr; }
+  .workspace-head { grid-template-columns: 1fr; align-items: start; }
+  .workspace-head__tools { flex-wrap: wrap; }
+  .workbench { grid-template-columns: 1fr; }
+  .workbench__aside { border: 0; border-top: 1px solid var(--line); }
+  .section-head p { max-width: 60ch; }
+  .section-nav__links { display: flex; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; border-inline-start: 0; border-bottom: 1px solid var(--line); }
+  .section-nav__links::-webkit-scrollbar { display: none; }
+  .section-nav__links a { flex: 0 0 auto; }
+  .section-nav__links::after { inset-inline-start: 0; top: auto; bottom: -1px; width: var(--nav-marker-w, 0px); height: 2px; transform: translateX(var(--nav-marker-x, 0px)); transition: transform 220ms var(--ease-out), width 220ms var(--ease-out), opacity 160ms var(--ease-out); }
+  .section-nav__links:not([data-nav-marker]) a[aria-current="true"] { box-shadow: inset 0 -2px 0 var(--accent-mark); }
+  .steps { grid-auto-flow: row; }
+  .workspace-head--compact:not(:has(.workspace-head__lede)) { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  .workspace-head--compact:not(:has(.workspace-head__lede)) .workspace-head__tools { flex-wrap: nowrap; }
+}
+@media (max-width: 520px) {
+  /* The mobile scale changes the tokens themselves. Component and catalog
+     headings use them through var() and shrink together with h1 and h2. */
+  :root { --gutter: var(--space-5); --section-y: var(--space-6); --type-page: 28px; --type-section: 22px; }
+  .metric__value { font-size: 28px; }
+  .workspace-head { position: relative; padding: var(--space-5) var(--gutter); }
+  .workspace-head h1 { font-size: var(--type-section); }
+  .workspace-head:has(.theme-switch) .workspace-head__main { padding-right: calc(44px + var(--space-4)); }
+  .workspace-head__tools { width: 100%; }
+  .workspace-head__tools > * { flex: 1 1 auto; }
+  .workspace-head__tools > label { flex-basis: 100%; }
+  .workspace-head__tools .theme-switch { position: absolute; top: var(--space-5); right: var(--gutter); }
+  /* The single bar keeps its row: tools stay next to the title, the theme
+     toggle stays in line. Keep its tools to a couple of buttons. */
+  .workspace-head--compact:not(:has(.workspace-head__lede)) .workspace-head__main { padding-right: 0; }
+  .workspace-head--compact:not(:has(.workspace-head__lede)) .workspace-head__tools { width: auto; }
+  .workspace-head--compact:not(:has(.workspace-head__lede)) .workspace-head__tools > * { flex: none; }
+  .workspace-head--compact:not(:has(.workspace-head__lede)) .workspace-head__tools .theme-switch { position: static; }
+  .workbench { min-height: 0; margin: 0; border-inline: 0; }
+  .scroll-region { min-height: 0; overflow: visible; }
+  .workspace-head--compact:not(:has(.workspace-head__lede)) { padding-block: var(--space-3); }
+  .scoreboard { grid-template-columns: 1fr; }
+  .scoreboard--compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .scoreboard--compact .metric { padding: var(--space-3) var(--space-4); }
+  .scoreboard--compact .metric__value { font-size: 20px; }
+  .scoreboard--compact .metric__label { margin-top: var(--space-2); font-size: var(--type-service); }
+  /* A table in .table-scroll or .scroll-region stays a full-width table, and the wrapper scrolls.
+     Without a wrapper the table itself becomes a scrolling block. */
+  .data-table { white-space: nowrap; }
+  :not(.table-scroll, .scroll-region) > .data-table:not(.data-table--records) { display: block; overflow-x: auto; }
+  @supports (animation-timeline: scroll()) {
+    :not(.table-scroll, .scroll-region) > .data-table:not(.data-table--records) {
+      mask-image: linear-gradient(to right, transparent, var(--text) var(--scroll-fade-start), var(--text) calc(100% - var(--scroll-fade-end)), transparent);
+      animation: craft-scroll-fade linear both;
+      animation-timeline: scroll(self inline);
+    }
+  }
+  .table-scroll:has(.data-table--records) { overflow: visible; }
+  .data-table--records { overflow: visible; white-space: normal; }
+  .data-table--records thead { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+  .data-table--records tbody { display: grid; gap: var(--space-4); }
+  .data-table--records tr { display: grid; padding: var(--space-3); border: 1px solid var(--line); }
+  .data-table--records td, .data-table--records td:last-child, .data-table--records td.data-table__num {
+    display: grid;
+    grid-template-columns: minmax(7rem, .45fr) minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: baseline;
+    padding: var(--space-2) 0;
+    text-align: left;
+    white-space: normal;
+  }
+  .data-table--records td::before { content: attr(data-label); color: var(--muted); font-size: var(--type-service); }
+  .data-table--records td > * { justify-self: start; }
+  /* Narrow pagination. Arrows and the current page, the tail does not wrap. */
+  .pagination:has(.pagination__page[aria-label]) { flex-wrap: nowrap; }
+  .pagination:has(.pagination__page[aria-label]) :is(.pagination__page:not([aria-current]):not([aria-label]), .pagination__gap) { display: none; }
+  .data-table--records td:last-child { border-bottom: 0; }
+  .footer { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  /* The scroll edge is a position, not a motion. The scrollbar sets its duration. */
+  .table-scroll, .data-table { animation-duration: auto !important; }
+}
+/* Manual print mode. Charts drawn by JavaScript read colors through
+   getComputedStyle, so a script sets data-print on html before printing. */
+:root[data-print="true"] { color-scheme: light; --bg: var(--craft-print-bg); --surface: var(--craft-print-surface); --surface-sunken: var(--craft-print-surface); --raise: transparent; --track: var(--craft-print-line); --line: var(--craft-print-line); --line-strong: var(--craft-print-text); --text: var(--craft-print-text); --text-body: var(--craft-print-text-body); --muted: var(--craft-print-muted); --accent: var(--craft-print-accent); --accent-mark: var(--craft-print-accent); --accent-tint: var(--craft-print-accent-tint); --error-tint: var(--craft-print-accent-tint); --data-red: var(--craft-print-data-red); --data-amber: var(--craft-print-data-amber); --data-green: var(--craft-print-data-green); --data-blue: var(--craft-print-data-blue); --data-neutral: var(--craft-print-data-neutral); --ok: var(--craft-print-data-green); --warn: var(--craft-print-data-amber); --error: var(--craft-print-data-red); --craft-code-text: var(--craft-print-code-text); --craft-code-gold: var(--craft-print-code-gold); --craft-code-blue: var(--craft-print-code-blue); }
+:root[data-print="true"] body { background: var(--bg); }
+
+/* With default Chromium settings an 8 mm margin leaves no room for browser
+   headers and footers. The user can still override the margins in the
+   print dialog, so the document does not promise to control that choice. */
+@page { margin: 8mm 14mm; }
+
+@media print {
+  :root { color-scheme: light; --bg: var(--craft-print-bg); --surface: var(--craft-print-surface); --surface-sunken: var(--craft-print-surface); --raise: transparent; --track: var(--craft-print-line); --line: var(--craft-print-line); --line-strong: var(--craft-print-text); --text: var(--craft-print-text); --text-body: var(--craft-print-text-body); --muted: var(--craft-print-muted); --accent: var(--craft-print-accent); --accent-mark: var(--craft-print-accent); --accent-tint: var(--craft-print-accent-tint); --error-tint: var(--craft-print-accent-tint); --data-red: var(--craft-print-data-red); --data-amber: var(--craft-print-data-amber); --data-green: var(--craft-print-data-green); --data-blue: var(--craft-print-data-blue); --data-neutral: var(--craft-print-data-neutral); --ok: var(--craft-print-data-green); --warn: var(--craft-print-data-amber); --error: var(--craft-print-data-red); --craft-code-text: var(--craft-print-code-text); --craft-code-gold: var(--craft-print-code-gold); --craft-code-blue: var(--craft-print-code-blue); }
+  /* By default the print dialog drops backgrounds. Then the white label of
+     the primary button, a checked checkbox, status dots, scales and the
+     heatmap disappeared, and gap-line grids lost their dividers. The print
+     theme is already light, so backgrounds print as is. The page itself is
+     the paper, with no gray backing inside the margins. */
+  :root { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  body { background: none; }
+  .shell { min-height: 0; }
+  .page-head { position: static; }
+  .section { break-inside: auto; }
+  .metric, .scoreboard, .notice, pre, blockquote, tr { break-inside: avoid; }
+  .section-head, h2, h3 { break-after: avoid; }
+  .section-head, .page-head, .workspace-head { break-inside: avoid; }
+  thead { display: table-header-group; }
+  .theme-switch, .section-nav, .tablist, .pagination, .code-block__copy { display: none; }
+  /* Paper has no scrolling. A wide table and a nested region print in full,
+     and the scroll edge does not fade. */
+  .table-scroll, .scroll-region, .data-table { overflow: visible; mask-image: none; animation: none; }
+  .code-block pre { overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; }
+  /* A disclosure prints open. The browser hides closed content through
+     ::details-content, not through display. */
+  .disclosure::details-content { content-visibility: visible; display: block; }
+  .disclosure > summary .icon { display: none; }
+  /* Paper has no switching. A hidden tab panel prints in full. */
+  /* Controls do nothing on paper. The selected period and the count of matching records stay. */
+  .workspace-head__tools .button, .filter-bar > :is(*, label):not(.filter-bar__count) { display: none; }
+  .filter-bar { padding-block: var(--space-2); }
+  .filter-bar__count { min-height: 0; margin-left: 0; }
+  [role="tabpanel"][hidden] { display: block; }
+  [role="tabpanel"][data-tab-label]::before { content: attr(data-tab-label); display: block; margin-bottom: var(--space-3); color: var(--text); font: 650 var(--type-local)/1.25 var(--font-display); break-after: avoid; }
+  .notice, .code-block, .steps, .timeline li { break-inside: avoid; }
+  .data-table--sticky thead th { position: static; }
+  .disclosure__body { display: block; }
+  /* The scale remainder is now a chip, not a border. Without exact background
+     printing the bar would lose its right end, and the length would have
+     nothing to compare against. */
+  .bar__track, .bar__fill { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

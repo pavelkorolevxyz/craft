@@ -1,0 +1,533 @@
+/* ============================================================
+   base.css: deck mechanics. Stage, navigation, overview, print.
+   No visual styling here. The variant theme owns all of it.
+   Sizes inside a slide use cqw/cqh, so the slide scales by itself,
+   both fullscreen and as an overview tile.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+.svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--surface-sunken);
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* var() inside ::selection resolves on the element that owns the
+   selection, so an accent fill only needs to override --selection
+   on itself. See the theme. */
+::selection { background: var(--selection); }
+
+/* ---------- stage ---------- */
+
+.deck {
+  height: 100dvh;
+  padding: var(--stage-pad, 0);
+}
+
+.slides {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.slide {
+  position: relative;
+  /* Everything inside a slide, including marks with a high z-index, stays
+     in the slide's own layer. The control panel always draws on top. */
+  isolation: isolate;
+  width: min(100%, calc((100dvh - var(--stage-pad, 0px) * 2) * 16 / 9));
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  display: none;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.slide[data-active] { display: block; }
+
+/* Print needs a separate container. The screen stage stays 16:9, while
+   on paper the canvas gets the real sheet proportions and recomputes
+   every cqw/cqh like a regular web page. */
+.slide-canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: size;
+  overflow: hidden;
+}
+
+/* inner slide grid: equal margins, the content is a grid */
+.pad {
+  position: absolute;
+  inset: 0;
+  padding: var(--pad-y) var(--pad-x);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- grid (G) and strip (L) overview ----------
+   A tile lays out the slide again at its own size instead of shrinking
+   a picture, so text stays sharp. Sizes inside a slide use cqw/cqh and
+   scale by themselves. Only the rules need extra care, see --rule
+   in the theme. */
+
+.deck[data-mode="grid"] {
+  display: block;
+  height: 100dvh;
+  overflow-y: auto;
+  padding: 2.5vw;
+}
+
+.deck[data-mode="grid"] .slides {
+  height: auto;
+  place-items: stretch;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.6vw;
+}
+
+.deck[data-mode="strip"] {
+  --strip-slide-width: round(down, min(
+    calc((100dvh - 7.5vw) * 8 / 9),
+    calc((100dvw - 7.5vw) / 2)
+  ), 16px);
+  --strip-gap: round(down, 2.5vw, 1px);
+  display: block;
+  height: 100dvh;
+  overflow: auto;
+  padding: 2.5vw;
+}
+
+.deck[data-mode="strip"] .slides {
+  display: flex;
+  align-items: center;
+  /* A whole-pixel gap is half of what a whole-pixel strip step needs, see .slide below. */
+  gap: var(--strip-gap);
+}
+
+.deck[data-mode="strip"][data-strip-direction="vertical"] .slides {
+  height: auto;
+  flex-direction: column;
+}
+
+/* Empty space at the edges lets even the first and last slide sit in
+   the center. The size subtracts gap, because flex adds it between the
+   spacer and the outer tile. */
+.deck[data-mode="strip"][data-strip-direction="vertical"] .slides::before,
+.deck[data-mode="strip"][data-strip-direction="vertical"] .slides::after {
+  content: "";
+  flex: 0 0 max(0px, calc(50dvh - 2.5vw - var(--strip-slide-width) * 9 / 32 - var(--strip-gap)));
+}
+
+.deck[data-mode="strip"] .slide {
+  /* The width is a multiple of 16, so at 16:9 the height is a whole
+     number of pixels. Together with the whole-pixel gap this gives a
+     whole-pixel scroll step. Otherwise the tile lands on a fraction of
+     a pixel on every slide, text gets resampled, and arrow navigation
+     flickers. */
+  width: var(--strip-slide-width);
+}
+
+.deck[data-mode="strip"][data-strip-direction="horizontal"] {
+  overflow-y: hidden;
+}
+
+.deck[data-mode="strip"][data-strip-direction="horizontal"] .slides {
+  width: max-content;
+  height: 100%;
+  flex-direction: row;
+}
+
+.deck[data-mode="strip"][data-strip-direction="horizontal"] .slides::before,
+.deck[data-mode="strip"][data-strip-direction="horizontal"] .slides::after {
+  content: "";
+  flex: 0 0 max(0px, calc(50dvw - 2.5vw - var(--strip-slide-width) / 2 - var(--strip-gap)));
+}
+
+.deck[data-mode="strip"][data-strip-direction="horizontal"] .slide {
+  flex: 0 0 auto;
+}
+
+/* The tile outline belongs to the overview, not to the slide, so it uses
+   shared Craft tokens. An accent slide overrides --line and --accent-mark
+   to white, and an outline built on them would turn white too. */
+.deck[data-mode="grid"] .slide,
+.deck[data-mode="strip"] .slide {
+  display: block;
+  cursor: pointer;
+  outline: 1px solid var(--craft-line, oklch(20% .02 60 / .18));
+  outline-offset: 3px;
+}
+.deck[data-mode="grid"] .slide { width: 100%; }
+/* Hover is off during keyboard navigation. The overview scrolls under a
+   still cursor, and hover would otherwise flash on the tiles that pass
+   under it. It looks as if the selection jumps to another slide before
+   it settles on the right one. */
+.deck:not([data-input="keyboard"])[data-mode="grid"] .slide:hover,
+.deck:not([data-input="keyboard"])[data-mode="strip"] .slide:hover {
+  outline: 2px solid var(--craft-accent-mark, currentColor);
+  outline-offset: 3px;
+}
+.deck[data-mode="grid"] .slide[data-active],
+.deck[data-mode="strip"] .slide[data-active] {
+  outline: 3px solid var(--craft-accent-mark, currentColor);
+  outline-offset: 4px;
+}
+/* Hover always adds weight and never removes it. Otherwise on the current
+   slide, which already has the heaviest outline, hover would read as a
+   weaker outline or not read at all. */
+.deck:not([data-input="keyboard"])[data-mode="grid"] .slide[data-active]:hover,
+.deck:not([data-input="keyboard"])[data-mode="strip"] .slide[data-active]:hover {
+  outline-width: 5px;
+  outline-offset: 4px;
+}
+
+/* ---------- controls help panel ---------- */
+
+.help-panel {
+  --control-size: 2.5rem;
+  --control-icon-size: 1rem;
+  position: fixed;
+  left: .75rem;
+  right: .75rem;
+  bottom: .75rem;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: .5rem;
+  color: var(--text);
+  font: 500 .8rem/1.2 var(--font-text);
+}
+.help-actions { display: flex; justify-self: start; gap: .2rem; }
+.help-strip[data-direction="horizontal"] svg { transform: rotate(90deg); }
+.help-theme .theme-icon-moon { display: none; }
+.help-motion .motion-icon-play { display: none; }
+:root[data-motion-state="off"] .help-motion .motion-icon-pause { display: none; }
+:root[data-motion-state="off"] .help-motion .motion-icon-play { display: block; }
+:root[data-theme="light"] .help-theme .theme-icon-sun { display: none; }
+:root[data-theme="light"] .help-theme .theme-icon-moon { display: block; }
+.help-nav {
+  display: grid;
+  grid-template-columns: var(--control-size) auto var(--control-size);
+  align-items: center;
+  justify-self: center;
+  gap: .2rem;
+}
+.help-panel button {
+  position: relative;
+  width: var(--control-size); height: var(--control-size);
+  padding: 0;
+  display: grid; place-items: center;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+.help-panel button svg {
+  width: var(--control-icon-size); height: var(--control-icon-size);
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.help-nav button svg { stroke-width: 2.25; }
+.help-panel button:hover:not(:disabled),
+.help-panel button:focus-visible {
+  border-color: var(--accent-mark);
+  color: var(--accent);
+  outline: none;
+}
+.help-panel button:disabled {
+  color: var(--muted, currentColor);
+  opacity: .28;
+  cursor: default;
+}
+.help-page {
+  width: 5.5rem; height: var(--control-size);
+  display: flex; align-items: center; justify-content: center; gap: .3rem;
+  padding: 0 .45rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  font: 700 .9rem/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  cursor: text;
+}
+.help-page:focus-within { border-color: var(--accent-mark); }
+.help-page-input {
+  width: 2ch;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  text-align: right;
+  font-variant-numeric: inherit;
+}
+.help-page-total { color: var(--muted); }
+.help-close { justify-self: end; }
+/* One panel row takes about 29rem. Below that width the panel splits
+   into two columns at the edges. Overview and fullscreen stack on the
+   left. Motion and theme sit on the right above the close button, which
+   takes the place of the panel's open button.
+   Navigation stays at the bottom center. Touch target size does not change. */
+@media (max-width: 32rem) {
+  .help-panel {
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto auto;
+    align-items: end;
+    column-gap: .5rem;
+    row-gap: .2rem;
+  }
+  .help-actions { display: contents; }
+  .help-actions [data-deck-action="grid"] { grid-area: 2 / 1; }
+  .help-actions [data-deck-action="fullscreen"] { grid-area: 3 / 1; }
+  .help-motion { grid-area: 1 / 3; }
+  .help-theme { grid-area: 2 / 3; }
+  .help-close { grid-area: 3 / 3; }
+  .help-nav { grid-area: 3 / 2; }
+  /* On a narrow screen the strip button is hidden, the L key still works. */
+  .help-panel .help-strip { display: none; }
+}
+.shortcut-key {
+  position: absolute;
+  z-index: 2;
+  left: 50%; top: -.45rem;
+  min-width: 1.65rem;
+  padding: .28rem .4rem;
+  transform: translate(-50%, -100%);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--accent);
+  font: 700 .75rem/1 var(--font-text);
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.help-panel button:hover .shortcut-key,
+.help-panel button:focus-visible .shortcut-key {
+  transform: translate(-50%, -100%);
+  opacity: 1;
+  visibility: visible;
+}
+.help-panel[hidden] { display: none; }
+/* The button sits in the top right corner. The page number is at the bottom
+   right, and on touch screens, where the button is always visible, it covered
+   the number. A slide title takes at most 70% of the width, so this corner is
+   usually empty. */
+.help-reveal-zone {
+  position: fixed;
+  right: 0; top: 0;
+  z-index: 20;
+  width: 7rem; height: 6rem;
+  display: grid; place-items: start end;
+  padding: .75rem .75rem 0 0;
+  pointer-events: none;
+}
+.help-reveal {
+  position: relative;
+  width: 2.5rem; height: 2.5rem;
+  padding: 0;
+  display: grid; place-items: center;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  opacity: 0;
+  pointer-events: none;
+}
+.help-reveal svg {
+  width: 1rem; height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.help-reveal-zone.is-active .help-reveal,
+.help-reveal:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.help-reveal:hover,
+.help-reveal:focus-visible {
+  border-color: var(--accent-mark);
+  color: var(--accent);
+}
+.help-reveal .shortcut-key { top: auto; bottom: -.45rem; transform: translate(-50%, 100%); }
+.help-reveal:hover .shortcut-key,
+.help-reveal:focus-visible .shortcut-key {
+  transform: translate(-50%, 100%);
+  opacity: 1;
+  visibility: visible;
+}
+@media (hover: none), (pointer: coarse) {
+  .help-reveal-zone { pointer-events: auto; }
+  .help-reveal { opacity: 1; pointer-events: auto; }
+  .help-reveal .shortcut-key { display: none; }
+}
+.help-reveal-zone:has(.help-reveal[hidden]) { display: none; }
+
+/* ---------- step reveal ----------
+   deck.js expands each state into a separate page.
+   Visibility changes between pages.
+
+   Motion is the theme's job, and only for what was revealed just now.
+   On a forward transition deck.js marks that spot with data-reveal.
+   So a theme rule looks like `[data-reveal] .something { animation }`
+   and stays still on the first frame, on going back and in print. */
+
+.frag { opacity: 0; }
+.frag[data-shown] { opacity: 1; }
+
+/* ---------- print to PDF ---------- */
+
+/* Exact 16:9 format. The pair 297 × 167 mm is a bit short of the needed
+   height. A slide with aspect-ratio took 167.0625 mm, and the Chromium
+   print dialog moved the rest onto a separate blank page. */
+@page { size: 320mm 180mm; margin: 0; }
+
+/* ---------- motion policy ----------
+   The only place where the deck turns motion off. deck.js decides from
+   the deck mode (show, auto, static) and sets :root[data-motion-state].
+   Components and deck-local CSS do not write their own
+   prefers-reduced-motion. Otherwise the system setting of someone
+   else's laptop would silently turn off a planned animation during the talk.
+
+   The animation is not removed. It jumps to its final frame with zero
+   duration and delay and a single iteration. This way static mode shows
+   the content even when the animation sets the final state (to with
+   forwards), not only the initial one. An infinite loop stops in place. */
+:root[data-motion-state="off"] *,
+:root[data-motion-state="off"] *::before,
+:root[data-motion-state="off"] *::after {
+  scroll-behavior: auto !important;
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
+/* A number with a counter does not wrap and keeps the digit width. */
+[data-count] {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- slide status ----------
+   deck.js adds a badge for data-status="draft" or "skip" on the source
+   slide. The badge prints, so a draft PDF does not look finished. */
+.slide-status {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: 2.2cqh;
+  margin: 0;
+  padding: .5cqh 1.2cqw;
+  transform: translateX(-50%);
+  border: 1px solid var(--accent-mark);
+  background: var(--bg);
+  color: var(--accent);
+  font: 600 1.4cqw/1.2 var(--font-text);
+  pointer-events: none;
+}
+
+@media print {
+  /* Do not let the browser save ink. Background fills, gradient lanes
+     and pseudo-elements are part of the slide composition. */
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  html, body {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  body { overflow: visible !important; background: oklch(99% .004 85); }
+  /* Paper and PDF are static formats, so a page shows the final frame.
+     As in static mode, the animation jumps to its end. */
+  *, *::before, *::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+  .help-panel, .help-reveal-zone { display: none; }
+  /* Overview modes have more specific selectors outside media print.
+     Reset them with !important so that printing from the grid or strip
+     still gives a plain sequence of pages. */
+  .deck {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  .slides {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  .slides::before, .slides::after { display: none !important; }
+  /* Every on-screen reveal step prints as a separate page. CSS removes
+     the motion but keeps the page set and numbering of the web deck. */
+  .slide { display: none !important; }
+  .slide[data-print-page] {
+    display: block !important;
+    /* This is not image scaling. The page takes the chosen sheet, and the
+       nested .slide-canvas lays out again for its width and height. */
+    width: 100% !important;
+    height: auto !important;
+    max-width: none;
+    aspect-ratio: 16 / 9;
+    flex: none !important;
+    break-after: page;
+    break-inside: avoid;
+    page-break-after: always;
+    page-break-inside: avoid;
+    outline: none !important;
+    transform: none !important;
+  }
+  /* Otherwise Firefox adds a blank 25th sheet after the last slide. */
+  .slide[data-print-page]:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+}
+
+/* In Firefox and Zen the physical page and the print viewport have
+   different sizes. The nested canvas isolates container units, so the
+   page itself can take the height of the chosen sheet and the HTML can
+   lay out again without image scaling. */
+@supports (-moz-appearance: none) {
+  @media print {
+    /* Percentages resolve against the printable area after the user's
+       margins and headers. In Firefox 100vh covers the whole sheet and
+       leaves a thin tail on a second page. */
+    html, body, .deck, .slides { height: 100% !important; }
+    .slide[data-print-page] {
+      height: 100% !important;
+      aspect-ratio: auto;
+    }
+  }
+}

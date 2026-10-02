@@ -1,0 +1,493 @@
+.system-layout { min-height: 100vh; display: grid; grid-template-columns: 220px minmax(0, 1fr); }
+.sheet-layout { min-height: 100vh; }
+.system-nav { position: fixed; z-index: 10; inset: 0 auto 0 0; width: 220px; min-width: 0; height: 100vh; display: flex; flex-direction: column; padding: var(--space-5) var(--space-5); border-right: 1px solid var(--line); background: var(--raise-solid); }
+.system-brand { display: flex; align-items: baseline; gap: var(--space-2); }
+.system-name { display: inline-block; padding-block: 2px; color: var(--text); font: 650 20px/1 var(--font-display); letter-spacing: -.03em; text-decoration: none; transition: color 160ms var(--ease-out); }
+.system-name:hover, .system-name:focus-visible { color: var(--accent); }
+.system-version { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.system-links { display: grid; margin: var(--space-5) calc(-1 * var(--space-5)) 0; }
+.system-links a { padding: var(--space-2) var(--space-5); border-bottom: 1px solid var(--line); color: var(--muted); font-size: 14px; text-decoration: none; transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out); }
+.system-links a:first-child { border-top: 1px solid var(--line); }
+.system-links a:hover, .system-links a:focus-visible, .system-links a[aria-current="true"] { color: var(--accent); }
+/* A 2 px accent line marks the current section on the nav edge that faces
+   the content. The selection takes no fill. */
+.system-links a[aria-current="true"] { color: var(--accent); box-shadow: inset -2px 0 0 var(--accent-mark); }
+.system-theme { align-self: flex-start; margin-top: auto; }
+.system-main { min-width: 0; }
+.system-intro { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .65fr); gap: var(--space-6); align-items: end; padding: var(--space-7) var(--space-6); border-bottom: 1px solid var(--line); }
+.system-intro h1 { max-width: 20ch; }
+.system-intro__lede { max-width: 52ch; margin: var(--space-3) 0 0; color: var(--text-body); font-size: var(--type-lede); }
+.system-meta { margin: 0; font-size: var(--type-service); }
+.system-meta div { display: grid; grid-template-columns: 1fr auto; gap: var(--space-5); padding: var(--space-2) 0; border-bottom: 1px solid var(--line); }
+.system-meta div:first-child { border-top: 1px solid var(--line); }
+.system-meta dt { color: var(--muted); }
+.system-meta dd { margin: 0; color: var(--text); }
+.system-section { padding: var(--space-7) var(--space-6); border-bottom: 1px solid var(--line); scroll-margin-top: var(--space-4); }
+.system-section:last-child { border-bottom: 0; }
+.system-section__head { margin-bottom: var(--space-6); }
+.system-section__head h2 { font-size: var(--type-section); }
+.system-section__head p { max-width: 64ch; margin: var(--space-2) 0 0; color: var(--muted); font-size: 14px; }
+.rule-list { border-top: 1px solid var(--line); }
+.rule-list article { display: grid; grid-template-columns: minmax(180px, .65fr) minmax(280px, 1.2fr) minmax(140px, .45fr); gap: var(--space-5); align-items: baseline; padding: var(--space-4) 0; border-bottom: 1px solid var(--line); }
+.rule-list h3 { color: var(--text); font: 600 16px/1.4 var(--font-text); letter-spacing: 0; }
+.rule-list p { margin: 0; color: var(--text-body); font-size: 14px; }
+.rule-list span { color: var(--muted); font-size: 12px; text-align: right; }
+.token-table { border-top: 1px solid var(--line); }
+.token-row { display: grid; grid-template-columns: 32px minmax(120px, .55fr) minmax(120px, .7fr) minmax(160px, 1fr) 8.5rem; gap: var(--space-4); align-items: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+/* The light role swatch almost matches the background, so its border is strong. */
+.token-row i { width: 20px; height: 20px; background: var(--swatch); border: 1px solid var(--line-strong); }
+.token-row strong { color: var(--text); font-weight: 500; }
+.token-row code, .token-row span { color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+.token-row span { white-space: nowrap; }
+.token-row em { color: var(--text-body); font-style: normal; }
+.type-specimens { border-top: 1px solid var(--line); }
+.type-row { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-5); align-items: baseline; padding: var(--space-5) 0; border-bottom: 1px solid var(--line); }
+.type-row > span { color: var(--muted); font-size: 12px; }
+.type-row > :last-child { margin: 0; color: var(--text); }
+.sample-page, .sample-section, .sample-local { font-family: var(--font-display); letter-spacing: -.03em; }
+.sample-page { font-size: var(--type-page); line-height: 1.06; }
+.sample-section { font-size: var(--type-section); line-height: 1.12; }
+.sample-local { font-size: var(--type-local); line-height: 1.25; }
+.sample-body { max-width: 64ch; font-size: var(--type-body); line-height: 1.6; }
+.sample-meta { color: var(--muted) !important; font-size: var(--type-service); }
+.rhythm-section { display: grid; grid-template-columns: minmax(220px, .7fr) minmax(320px, 1fr); gap: var(--space-7); }
+.rhythm-section h2 { font-size: var(--type-section); }
+.rhythm-section p { max-width: 42ch; margin: var(--space-3) 0 0; color: var(--muted); font-size: 14px; }
+.space-scale { display: grid; gap: var(--space-3); }
+.space-scale div { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: var(--space-4); align-items: center; color: var(--muted); font-size: var(--type-service); line-height: 1; font-variant-numeric: tabular-nums; }
+.space-scale i { display: block; width: var(--space); height: 16px; background: var(--text); }
+.control-demo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid var(--line); }
+.control-group { min-width: 0; padding: var(--space-5); background: var(--bg); }
+.control-group:nth-child(odd) { border-right: 1px solid var(--line); }
+.control-group:nth-child(-n + 4) { border-bottom: 1px solid var(--line); }
+.control-group:last-child { grid-column: 1 / -1; border-right: 0; }
+.series-palette { margin-top: var(--space-6); }
+.control-label { display: block; margin-bottom: var(--space-3); color: var(--muted); font-size: 12px; }
+.control-line { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); }
+.data-heading { margin-bottom: var(--space-6); }
+.data-heading h2 { font-size: var(--type-section); }
+.data-heading p { max-width: 64ch; margin: var(--space-2) 0 0; color: var(--muted); font-size: 14px; }
+.format-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); background: var(--line) padding-box; }
+.format-metrics > div { padding: var(--space-5); background: var(--bg); }
+.format-metrics strong { display: block; color: var(--text); font: 650 32px/1 var(--font-display); letter-spacing: -.035em; }
+.format-metrics span { display: block; margin-top: var(--space-2); color: var(--muted); font-size: var(--type-service); }
+.format-table { margin-top: var(--space-5); }
+.chart-sample { margin: 0; border: 1px solid var(--line); }
+.chart-sample__head { display: flex; justify-content: space-between; gap: var(--space-5); align-items: end; padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--line); }
+.chart-sample__head :is(h2, h3) { font-size: var(--type-local); }
+.chart-sample__head p { margin: var(--space-1) 0 0; color: var(--muted); font-size: 12px; }
+.chart-canvas { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: var(--space-3); padding: var(--space-5) var(--space-5) 0; }
+/* A scale label uses the same --at fraction as its grid line and centers
+   on it. Labels used to be spread over the block height, and the outer ones
+   drifted half a line off their lines. */
+.chart-y-axis { position: relative; height: 260px; color: var(--muted); font-size: var(--type-service); line-height: 1; text-align: right; font-variant-numeric: tabular-nums; }
+.chart-y-axis span { position: absolute; top: var(--at); right: 0; transform: translateY(-50%); white-space: nowrap; }
+.chart-plot { position: relative; min-width: 0; height: 260px; }
+.chart-plot > i { position: absolute; z-index: 0; top: var(--at); right: 0; left: 0; border-top: 1px solid var(--line); }
+.chart-plot svg { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.chart-line { fill: none; stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+.chart-line--neutral { stroke: var(--data-neutral); }
+.chart-line--blue { stroke: var(--data-blue); }
+.chart-line--green { stroke: var(--data-green); }
+.chart-event { position: absolute; z-index: 2; top: 0; bottom: 0; left: 66%; border-left: 1px dashed var(--accent-mark); }
+.chart-event b { position: absolute; top: 0; left: -3px; width: 6px; height: 6px; background: var(--accent-mark); }
+/* The bottom edge of the block is the threshold line. The label sits above
+   it at the left edge, where the series run far below, and does not cross
+   the data. */
+.chart-threshold { position: absolute; z-index: 2; bottom: calc(100% - var(--at)); right: 0; left: 0; padding: 0 0 var(--space-1) var(--space-1); border-bottom: 1px dashed var(--accent-mark); color: var(--accent); font-size: var(--type-service); line-height: 1.2; }
+/* A time label centers on its tick, like an event mark. */
+.chart-x-axis { position: relative; height: 18px; margin: var(--space-2) var(--space-5) 0 calc(var(--space-5) + 60px); color: var(--muted); font-size: var(--type-service); line-height: 18px; font-variant-numeric: tabular-nums; }
+.chart-x-axis span { position: absolute; top: 0; left: var(--at); transform: translateX(-50%); white-space: nowrap; }
+/* The outer labels sit inside the chart. Centered on the tick, they ran into the border. */
+.chart-x-axis span:first-child { transform: none; }
+.chart-x-axis span:last-child { transform: translateX(-100%); }
+.chart-summary { margin: var(--space-4) 0 0; padding: var(--space-4) var(--space-5); border-top: 1px solid var(--line); color: var(--muted); font-size: var(--type-body); }
+.chart-summary strong { color: var(--text); font-weight: 600; }
+.chart-pair { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); margin-top: var(--space-5); }
+.chart-panel { min-width: 0; margin: 0; border: 1px solid var(--line); }
+.chart-panel > figcaption { min-height: 74px; display: flex; justify-content: space-between; gap: var(--space-4); align-items: start; padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--line); }
+.chart-panel > figcaption h3 { font-size: 18px; }
+.chart-panel > figcaption p { margin: var(--space-1) 0 0; color: var(--muted); font-size: 12px; }
+.chart-panel > .bar-list { margin: var(--space-5); }
+/* Extra height from the neighboring panel splits evenly above and below the chart. */
+.chart-pair .equal-panel__body { display: grid; align-content: center; }
+/* In a component card .component-preview already draws the border. The
+   panel's own border would be a second line twenty pixels from the first,
+   so here the panel gives its border to the preview and keeps only the
+   dividers. */
+.catalog-chart-panel { border: 0; }
+.catalog-chart-panel > figcaption, .catalog-chart-panel > .chart-summary { padding-inline: var(--gutter); }
+.catalog-chart-panel > .bar-list { margin-inline: var(--gutter); }
+/* The scale, grid and threshold share the grid cell with the bars and take
+   the --at fraction of its height, so the 400 tick and the top of a 400 bar
+   line up. The baseline runs under the bars, category labels go below it.
+   The fraction is a unitless number, because CSS can't multiply a length by
+   a percentage. */
+.column-chart { --plot: 168px; --label: 18px; --axis: 28px; position: relative; display: grid; grid-template-columns: var(--axis) repeat(5, minmax(0, 1fr)); grid-template-rows: auto var(--plot) var(--label); gap: var(--space-2) var(--space-4); align-items: end; margin: var(--space-5); padding-top: var(--space-2); }
+/* For an absolutely positioned grid item an "auto" end means the container edge, so both lines are set explicitly. */
+.column-chart__grid, .column-threshold { position: absolute; grid-row: 2 / 3; }
+.column-chart__grid { grid-column: 2 / -1; inset: 0 0 -1px; border-bottom: 1px solid var(--line-strong); }
+.column-chart__grid i { position: absolute; right: 0; left: 0; bottom: calc(var(--at) * 100%); border-top: 1px solid var(--line); }
+.column-chart__axis { position: relative; grid-column: 1; grid-row: 2; align-self: stretch; color: var(--muted); font-size: var(--type-service); line-height: 1; text-align: right; font-variant-numeric: tabular-nums; }
+.column-chart__axis span { position: absolute; right: 0; bottom: calc(var(--at) * 100%); transform: translateY(50%); }
+.column-chart > div { z-index: 1; grid-row: 1 / -1; display: grid; grid-template-rows: subgrid; align-items: end; text-align: center; }
+.column-chart strong { color: var(--text); font-size: var(--type-service); font-variant-numeric: tabular-nums; }
+.column-chart > div > i { width: min(100%, 44px); height: var(--value); justify-self: center; background: var(--data-neutral); }
+.column-chart > div > span { display: block; color: var(--muted); font-size: var(--type-service); line-height: var(--label); }
+.column-chart > .column-chart__alert > i { background: var(--data-red); }
+.column-chart__alert strong { color: var(--accent); }
+/* The threshold label sits above the line at the left edge, over the short bars. */
+.column-threshold { z-index: 2; grid-column: 2 / -1; right: 0; left: 0; bottom: calc(var(--at) * 100%); padding: 0 0 var(--space-1) var(--space-1); border-bottom: 1px dashed var(--accent-mark); color: var(--accent); font-size: var(--type-service); line-height: 1.2; }
+.chart-panel > figcaption.heatmap-heading { align-items: center; }
+.heatmap-legend { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--muted); font-size: var(--type-service); white-space: nowrap; }
+.heatmap-legend i { width: 14px; height: 14px; background: var(--data-neutral); }
+.heatmap-legend i:nth-of-type(1) { opacity: .16; }
+.heatmap-legend i:nth-of-type(2) { opacity: .36; }
+.heatmap-legend i:nth-of-type(3) { opacity: .62; }
+.heatmap-legend i:nth-of-type(4) { opacity: .9; }
+.heatmap { display: grid; grid-template-columns: 36px repeat(8, minmax(0, 1fr)); gap: var(--space-1); align-items: center; padding: var(--space-5) var(--space-5) 0; }
+.heatmap span { color: var(--muted); font-size: var(--type-service); text-align: right; font-variant-numeric: tabular-nums; }
+.heatmap i { min-width: 0; height: 34px; background: var(--data-neutral); }
+.heat-1 { opacity: .1; }
+.heat-2 { opacity: .24; }
+.heat-3 { opacity: .44; }
+.heat-4 { opacity: .68; }
+.heat-5 { opacity: .92; }
+.heatmap-axis { display: flex; justify-content: space-between; margin: var(--space-2) var(--space-5) 0 calc(var(--space-5) + 40px); color: var(--muted); font-size: var(--type-service); font-variant-numeric: tabular-nums; }
+.donut-layout { min-height: 250px; display: grid; grid-template-columns: minmax(150px, .9fr) minmax(130px, 1fr); gap: var(--space-4); align-items: center; padding: var(--space-5); }
+.donut-chart { width: 100%; max-width: 220px; justify-self: center; overflow: visible; transform: rotate(-90deg); }
+.donut-chart circle { fill: none; stroke-width: 18; vector-effect: non-scaling-stroke; }
+.donut-chart__base { stroke: var(--line); }
+.donut-chart__segment { stroke-linecap: butt; }
+.donut-chart__segment--neutral { stroke: var(--data-neutral); }
+.donut-chart__segment--blue { stroke: var(--data-blue); }
+.donut-chart__segment--amber { stroke: var(--data-amber); }
+.donut-chart__segment--green { stroke: var(--data-green); }
+.donut-chart text { transform: rotate(90deg); transform-origin: 80px 80px; fill: var(--text); font-family: var(--font-display); }
+.donut-chart__value { font-size: 16px; font-weight: 650; }
+.donut-chart text.donut-chart__label { fill: var(--muted); font-family: var(--font-text); font-size: var(--type-service); font-weight: 400; }
+.donut-legend { margin: 0; }
+.donut-legend div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-3); align-items: center; padding: var(--space-2) 0; border-bottom: 1px solid var(--line); }
+.donut-legend dt { min-width: 0; }
+.donut-legend dd { margin: 0; color: var(--text); font-size: var(--type-body); font-variant-numeric: tabular-nums; }
+.queue-sample { border: 1px solid var(--line); }
+.queue-sample__head { display: flex; justify-content: space-between; gap: var(--space-5); align-items: center; padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--line); }
+.queue-sample__head > div { display: grid; gap: var(--space-1); }
+.queue-sample__head strong { color: var(--text); font: 600 18px/1.3 var(--font-display); }
+.queue-sample__head span { color: var(--muted); font-size: 12px; }
+.queue-sample__body { display: grid; grid-template-columns: minmax(320px, 1.15fr) minmax(280px, .85fr); }
+.queue-sample__list { min-width: 0; }
+.queue-row { position: relative; width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-4); align-items: center; padding: var(--space-4) var(--space-5); border: 0; border-bottom: 1px solid var(--line); color: var(--text-body); background: var(--bg); text-align: left; cursor: pointer; }
+.queue-row:last-child { border-bottom: 0; }
+.queue-row:hover strong { color: var(--accent); }
+.queue-row:focus-visible { outline-offset: -3px; }
+/* A line on the border with the details panel marks the open record. The
+   mark shows which row the content on the right belongs to. */
+.queue-row[aria-pressed="true"]::before { content: ""; position: absolute; inset: 0 0 0 auto; width: 2px; background: var(--accent-mark); }
+.queue-row[aria-pressed="true"] strong { color: var(--accent); }
+.queue-row > span:first-child { min-width: 0; display: grid; gap: var(--space-1); }
+.queue-row strong { overflow: hidden; color: var(--text); font-weight: 600; transition: color 160ms var(--ease-out); text-overflow: ellipsis; white-space: nowrap; }
+.queue-row small { overflow: hidden; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.queue-detail { min-width: 0; padding: var(--space-5); border-left: 1px solid var(--line); }
+.queue-detail__meta { display: block; margin-bottom: var(--space-2); color: var(--muted); font-size: 12px; }
+.queue-detail h3 { max-width: 24ch; }
+.queue-detail p { max-width: 50ch; margin: var(--space-4) 0 var(--space-5); }
+.queue-detail dl { margin: 0 0 var(--space-5); border-top: 1px solid var(--line); }
+.queue-detail dl div { display: grid; grid-template-columns: minmax(7rem, .65fr) minmax(0, 1fr); gap: var(--space-4); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
+.queue-detail dt { color: var(--muted); font-size: 12px; }
+.queue-detail dd { margin: 0; color: var(--text); }
+.layout-map { border: 1px solid var(--line); }
+.layout-row { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: var(--space-7); align-items: center; padding: var(--space-5); border-bottom: 1px solid var(--line); }
+.layout-row:last-child { border-bottom: 0; }
+.layout-row h3 { font-size: var(--type-local); }
+.layout-row p { max-width: 64ch; margin: var(--space-2) 0 var(--space-3); color: var(--muted); }
+.layout-diagram { width: 220px; height: 124px; display: grid; gap: 4px; padding: 8px; border: 1px solid var(--line-strong); background: var(--bg); }
+.layout-diagram i { display: block; min-width: 0; min-height: 0; background: transparent; border: 1px solid var(--line); }
+.layout-diagram--document { grid-template-rows: 22px 24px 1fr; padding-inline: 28px; }
+.layout-diagram--data { grid-template: 24px 22px 1fr / 1fr 64px; }
+.layout-diagram--data i:first-child, .layout-diagram--data i:nth-child(2) { grid-column: 1 / -1; }
+.layout-diagram--workspace { grid-template: 24px 1fr 24px / 1fr 76px; }
+.layout-diagram--workspace i:first-child, .layout-diagram--workspace i:last-child { grid-column: 1 / -1; }
+/* The grid draws the outer border, and the background in the gaps draws
+   the joint lines. The column count matches the cell count, so the last row
+   is full and there are no holes filled with the line color. */
+.demo-grid { --demo-cols: 4; display: grid; grid-template-columns: repeat(var(--demo-cols), minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); background: var(--line) padding-box; }
+.demo-cell { min-width: 0; display: grid; gap: var(--space-3); align-content: start; padding: var(--space-5); background: var(--raise-solid); }
+.demo-cell--wide { grid-column: 1 / -1; }
+/* The tall cell spans three rows. Its short neighbors stack next to it and
+   do not stretch to its height. */
+.demo-cell--tall { grid-row: span 3; }
+.demo-label { color: var(--muted); font-size: 12px; }
+#navigation .breadcrumbs { margin-bottom: var(--space-5); }
+#navigation .tabs { margin-bottom: var(--space-6); }
+#navigation .pagination { margin-top: var(--space-5); }
+.catalog-pagination { padding: var(--space-4) var(--gutter); }
+#navigation .data-table caption { padding: var(--space-3); color: var(--muted); font-size: 12px; text-align: left; }
+.fragment-showcase { display: grid; gap: var(--space-6); }
+.fragment-stage { min-width: 0; border: 1px solid var(--line); }
+.fragment-stage__label { margin: 0; padding: var(--space-3) var(--gutter); border-bottom: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.fragment-stage__label code { font-size: 1em; }
+.fragment-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
+.catalog-page-head { padding: var(--preview-pad, var(--gutter)) var(--gutter); }
+.catalog-page-head h3 { max-width: 24ch; font-size: var(--type-page); }
+.catalog-workspace-head { padding: var(--preview-pad, var(--gutter)) var(--gutter); }
+.catalog-workspace-head h3 { font-size: var(--type-section); }
+.catalog-workbench { min-height: 0; margin: 0; border: 0; }
+.catalog-workbench .scroll-region { min-height: 0; }
+.catalog-workbench .panel-head h3 { font-size: var(--type-local); }
+.catalog-workbench .panel-head { padding-inline: var(--gutter); }
+.catalog-workbench__content { display: grid; gap: var(--space-3); padding: var(--space-4) var(--gutter); }
+.catalog-workbench__content p { max-width: 52ch; margin: 0; color: var(--muted); }
+.catalog-workbench .kv-list { padding: var(--space-4) var(--gutter); }
+.fragment-stage .data-table caption { padding: var(--space-4) var(--gutter); color: var(--muted); font-size: 12px; text-align: left; }
+.catalog-empty-state { min-height: 14rem; display: grid; }
+.recipe-start { min-width: 0; }
+.recipe-start > .steps { border-inline: 0; }
+.recipe-command-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); padding: var(--space-5); border-bottom: 1px solid var(--line); }
+.recipe-command-grid .code-block { min-width: 0; }
+/* A long command scrolls as a whole. A line break in the middle of a flag
+   makes it hard to copy by eye. */
+.recipe-command-grid .code-block pre { overscroll-behavior-x: contain; }
+.recipe-start > .notice { margin: var(--space-5); }
+/* Component documentation. The shell uses the Craft language: dense
+   typography, flat sections and lines instead of cards. */
+.docs-main { grid-column: 2; min-width: 0; }
+.docs-main { --docs-end: max(var(--space-7), calc(100% - 1200px + var(--space-7))); }
+/* Right padding limits the text column, not the block width. Otherwise the
+   section dividers would stop short of the window edge. */
+.docs-intro, .component-group, .docs-page-head, .component-doc { padding-right: var(--docs-end); }
+.docs-intro { padding-block: var(--space-7); padding-left: var(--space-7); border-bottom: 1px solid var(--line); }
+.docs-intro > p:last-of-type { max-width: 64ch; margin: var(--space-2) 0 0; color: var(--muted); font-size: var(--type-lede); }
+.docs-facts { display: flex; flex-wrap: wrap; gap: var(--space-6); margin: var(--space-7) 0 0; }
+/* Values stay on one line even if the neighbor's label wraps. */
+.docs-facts div { min-width: 8rem; display: grid; grid-template-rows: 1fr auto; padding-top: var(--space-2); border-top: 1px solid var(--line); }
+.docs-facts dt { color: var(--muted); font-size: var(--type-service); }
+.docs-facts dd { margin: var(--space-2) 0 0; color: var(--text); font: 650 var(--type-section)/1 var(--font-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.component-group { padding-block: var(--space-7); padding-left: var(--space-7); border-bottom: 1px solid var(--line); scroll-margin-top: var(--space-5); }
+.component-group:last-child { border-bottom: 0; }
+.component-group > header { margin-bottom: var(--space-6); }
+.component-group > header h2 { font-size: var(--type-section); }
+.component-group > header p { max-width: 54ch; margin: var(--space-2) 0 0; color: var(--muted); }
+.component-index { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; padding: 1px; }
+.component-index:has(> a:only-child) { grid-template-columns: 1fr; }
+.component-index:has(> a:nth-child(2):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.component-index a { min-width: 0; min-height: 72px; display: flex; flex-direction: column; gap: var(--space-1); justify-content: center; padding: var(--space-3) var(--space-4); outline: 1px solid var(--line); color: var(--text); background: var(--bg); text-decoration: none; transition: color 160ms var(--ease-out); }
+.component-index a:hover, .component-index a:focus-visible { color: var(--accent); }
+.component-index span, .component-index code { overflow: hidden; color: var(--muted); font: var(--type-service)/1.5 var(--font-mono); text-overflow: ellipsis; white-space: nowrap; }
+.level-index span { font-family: var(--font-text); }
+/* Category page and the block for a single component. */
+.docs-article { min-width: 0; }
+.docs-page-head { padding-block: var(--space-7); padding-left: var(--space-7); border-bottom: 1px solid var(--line); }
+.docs-page-head > p { max-width: 64ch; margin: var(--space-2) 0 0; color: var(--muted); font-size: var(--type-lede); }
+.component-doc { padding-block: var(--space-7); padding-left: var(--space-7); border-bottom: 1px solid var(--line); scroll-margin-top: var(--space-5); }
+.component-doc:last-child { border-bottom: 0; }
+.component-doc__head { margin-bottom: var(--space-6); }
+.component-doc__head h2 { font-size: var(--type-section); }
+.component-doc__summary { max-width: 56ch; margin: var(--space-2) 0 0; color: var(--muted); font-size: var(--type-lede); }
+/* The preview wraps the example. The content sets the height, and the
+   padding is the same on every page. An example with no padding gets the
+   same padding through --gutter, so its text lines up with the text of a
+   regular preview. */
+.component-preview { --preview-pad: var(--space-6); display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; padding: var(--preview-pad); border: 1px solid var(--line); background: var(--raise); overflow: auto; }
+.component-preview--flush { --gutter: var(--preview-pad); --section-y: var(--preview-pad); padding: 0; }
+/* The preview draws the border. The example gives up its outer lines, so
+   each edge has one owner. */
+.component-preview--flush > *, .fragment-stage > * { border-inline: 0; }
+.component-preview--flush > :first-child, .fragment-stage__label + * { border-top: 0; }
+.component-preview--flush > :last-child, .fragment-stage > :last-child { border-bottom: 0; }
+.fragment-stage .section-nav--row .section-nav__links { border-bottom: 0; }
+.component-preview > :only-child { width: 100%; }
+.component-preview--flush > :is(.token-table, .type-specimens) > * { padding-inline: var(--gutter); }
+.component-preview--flush > :is(.token-table, .type-specimens) > :last-child { border-bottom: 0; }
+:is(.component-preview--flush, .fragment-stage) .data-table :is(th, td):first-child { padding-left: var(--gutter); }
+:is(.component-preview--flush, .fragment-stage) .data-table :is(th, td):last-child { padding-right: var(--gutter); }
+:is(.component-preview--flush, .fragment-stage) > .table-scroll:last-child tbody > tr:last-child > * { border-bottom: 0; }
+/* The markup shares the preview's bottom line. A top border on the
+   disclosure would lay a second translucent line on top of it. */
+.component-code { border-top: 0; }
+.component-code pre { margin: 0; padding: var(--space-4); color: var(--craft-code-text); background: transparent; border-top: 1px solid var(--line); font: 13px/1.6 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.component-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-7); margin-top: var(--space-6); }
+.component-notes section { min-width: 0; }
+.component-notes h3 { margin-bottom: var(--space-2); font-size: var(--type-local); }
+.component-notes p, .component-notes ul, .component-notes ol { margin: 0; color: var(--muted); }
+.component-notes p + p { margin-top: var(--space-2); }
+.component-notes ul, .component-notes ol { padding-left: 1.2rem; }
+.component-api { width: 100%; margin-top: var(--space-6); border: 1px solid var(--line); border-collapse: collapse; table-layout: fixed; }
+/* The contract caption sits level with the note headings above. */
+.component-api caption { padding-bottom: var(--space-2); color: var(--text); font: 700 var(--type-local)/1.25 var(--font-display); letter-spacing: -.03em; text-align: left; }
+.component-api th, .component-api td { padding: var(--space-2) var(--space-3); border: 1px solid var(--line); text-align: left; vertical-align: baseline; overflow-wrap: anywhere; }
+.component-api th { width: 32%; color: var(--muted); font-size: var(--type-service); font-weight: 500; }
+.component-api code { font-size: var(--type-service); }
+.docs-preview-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
+.docs-preview-stack { display: grid; gap: var(--space-4); }
+.docs-preview-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+/* The icon grid fills the preview. The preview draws the border, and the
+   background in the gaps draws the lines between cells. The column count
+   divides 18 icons evenly at every width, so there are never empty cells
+   filled with the line color. */
+.docs-icon-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1px; background: var(--line); }
+.docs-icon-grid div { min-height: 88px; display: grid; justify-items: center; align-content: center; gap: var(--space-2); padding: var(--space-3); color: var(--muted); background: var(--raise-solid); font-size: var(--type-service); text-align: center; }
+.docs-icon-grid code { white-space: nowrap; }
+.docs-icon-grid .icon { color: var(--text); }
+
+@media (max-width: 1180px) {
+  .demo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .docs-icon-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .chart-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chart-panel:last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 900px) {
+  .system-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .docs-intro, .component-group, .docs-page-head, .component-doc { padding-inline: var(--space-5); }
+  .system-nav { position: sticky; inset: auto; top: 0; width: auto; height: auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "brand theme" "links links"; align-items: center; padding: var(--space-4) var(--space-5) 0; border: 0; border-bottom: 1px solid var(--line); background: var(--raise-solid); }
+  .docs-main { grid-column: 1; }
+  .system-brand { grid-area: brand; }
+  .system-version { display: none; }
+  .system-theme { grid-area: theme; justify-self: end; margin: 0; }
+  /* The first link's label sits at the content edge, so the row shifts by
+     the link's inner padding. The right edge fades out. The row scrolls, and
+     a clipped link must read as more to come, not as a bug. */
+  .system-links { grid-area: links; width: auto; min-width: 0; display: flex; flex-wrap: nowrap; gap: var(--space-1); margin: var(--space-3) calc(-1 * var(--space-5)) 0; padding: 0 var(--space-7) 0 calc(var(--space-5) - var(--space-3)); overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; mask-image: linear-gradient(to left, transparent, var(--text) var(--space-7)); }
+  .system-links::-webkit-scrollbar { display: none; }
+  /* The nav moved above the content, so the selection mark moves to the bottom edge. */
+  /* The current-page mark sits on the strip's bottom rule, with no gap under it. */
+  .system-links a, .system-links a:first-child { flex: 0 0 auto; padding: var(--space-3); border: 0; }
+  .system-links a[aria-current="true"] { box-shadow: inset 0 -2px 0 var(--accent-mark); }
+  .system-intro { min-height: 0; grid-template-columns: 1fr; padding: var(--space-6) var(--space-5); }
+  .system-section { padding: var(--space-6) var(--space-5); scroll-margin-top: calc(2 * var(--space-7)); }
+  .rule-list article { grid-template-columns: minmax(160px, .65fr) minmax(240px, 1.2fr); }
+  .rule-list span { grid-column: 2; text-align: left; }
+  .rhythm-section { grid-template-columns: minmax(180px, .7fr) minmax(280px, 1fr); gap: var(--space-6); }
+  .chart-pair { grid-template-columns: 1fr; }
+  .chart-panel:last-child { grid-column: auto; }
+  .queue-sample__body { grid-template-columns: 1fr; }
+  .queue-detail { border: 0; border-top: 1px solid var(--line); }
+  /* The details moved below the whole list, so the row no longer has an edge
+     facing them. A bottom line would point at the next row, so the selection
+     uses a quiet background. */
+  .queue-row[aria-pressed="true"] { background: var(--accent-tint); }
+  .queue-row[aria-pressed="true"]::before { content: none; }
+  .fragment-pair { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .docs-intro { padding-block: var(--space-7); }
+  .docs-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+  .docs-facts div { min-width: 0; }
+  .component-notes, .docs-preview-columns { grid-template-columns: 1fr; }
+  /* A narrow cell has no room for the class name, so the pair stacks.
+     The tbody draws the border so the caption stays outside. */
+  .component-api, .component-api caption, .component-api tbody, .component-api tr, .component-api th, .component-api td { display: block; width: auto; }
+  .component-api { border: 0; }
+  .component-api tbody { border: 1px solid var(--line); }
+  .component-api th, .component-api td { border: 0; }
+  .component-api tr + tr { border-top: 1px solid var(--line); }
+  .component-api th { padding-bottom: 0; }
+  .component-api td { padding-top: var(--space-1); }
+  .recipe-command-grid { grid-template-columns: 1fr; padding: var(--space-4); }
+  .recipe-start > .notice { margin: var(--space-4); }
+  .component-preview { --preview-pad: var(--space-5); }
+  .docs-icon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .docs-icon-grid div { padding: var(--space-3) var(--space-2); }
+  .component-index, .component-index:has(> a:nth-child(2):last-child) { grid-template-columns: 1fr; }
+  .system-section__head, .data-heading { margin-bottom: var(--space-5); }
+  .rhythm-section { grid-template-columns: 1fr; gap: var(--space-3); margin-bottom: var(--space-5); }
+  .rule-list article { grid-template-columns: 1fr; gap: var(--space-2); }
+  .rule-list span { grid-column: 1; text-align: left; }
+  .control-demo { grid-template-columns: 1fr; }
+  .demo-grid { grid-template-columns: 1fr; }
+  .demo-cell--tall { grid-row: auto; }
+  .control-group:nth-child(odd) { border-right: 0; }
+  .control-group:nth-child(-n + 4) { border-bottom: 1px solid var(--line); }
+  .token-row { grid-template-columns: 28px minmax(0, 1fr) auto; gap: var(--space-1) var(--space-3); }
+  .token-row i { grid-area: 1 / 1; }
+  .token-row strong { grid-area: 1 / 2; }
+  .token-row span { grid-area: 1 / 3; }
+  .token-row code { grid-area: 2 / 2 / 3 / -1; }
+  .token-row em { grid-area: 3 / 2 / 4 / -1; font-size: var(--type-body); }
+  .type-row { grid-template-columns: 1fr; gap: var(--space-2); }
+  .layout-row { grid-template-columns: 1fr; }
+  .layout-diagram { width: 100%; max-width: 320px; }
+  .catalog-workspace-head { position: static; }
+  .catalog-workspace-head h3 { padding-right: 0; }
+  .catalog-workspace-head .workspace-head__tools { display: flex; position: static; width: auto; }
+  .catalog-workbench { display: grid; }
+  .format-metrics { grid-template-columns: 1fr; }
+  .chart-sample__head { align-items: flex-start; flex-direction: column; }
+  .chart-canvas { grid-template-columns: 40px minmax(0, 1fr); padding-inline: var(--space-4); }
+  .chart-y-axis, .chart-plot { height: 220px; }
+  .chart-x-axis { margin-inline: calc(var(--space-4) + 52px) var(--space-5); }
+  .chart-panel > figcaption { min-height: 0; }
+  .column-chart { gap: var(--space-2); margin-inline: var(--space-4); }
+  .column-chart > div > i { width: min(100%, 34px); }
+  .chart-panel > figcaption.heatmap-heading { align-items: flex-start; flex-direction: column; }
+  .heatmap { padding-inline: var(--space-4); }
+  .heatmap i { height: 28px; }
+  .heatmap-axis { margin-inline: calc(var(--space-4) + 40px) var(--space-4); }
+  .donut-layout { min-height: 0; grid-template-columns: 1fr; padding: var(--space-4); }
+  .donut-chart { max-width: 180px; }
+  .queue-sample__head { align-items: flex-start; flex-direction: column; gap: var(--space-2); }
+  .queue-row { grid-template-columns: 1fr; gap: var(--space-2); }
+}
+@media (max-width: 520px) {
+  /* Rows turn into cards with their own border. The cards need space from
+     the preview border, and the cells don't need the table edge padding. */
+  .component-preview--flush > .table-scroll:has(.data-table--records) { padding: var(--gutter); }
+  :is(.component-preview--flush, .fragment-stage) .data-table--records td:is(:first-child, :last-child) { padding-inline: 0; }
+  :is(.component-preview--flush, .fragment-stage) > .table-scroll:last-child .data-table--records tbody > tr:last-child > :not(:last-child) { border-bottom: 1px solid var(--line); }
+}
+@media print {
+  .system-layout { display: block; }
+  .system-nav { display: none; }
+  .system-intro, .system-section { padding-inline: 0; }
+  .docs-intro, .component-group, .docs-page-head, .component-doc { padding-inline: 0; }
+  /* A whole section would not break across pages and left half a page empty.
+     Now only component examples and rows are unbreakable, and the section
+     flows across pages. A recipe preview taller than a page breaks too.
+     Otherwise the first page was left with only a heading. */
+  [data-component-doc] .component-preview, .demo-cell, .fragment-stage, .chart-panel, .chart-sample, .rule-list article, .layout-row, .token-row, .type-row, .component-notes section, .component-api, .control-group { break-inside: avoid; }
+  /* The section header does not break and moves to the next page with the first example. */
+  .component-doc__head, .system-section__head, .data-heading { break-inside: avoid; break-after: avoid; }
+  .component-preview { overflow: visible; }
+  /* When paginating, Chromium places an absolutely positioned grid item with
+     grid-row at the start of the document instead of its cell. The threshold
+     and scale lines ended up on the first page. On paper they are regular
+     items in the same cell, and the bars get explicit columns so automatic
+     placement does not skip the occupied cell. */
+  .column-chart__grid, .column-threshold { position: relative; inset: auto; grid-row: 2; grid-column: 2 / -1; }
+  .column-chart__grid { align-self: stretch; margin-bottom: -1px; }
+  .column-threshold { align-self: end; margin-bottom: calc(var(--at) * var(--plot)); }
+  .column-chart > div:nth-of-type(1) { grid-column: 2; }
+  .column-chart > div:nth-of-type(2) { grid-column: 3; }
+  .column-chart > div:nth-of-type(3) { grid-column: 4; }
+  .column-chart > div:nth-of-type(4) { grid-column: 5; }
+  .column-chart > div:nth-of-type(5) { grid-column: 6; }
+  /* On a page break the gap-line grid filled the rest of the page with the
+     line color. On paper the examples flow, and each cell has its own border. */
+  .demo-grid { display: block; border: 0; background: none; }
+  .demo-cell { border: 1px solid var(--line); }
+  .demo-cell + .demo-cell { margin-top: -1px; }
+  /* The catalog prints the component sample even if a project hides it on
+     paper. Otherwise the tabs, pagination and nav previews came out empty. */
+  .component-preview :is(.tablist, .pagination) { display: flex; }
+  .component-preview .section-nav { display: block; }
+  /* The collapsed example markup does not expand on paper and stays an empty line. */
+  .component-code { display: none; }
+}
+
+/* Template sketches: the geometry of a page as labeled regions, a wide
+   screen next to a phone. Regions carry the class that builds them. */
+.template-sketch { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); gap: var(--space-5); align-items: start; }
+.template-sketch figure { display: grid; gap: var(--space-2); margin: 0; min-width: 0; }
+.template-sketch figcaption { color: var(--muted); font-size: var(--type-service); }
+.sketch { display: grid; gap: var(--space-2); padding: var(--space-2); border: 1px solid var(--line); background: var(--bg); }
+.sketch--document { grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); grid-template-rows: auto 7rem 5rem; grid-template-areas: "head head" "nav band" "nav band2"; }
+.sketch--data { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto 5rem 5rem; grid-template-areas: "head" "filters" "metrics" "chart" "table"; }
+.sketch--work { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); grid-template-rows: auto 13rem; grid-template-areas: "head head" "main aside"; }
+.sketch--phone { grid-template-columns: minmax(0, 1fr); }
+.sketch-region { display: grid; align-content: start; gap: var(--space-1); min-width: 0; padding: var(--space-2) var(--space-3); border: 1px solid var(--line); background: var(--raise); color: var(--muted); font-size: var(--type-service); }
+.sketch-region b { color: var(--text); font-family: var(--font-mono); font-weight: 500; overflow-wrap: anywhere; }
+.sketch-region--tall { min-height: 6rem; }
+@media (max-width: 860px) {
+  .template-sketch { grid-template-columns: minmax(0, 1fr); }
+  .template-sketch figure:first-child { display: none; }
+}
