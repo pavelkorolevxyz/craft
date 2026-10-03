@@ -82,9 +82,13 @@
      intended. A line cannot be thinner than a pixel, so the floor is 1px.
      On a tile every rule converges to it and looks even, with no jumps
      in thickness. During the talk the values go back to the usual 1px
-     and 3px. Here cqw resolves against .slide, the slide container. */
-  --rule: max(1px, .0625cqw);
-  --rule-strong: max(1px, .1875cqw);
+     and 3px. Here cqw resolves against .slide, the slide container.
+     On a slide wider than 1600px the fraction is not a whole pixel, and
+     the browser draws such a line wider or narrower depending on where it
+     falls, while borders round down. Rounding down to whole pixels keeps
+     every line as thick as a box border. */
+  --rule: max(1px, round(down, .0625cqw, 1px));
+  --rule-strong: max(1px, round(down, .1875cqw, 1px));
 }
 
 /* ============================================================
@@ -1031,14 +1035,16 @@
 /* A link spans the whole gap, and the arrowhead touches the next node.
    The segment stops at the base of the arrowhead instead of running under
    it. The line and the triangle use a semi-transparent color, and where
-   they overlap they would show through each other as a dark spot. */
+   they overlap they would show through each other as a dark spot. The
+   link is centered with a margin, not a transform: layout offsets snap to
+   whole pixels, and a translate by half a pixel smears the line over two. */
 .flow-arrow {
   position: absolute;
   top: 50%;
   right: 100%;
   width: var(--flow-gap);
   height: var(--rule);
-  transform: translateY(-50%);
+  margin-top: calc(var(--rule) / -2);
 }
 .flow-arrow::before {
   content: "";
@@ -1065,7 +1071,7 @@
   left: 50%;
   width: var(--rule);
   height: var(--flow-drop);
-  transform: translateX(-50%);
+  margin: 0 0 0 calc(var(--rule) / -2);
 }
 /* Pointing down, the arrowhead sits ON the node border, not over it. The
    border is a quiet color too, and a shared pixel would read as a thicker line. */
