@@ -256,7 +256,11 @@ def build(args: argparse.Namespace) -> Path:
     if args.pdf:
         pdf = stage / f"{name}.pdf"
         from lib import chromium_args
-        subprocess.run([*chromium_args(1280, 720), f"--print-to-pdf={pdf}", (stage / "index.html").as_uri() + "?reveal=steps&motion=static"], check=True, capture_output=True)
+        result = subprocess.run([*chromium_args(1280, 720), f"--print-to-pdf={pdf}", (stage / "index.html").as_uri() + "?reveal=steps&motion=static"], capture_output=True, text=True)
+        # Chrome on macOS may exit non-zero on teardown after the PDF is
+        # already written, so the file decides, not the exit code.
+        if not pdf.is_file() or pdf.stat().st_size == 0:
+            raise SystemExit(f"Chromium wrote no PDF (exit {result.returncode}): {result.stderr.strip()[-500:]}")
         hashes[pdf] = digest(pdf)
 
     now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
