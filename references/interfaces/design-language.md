@@ -26,6 +26,8 @@ The current theme uses `--raise` behind nested fields, buttons and panels. Use `
 
 The mark gets the signal color, the text next to it stays neutral. The exception is `.tag`, where the border and label form one colored sign.
 
+An accent fill (`.section--accent`, `.notice--action`, a filled metric or total) marks the main conclusion or the one next action. Keep one per screen. A checklist, a formula result, a definition or a quote stays on the neutral surface, and so does a block that just needs to stand out from the text around it. Two red fills in one view compete, and the reader cannot tell which one matters.
+
 On `--accent-fill`, swap text and quiet roles for `--craft-on-accent-*`. On the translucent `--accent-tint` the usual roles stay. A new local accent composition uses the same roles, not new shades.
 
 Load `theme.js` in `head` before the CSS. It picks the theme from `?theme=`, the saved value or `prefers-color-scheme`. It saves an explicit choice; without one the page follows the system. Redraw graphics that read `getComputedStyle` on `craft-themechange`. Both themes and print have their own data roles, so do not hard-code a screen color in a script.

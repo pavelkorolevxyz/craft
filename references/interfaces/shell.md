@@ -6,6 +6,8 @@ Only for the `blank` template. The `bare` starter skips this reference.
 
 `<main class="shell" data-craft-shell="app">` opens with `.workspace-head--compact`: `h1` on the left, page tools on the right, the theme toggle last. Page-wide controls live in the header, sections in `.tabs--page` below it. With `data-craft-shell`, the validator requires a working toggle.
 
+The page has one title, and it is the `h1`. In a tool, the bar's `h1` is that title. A document puts its `h1` in `page-head` under the bar, and the bar keeps only the tools and an optional back link in an empty `.workspace-head__main`. Do not leave the bar's `h1` in place and set the real title as a large `h2`. The check fails when a lower heading is bigger than the `h1`.
+
 A custom theme button: `data-theme-toggle`, `aria-pressed="false"`, classes `.button--stable .button--icon .theme-switch` and SVG labels `.button__label--rest`, `.button__label--pressed`. `theme.js` sets its name and tooltip.
 
 ## Action feedback

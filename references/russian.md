@@ -47,6 +47,12 @@ The control panel labels live in `index.html`. Replace each `aria-label`:
 
 On a page, the theme toggle gets `data-label-dark="Включить тёмную тему"` and `data-label-light="Включить светлую тему"`. The copy button reads «Копировать» and «Скопировано».
 
+## Terms
+
+Write in Russian. English stays in names, code, commands and identifiers. A term with no settled Russian word gets a short Russian explanation at first use.
+
+Headings, labels, tags, buttons and statuses are always Russian. Not "Action points", but «Что сделать». Not a `security` tag, but «безопасность». Not «low-friction режим», but «без лишних подтверждений».
+
 ## Numbers and dates
 
 - Group digits with a no-break space and use a decimal comma: `12 400`, `2,4`. In a `ru` deck the counter reads a comma as the decimal mark, so `12,400` would animate as twelve.

@@ -12,7 +12,9 @@
 
 Place a notice next to the content it concerns, not above the whole page. A square mark sets the tone. `.notice--ok` confirms a result, `.notice--warn` names a condition worth knowing, `.notice--error` reports a failed action. Without a modifier the notice is neutral.
 
-Only an error gets a signal background. The theme's `--raise` is the usual notice background. Text stays neutral in every tone, and the title and explanation carry the meaning. The `.notice--action` variant shows one next step and replaces a separate accent callout.
+The modifiers are exactly `--ok`, `--warn`, `--error` and `--action`. The check rejects any other, such as `--warning` or `--info`.
+
+Only an error gets a signal background. The theme's `--raise` is the usual notice background. Text stays neutral in every tone, and the title and explanation carry the meaning. The `.notice--action` variant shows one next step the reader must take now and replaces a separate accent callout. A step that is already done, such as "the structure is applied" or "delivery restored", is `--ok`, not `--action`. A red fill on a finished fact reads as an alarm.
 
 If a notice has an action, put the buttons in `.notice__actions`. They sit under the text and do not compete with the mark.
 
