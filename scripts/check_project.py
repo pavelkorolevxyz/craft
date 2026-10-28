@@ -19,6 +19,10 @@ CSS_IMPORT = re.compile(r"@import\s+(?:url\(\s*)?[\"']?([^\"')\s;]+)", re.I)
 CSS_URL = re.compile(r"url\(\s*[\"']?([^\"')]+)[\"']?\s*\)", re.I)
 VIEWPORTS = ((1440, 900), (390, 844), (320, 720))
 WEB_DELIVERY = re.compile(r"<html\b[^>]*\bdata-craft-delivery=\"web\"")
+# Attributes only the Craft catalogs carry. In a project they mean a copied catalog.
+CATALOG_MARKUP = re.compile(r"\bdata-(?:catalog-example|component-doc|preview-code)\b")
+CSS_CLASS = re.compile(r"\.(-?[_a-zA-Z][\w-]*)")
+CRAFT_CSS = {"tokens.css", "theme.css", "base.css", "slides.css"}
 ALLOWED_HOSTS = {"fonts.googleapis.com", "fonts.gstatic.com", "cdn.jsdelivr.net", "unpkg.com"}
 
 
@@ -29,9 +33,14 @@ class ProjectParser(HTMLParser):
         self.h1_count = 0
         self.interface = False
         self.slides = False
+        self.classes: set[str] = set()
+        self.styles: list[str] = []
+        self.in_style = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
+        self.classes.update((values.get("class") or "").split())
+        self.in_style = tag == "style"
         if tag == "h1":
             self.h1_count += 1
         if values.get("data-craft-layout") == "interface":
@@ -54,6 +63,14 @@ class ProjectParser(HTMLParser):
             )
         if values.get("style"):
             self.assets.extend(css_references(values["style"] or ""))
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "style":
+            self.in_style = False
+
+    def handle_data(self, data: str) -> None:
+        if self.in_style:
+            self.styles.append(data)
 
 
 def project_index(path: Path) -> Path:
@@ -85,6 +102,18 @@ def validate_reference(root: Path, base: Path, value: str, origin: Path, web: bo
     target = (base / relative).resolve()
     assert target == root or root in target.parents, f"asset points outside the project folder in {origin.relative_to(root)}: {reference}"
     assert target.is_file(), f"broken local asset in {origin.relative_to(root)}: {reference}"
+
+
+def css_classes(texts: list[str]) -> set[str]:
+    return {name for text in texts for name in CSS_CLASS.findall(CSS_COMMENT.sub("", text))}
+
+
+def check_modifiers(classes: set[str], craft: list[str], local: list[str]) -> None:
+    """A Craft block with a modifier no stylesheet defines is a typo, such as notice--warning for notice--warn."""
+    blocks = css_classes(craft)
+    defined = blocks | css_classes(local)
+    unknown = sorted(name for name in classes if "--" in name and name.split("--", 1)[0] in blocks and name not in defined)
+    assert not unknown, f"modifier not defined in any stylesheet: {', '.join(unknown)}. Pick an existing one from the component reference"
 
 
 def check_qr_color(text: str) -> None:
@@ -157,10 +186,15 @@ def check_static(index: Path, resource_root: Path | None = None) -> str:
     project_files = [path for path in root.rglob("*") if path.is_file() and path.suffix in {".html", ".css", ".js"}]
     web = bool(WEB_DELIVERY.search(index.read_text(encoding="utf-8")))
     html_parsers: dict[Path, ProjectParser] = {}
+    # The catalogs are checked from their package root with --resource-root.
+    catalog = resources / "catalog" in (root, *root.parents)
     for path in project_files:
         text = path.read_text(encoding="utf-8")
         match = PLACEHOLDER.search(text)
         assert not match, f"unfilled placeholder {match.group(0)} in {path.relative_to(root)}"
+        if path.suffix == ".html" and not catalog:
+            match = CATALOG_MARKUP.search(text)
+            assert not match, f"catalog markup {match.group(0)} in {path.relative_to(root)}: the catalog is a reference, not a starter. Scaffold a project and add fragments with compose.py"
         if path.suffix == ".html":
             parser = ProjectParser()
             parser.feed(text)
@@ -173,6 +207,17 @@ def check_static(index: Path, resource_root: Path | None = None) -> str:
 
     parser = html_parsers[index]
     assert parser.h1_count == 1, f"expected one h1, found: {parser.h1_count}"
+    stylesheets = [
+        (index.parent / unquote(urlsplit(value).path)).resolve()
+        for value in parser.assets
+        if value.split("?", 1)[0].endswith(".css") and not urlsplit(value).scheme and not value.startswith("//")
+    ]
+    sheets = {path: path.read_text(encoding="utf-8") for path in stylesheets if path.is_file()}
+    check_modifiers(
+        parser.classes,
+        [text for path, text in sheets.items() if path.name in CRAFT_CSS],
+        [text for path, text in sheets.items() if path.name not in CRAFT_CSS] + parser.styles,
+    )
     assert parser.interface != parser.slides, "cannot tell the Craft format for sure"
     if parser.slides:
         check_qr_color(index.read_text(encoding="utf-8"))
@@ -208,6 +253,7 @@ VISUAL_CHECKS = {
     "outside": "text overflows its block",
     "clipped": "text clipped by container",
     "tiny": "text smaller than 12 px",
+    "headingScale": "a lower heading is larger than the h1: the page title must be the h1",
     "contrast": "text contrast below WCAG AA",
     "smallTargets": "tap target smaller than 24 px",
 }

@@ -158,6 +158,21 @@ def test_static_resources(root: Path) -> None:
     theme.write_text(theme.read_text(encoding="utf-8") + '\n@import url("https://example.com/theme.css");\n', encoding="utf-8")
     assert_static_failure(imported, "external asset")
 
+    copied = root / "copied-catalog"
+    copied.mkdir()
+    shutil.copy2(CATALOG / "slides" / "index.html", copied / "index.html")
+    assert_static_failure(copied, "catalog markup")
+
+    modifier = root / "unknown-modifier"
+    scaffold(modifier, "interface", "blank")
+    index = modifier / "index.html"
+    page = index.read_text(encoding="utf-8")
+    notice = '<aside class="notice notice--{}"><span class="notice__mark"></span><p>Text</p></aside></main>'
+    index.write_text(page.replace("</main>", notice.format("warning")), encoding="utf-8")
+    assert_static_failure(modifier, "notice--warning")
+    index.write_text(page.replace("</main>", notice.format("warn")), encoding="utf-8")
+    run(sys.executable, CHECK_PROJECT, modifier, "--static-only")
+
     escaped = root / "escaped-resource"
     scaffold(escaped, "interface", "blank")
     root.joinpath("outside.css").write_text("body {}\n", encoding="utf-8")
