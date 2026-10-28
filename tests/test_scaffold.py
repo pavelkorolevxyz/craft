@@ -245,6 +245,37 @@ def test_project_check_rejects_detached_page_tabs(root: Path) -> None:
         assert all((count > 0) == broken for count in counts), f"the validator misjudged tabs under the header: {classes} → {counts}"
 
 
+def test_project_check_finds_overlaps_below_the_fold(root: Path) -> None:
+    # A real page: the theme scrolls smoothly and a long inline path in a
+    # narrow grid column ran over the list next to it, three screens down.
+    project = root / "hidden-overlap"
+    project.mkdir()
+    index = project / "index.html"
+    page = '''<!doctype html><html lang="en" data-theme="dark"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<style>html{scroll-behavior:smooth}body{margin:0;font:16px sans-serif}.spacer{height:3000px}.row{display:grid;grid-template-columns:140px 1fr}p{margin:0}code{justify-self:start;white-space:nowrap;CODE}</style>
+<main data-craft-layout="interface"><h1>Routes</h1><div class="spacer"></div>
+<div class="row"><code>#ai / #android / #security / #updates</code><p>Analyzer sends a digest to every channel</p></div></main></html>'''
+    index.write_text(page.replace("CODE", ""), encoding="utf-8")
+    counts = [result["overlapsCount"] for result in check_project_module.probe_all(index, "interface")]
+    assert all(count > 0 for count in counts), f"the validator missed inline code over its neighbor below the fold: {counts}"
+    index.write_text(page.replace("CODE", "white-space:normal"), encoding="utf-8")
+    counts = [result["overlapsCount"] for result in check_project_module.probe_all(index, "interface")]
+    assert all(count == 0 for count in counts), f"the validator reports an overlap after the fix: {counts}"
+
+
+def test_project_check_rejects_demoted_title(root: Path) -> None:
+    project = root / "demoted-title"
+    project.mkdir()
+    index = project / "index.html"
+    page = '''<!doctype html><html lang="en" data-theme="dark"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<style>body{margin:0}h1{font-size:24px}h2{font-size:SIZE}</style>
+<main data-craft-layout="interface"><header><h1>Research</h1></header><h2>Agents in a corporate network</h2></main></html>'''
+    for size, broken in (("40px", True), ("24px", False)):
+        index.write_text(page.replace("SIZE", size), encoding="utf-8")
+        counts = [result["headingScaleCount"] for result in check_project_module.probe_all(index, "interface")]
+        assert all((count > 0) == broken for count in counts), f"the validator misjudged an h2 of {size} under a 24px h1: {counts}"
+
+
 def test_catalog_visual_quality() -> None:
     pages = sorted((CATALOG / "interfaces").glob("*.html"))
     for page, checked in zip(pages, check_project_module.page_check(pages, "interface")):
@@ -472,6 +503,8 @@ def main() -> None:
         test_project_check_batches_browser(root)
         test_project_check_rejects_double_boundaries(root)
         test_project_check_rejects_detached_page_tabs(root)
+        test_project_check_finds_overlaps_below_the_fold(root)
+        test_project_check_rejects_demoted_title(root)
         test_dump_probe_isolated(root)
         test_interface_starter(outputs["interface-blank"], root)
         test_interface_bare(outputs["interface-bare"], root)

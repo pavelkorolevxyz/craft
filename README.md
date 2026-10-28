@@ -90,16 +90,17 @@ python3 scripts/check_project.py ./output/report                 # render pass, 
 python3 scripts/check_project.py ./output/report --full          # before handoff
 ```
 
-The static pass looks for external and missing resources and unfilled placeholders.
+The static pass looks for external and missing resources, unfilled placeholders, markup copied from the catalogs and modifiers of Craft components that do not exist, such as `notice--warning`.
 
 The render pass opens the page in Chromium at 1440, 390 and 320 px in both themes. It fails on:
 
 - horizontal scroll;
-- text overlapping other text or overflowing its box;
+- text overlapping other text or overflowing its box, inline code included, on the whole page and not only the first screen;
 - contrast below WCAG AA;
 - fonts under 12 px and tap targets under 24 px;
 - a double line where two borders meet;
 - controls without an accessible name and skipped heading levels;
+- a lower heading set larger than the `h1`;
 - a broken theme toggle.
 
 A deck is checked in every reveal step of every slide: text stays inside, reveals shift nothing, video plays, QR codes scan.

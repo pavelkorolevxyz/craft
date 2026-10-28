@@ -90,14 +90,15 @@ function craftProbe(frame, surface) {
     }),
   ];
 
-  // Text means an own text node outside code and scrollable tables.
+  // Text means an own text node outside code blocks and scrollable tables.
+  // Inline code stays in: a long path in a narrow column runs over its neighbor.
   const textRect = (el) => {
     const range = document.createRange();
     range.selectNodeContents(el);
     return range.getBoundingClientRect();
   };
   const texts = elements.filter((el) => [...el.childNodes].some((node) => node.nodeType === 3 && node.textContent.trim()));
-  const prose = texts.filter((el) => !el.closest("pre,code,.table-scroll,.scroll-region,input,select,textarea"));
+  const prose = texts.filter((el) => !el.closest("pre,.table-scroll,.scroll-region,input,select,textarea"));
 
   const outside = prose.filter((el) => {
     const s = styleOf(el);
@@ -112,6 +113,12 @@ function craftProbe(frame, surface) {
   });
   const tiny = texts.filter((el) => parseFloat(styleOf(el).fontSize) < 11.5);
 
+  // The page title is the h1. A larger h2 means the real title was demoted to
+  // get past the one-h1 rule while the header bar kept the h1.
+  const title = [...document.querySelectorAll("h1")].find(visible);
+  const titleSize = title ? parseFloat(styleOf(title).fontSize) : Infinity;
+  const headingScale = [...document.querySelectorAll("h2,h3,h4,h5,h6")].filter(visible).filter((el) => parseFloat(styleOf(el).fontSize) > titleSize + 0.5);
+
   const pinned = (el) => { for (let p = el; p; p = p.parentElement) if (["fixed", "sticky"].includes(styleOf(p).position)) return true; return false; };
   const placed = prose.filter((el) => !pinned(el)).map((el) => [el, textRect(el)]).filter(([, r]) => r.width > 2 && r.height > 2);
   const overlaps = [];
@@ -124,15 +131,16 @@ function craftProbe(frame, surface) {
       const y = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
       if (x <= 3 || y <= 3) continue;
       // Hit testing sees only the viewport, so scroll the point on screen first.
+      // The theme scrolls smoothly, so ask for an instant jump or nothing moves yet.
       const cy = (Math.max(ra.top, rb.top) + Math.min(ra.bottom, rb.bottom)) / 2 + win.scrollY;
-      win.scrollTo(0, Math.max(0, cy - win.innerHeight / 2));
+      win.scrollTo({ top: Math.max(0, cy - win.innerHeight / 2), behavior: "instant" });
       const na = textRect(a);
       const nb = textRect(b);
       const hits = document.elementsFromPoint((Math.max(na.left, nb.left) + Math.min(na.right, nb.right)) / 2, (Math.max(na.top, nb.top) + Math.min(na.bottom, nb.bottom)) / 2);
       if (hits.some((h) => a.contains(h)) && hits.some((h) => b.contains(h))) overlaps.push(a);
     }
   }
-  win.scrollTo(0, 0);
+  win.scrollTo({ top: 0, behavior: "instant" });
 
   const parse = (value) => {
     const m = value.match(/rgba?\(([^)]+)\)/);
@@ -202,6 +210,7 @@ function craftProbe(frame, surface) {
     outside: sample(outside), outsideCount: outside.length,
     clipped: sample(clipped), clippedCount: clipped.length,
     tiny: sample(tiny), tinyCount: tiny.length,
+    headingScale: sample(headingScale), headingScaleCount: headingScale.length,
     contrast: contrast.slice(0, 3), contrastCount: contrast.length,
     smallTargets: sample(smallTargets), smallTargetsCount: smallTargets.length,
   });

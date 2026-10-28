@@ -434,6 +434,8 @@
   .component-preview--flush > .table-scroll:has(.data-table--records) { padding: var(--gutter); }
   :is(.component-preview--flush, .fragment-stage) .data-table--records td:is(:first-child, :last-child) { padding-inline: 0; }
   :is(.component-preview--flush, .fragment-stage) > .table-scroll:last-child .data-table--records tbody > tr:last-child > :not(:last-child) { border-bottom: 1px solid var(--line); }
+  /* Five time labels do not fit a phone plot. Every other one stays. */
+  .chart-x-axis span:nth-child(even) { display: none; }
 }
 @media print {
   .system-layout { display: block; }
