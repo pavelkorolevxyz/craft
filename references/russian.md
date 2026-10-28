@@ -22,7 +22,7 @@ Write takeaways in the first person and match the speaker's gender in verbs.
 
 ## Deck controls
 
-The control panel labels live in `index.html`. Replace each `aria-label`:
+`scaffold.py --lang ru` writes these labels into `index.html` and `data-labels` on `.deck`. Check an older deck against the table:
 
 | English | Russian |
 |---|---|
@@ -37,15 +37,9 @@ The control panel labels live in `index.html`. Replace each `aria-label`:
 | Go to page | Перейти к странице |
 | Hide control panel, Show control panel | Скрыть управление, Показать управление |
 
-`deck.js` writes some labels itself. Override them on `.deck`:
-
-```html
-<div class="deck" data-labels='{"draft":"Черновик","skip":"Исключён","stopMotion":"Остановить движение","startMotion":"Запустить движение","darkTheme":"Включить тёмную тему","lightTheme":"Включить светлую тему","strip":"Обзор лентой","stripHorizontal":"Лента по горизонтали","stripVertical":"Лента по вертикали"}'>
-```
-
 ## Page controls
 
-On a page, the theme toggle gets `data-label-dark="Включить тёмную тему"` and `data-label-light="Включить светлую тему"`. The copy button reads «Копировать» and «Скопировано».
+On a page, the scaffold gives the theme toggle `data-label-dark="Включить тёмную тему"` and `data-label-light="Включить светлую тему"`. The copy button reads «Копировать» and «Скопировано».
 
 ## Terms
 

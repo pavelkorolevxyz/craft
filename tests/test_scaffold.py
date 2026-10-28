@@ -128,6 +128,18 @@ def test_scaffold_inputs(root: Path) -> None:
     )
     assert result.returncode != 0 and not invalid.exists(), "an invalid --lang created a project"
 
+    # A Russian project gets Russian control labels without manual edits.
+    deck = root / "ru-deck"
+    run(sys.executable, ROOT / "scripts/scaffold.py", deck, "--surface", "slides", "--lang", "ru")
+    document = deck.joinpath("index.html").read_text(encoding="utf-8")
+    english = [label for label in ("Presentation controls", "Slide overview", "Next slide", "Hide control panel") if f'aria-label="{label}"' in document]
+    assert not english, f"English control labels in a ru deck: {english}"
+    russian = json.loads((ROOT / "assets/shared/locales/ru.json").read_text(encoding="utf-8"))
+    assert "data-labels='{" in document and russian["deckLabels"]["draft"] in document, "a ru deck has no deck.js labels"
+    page = root / "ru-page"
+    run(sys.executable, ROOT / "scripts/scaffold.py", page, "--lang", "ru-RU")
+    assert f'data-label-dark="{russian["themeLabels"]["dark"]}"' in page.joinpath("index.html").read_text(encoding="utf-8"), "a ru page has an English theme toggle"
+
 
 def assert_static_failure(project: Path, expected: str) -> None:
     result = subprocess.run(

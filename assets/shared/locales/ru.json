@@ -1,0 +1,31 @@
+{
+  "slideLabels": {
+    "Presentation controls": "Управление презентацией",
+    "Slide overview": "Обзор слайдов",
+    "Slide strip view": "Обзор лентой",
+    "Full screen": "Полный экран",
+    "Stop motion": "Остановить движение",
+    "Switch to light theme": "Включить светлую тему",
+    "Slide navigation": "Навигация по слайдам",
+    "Previous slide": "Предыдущий слайд",
+    "Next slide": "Следующий слайд",
+    "Go to page": "Перейти к странице",
+    "Hide control panel": "Скрыть управление",
+    "Show control panel": "Показать управление"
+  },
+  "deckLabels": {
+    "draft": "Черновик",
+    "skip": "Исключён",
+    "stopMotion": "Остановить движение",
+    "startMotion": "Запустить движение",
+    "darkTheme": "Включить тёмную тему",
+    "lightTheme": "Включить светлую тему",
+    "strip": "Обзор лентой",
+    "stripHorizontal": "Лента по горизонтали",
+    "stripVertical": "Лента по вертикали"
+  },
+  "themeLabels": {
+    "dark": "Включить тёмную тему",
+    "light": "Включить светлую тему"
+  }
+}

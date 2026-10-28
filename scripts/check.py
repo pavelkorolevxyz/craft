@@ -680,8 +680,8 @@ def check_language() -> None:
         text = path.read_text(encoding="utf-8", errors="ignore")
         if path.suffix in {".html", ".svg"}:
             text = FOREIGN_LANG_BLOCK.sub(lambda match: "\n" * match.group(0).count("\n"), text)
-        if path == RUSSIAN_GUIDE:
-            # The Russian guide keeps its samples: fixed slide words, labels and quotes.
+        if path == RUSSIAN_GUIDE or path.parent == ROOT / "assets/shared/locales":
+            # The Russian guide keeps its samples, and a locale file holds translated control labels.
             continue
         match = CYRILLIC.search(text)
         if match:
