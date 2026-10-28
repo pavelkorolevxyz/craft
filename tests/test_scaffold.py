@@ -278,6 +278,30 @@ def test_project_check_finds_overlaps_below_the_fold(root: Path) -> None:
     assert all(count == 0 for count in counts), f"the validator reports an overlap after the fix: {counts}"
 
 
+def test_code_block_in_prose_has_one_frame(root: Path) -> None:
+    project = root / "prose-code"
+    scaffold(project, "interface", "blank")
+    index = project / "index.html"
+    block = (ROOT / "assets/interfaces/fragments/code-block.html").read_text(encoding="utf-8")
+    values = {"CODE_LABEL": "Shell", "CODE_ID": "code-1", "CODE": "make check"}
+    block = re.sub(r"\{\{(\w+)\}\}", lambda match: values[match.group(1)], block)
+    index.write_text(index.read_text(encoding="utf-8").replace('<div id="craft-content"></div>', f'<section class="section"><div class="prose"><p>Run:</p>{block}</div></section>'), encoding="utf-8")
+    counts = [result["doubleBordersCount"] for result in check_project_module.probe_all(index, "interface")]
+    assert all(count == 0 for count in counts), f"a code block inside .prose draws a second frame: {counts}"
+
+
+def test_deck_keeps_no_break_space(root: Path) -> None:
+    deck = root / "nbsp-deck"
+    scaffold(deck, "slides", "deck")
+    index = deck / "index.html"
+    html = index.read_text(encoding="utf-8")
+    html = html.replace('<h1 class="type-hero">', '<h1 class="type-hero">Path to&nbsp;result ', 1)
+    index.write_text(html.replace("</body>", "<script>addEventListener('load',()=>setTimeout(()=>{document.title='ready'},300))</script></body>", 1), encoding="utf-8")
+    dom = BrowserSession.shared().dump(index.as_uri(), 1280, 720, "ready")
+    words = re.findall(r'<span class="word"><span>([^<]*)</span></span>', dom)
+    assert {"to&nbsp;result", "to\u00a0result"} & set(words), f"deck.js split a no-break space between words: {words[:6]}"
+
+
 def test_project_check_rejects_demoted_title(root: Path) -> None:
     project = root / "demoted-title"
     project.mkdir()
@@ -520,6 +544,8 @@ def main() -> None:
         test_project_check_rejects_detached_page_tabs(root)
         test_project_check_finds_overlaps_below_the_fold(root)
         test_project_check_rejects_demoted_title(root)
+        test_code_block_in_prose_has_one_frame(root)
+        test_deck_keeps_no_break_space(root)
         test_dump_probe_isolated(root)
         test_interface_starter(outputs["interface-blank"], root)
         test_interface_bare(outputs["interface-bare"], root)

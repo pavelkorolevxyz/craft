@@ -11,7 +11,7 @@ A numeric matrix with short cells keeps its columns and scrolls horizontally on 
 </table>
 ```
 
-Each `data-label` repeats its `th`. The main field stays a line, the rest become labeled pairs. Do not drop fields silently, and do not repeat them in both the record and a summary next to it. You can move secondary data into details.
+Each `data-label` repeats its `th`. On a phone a record cell is a two-column grid, label and value, so every child and every bare text run becomes a separate grid item. A cell with mixed content, such as `<strong>` followed by text, goes into one `<span>`, or its pieces scatter across both columns. The main field stays a line, the rest become labeled pairs. Do not drop fields silently, and do not repeat them in both the record and a summary next to it. You can move secondary data into details.
 
 Rows are static by default. Selecting a record needs `data-interactive`, `tabindex="0"`, `aria-selected` and working mouse and keyboard handlers. The theme already styles hover and selection.
 

@@ -67,7 +67,8 @@
     nodes.forEach((node) => {
       // A counter rewrites its own text, so its words stay whole.
       if (node.parentElement.closest('[data-count], .word')) return;
-      const parts = node.textContent.split(/(\s+)/);
+      // A no-break space joins a short word to the next one, so it does not split.
+      const parts = node.textContent.split(/([^\S\u00a0\u202f]+)/);
       if (!parts.some((part) => part.trim())) return;
       const fragment = document.createDocumentFragment();
       parts.forEach((part) => {

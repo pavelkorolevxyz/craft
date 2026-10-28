@@ -626,7 +626,8 @@ a.tag--accent:hover { --status: var(--accent-fill); text-decoration: underline; 
 /* Copy is a quiet label in the caption bar: no frame, no divider, the
    label alone answers hover. */
 .code-block__copy { min-height: 2.75rem; margin-block: calc(-1 * var(--space-2)); margin-right: calc(-1 * var(--space-3)); padding: 0 var(--space-3); border: 0; background: transparent; color: var(--muted); font-size: var(--type-service); }
-.code-block pre { margin: 0; padding: var(--space-4); overflow: auto; color: var(--craft-code-text); font-family: var(--font-mono); font-size: 13px; }
+/* The block owns the frame. Inside .prose the pre would draw a second one. */
+.code-block pre { margin: 0; padding: var(--space-4); overflow: auto; border: 0; color: var(--craft-code-text); font-family: var(--font-mono); font-size: 13px; }
 /* code-highlight.js marks up the highlighting. The roles match code on
    slides. The element name, selector and command use the accent. The
    attribute, property and string are gold, the number is blue, and the
