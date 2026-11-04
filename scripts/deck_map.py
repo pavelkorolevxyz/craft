@@ -49,7 +49,7 @@ class DeckParser(HTMLParser):
             return
         if self.current is None:
             return
-        if "frag" in classes and (not self.current["frags"] or values.get("data-frag") != "with-previous"):
+        if "frag" in classes and (not self.current["frags"] or values.get("data-frag") not in {"with-previous", "after-count"}):
             self.current["frags"] += 1
         if not self.current["title"] and self.title_depth is None and (tag in {"h1", "h2", "h3"} or "slide-title" in classes):
             self.title_depth = self.depth

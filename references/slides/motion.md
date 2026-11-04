@@ -22,4 +22,4 @@ Keep the final value in text. `data-count` counts up from zero only on a forward
 <div class="frag"><p class="type-metric" data-count data-count-duration="1200">12,400</p></div>
 ```
 
-Separate thousands with a comma from five digits on. A plain space fails. The mechanics keep the number on one line and reserve the width of the final value. Count values only, not step numbers or scale ticks. In a table, mark the number inside the cell: `<td class="num"><span data-count>1,240</span></td>`.
+Separate thousands with a comma from five digits on. A plain space fails. The mechanics keep the number on one line and reserve the width of the final value. A `data-frag="after-count"` note waits. Count values only, not step numbers or scale ticks. In a table, mark the number inside the cell: `<td class="num"><span data-count>1,240</span></td>`.
