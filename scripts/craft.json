@@ -2006,7 +2006,8 @@
     "--scroll-duration",
     "--span",
     "--wipe",
-    "--past"
+    "--past",
+    "--count-wait"
   ],
   "requirements": {
     "fontFiles": 4,

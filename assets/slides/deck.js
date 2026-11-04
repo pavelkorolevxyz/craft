@@ -142,10 +142,12 @@
 
     // Reveal step. data-frag="with-previous" shows a part on the same
     // press as the previous one, so a label in a sibling container
-    // appears together with its item.
+    // appears together with its item. data-frag="after-count" joins the
+    // same press too, but shows once that step's counters have finished.
     let fragmentCount = 0;
     source.querySelectorAll('.frag').forEach((fragment, index) => {
-      if (index === 0 || fragment.dataset.frag !== 'with-previous') fragmentCount += 1;
+      const joins = fragment.dataset.frag === 'with-previous' || fragment.dataset.frag === 'after-count';
+      if (index === 0 || !joins) fragmentCount += 1;
       fragment.dataset.fragStep = fragmentCount;
     });
     const pages = document.createDocumentFragment();
@@ -477,6 +479,12 @@
       element.setAttribute('data-reveal', '');
       animateCounters(element);
     });
+    // after-count waits for the counters this press started. Counters that
+    // did not start (motion off, a zero, the overview) wait for nothing.
+    page.style.setProperty('--count-wait', `${Math.max(0, ...[...runningCounters.keys()].map((element) => {
+      const duration = Number(element.dataset.countDuration);
+      return Number.isFinite(duration) && duration >= 0 ? Math.min(duration, 10_000) : 900;
+    }))}ms`);
 
     // The page we left stays marked for a moment on a forward move to
     // another slide. The theme may keep it on screen under a transition,

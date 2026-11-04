@@ -1602,6 +1602,10 @@
 }
 [data-reveal] .code-run .code-line.is-output { animation: run-appear 1ms linear var(--run-delay, 0ms) both; }
 
+/* A note on the numbers is said once they stop: data-frag="after-count"
+   joins the counters' press and waits for the longest one (deck.js). */
+.frag[data-frag="after-count"][data-reveal] { animation: land var(--count-wait, 0ms) steps(1, end) both; }
+
 /* Digits use tabular width wherever they are compared. */
 .slide-number, .type-metric, .comparison-value, .bullets > li::before,
 .steps .n, .timeline-key, .chart-row > strong, .data-table .num,
