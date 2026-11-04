@@ -292,12 +292,14 @@ DECK_PASSES = {
 }
 
 
-def check_deck(index: Path, level: str = "full", shots: Path | None = None) -> dict:
+def check_deck(index: Path, level: str = "full", shots: Path | None = None, only: str | None = None) -> dict:
     """Walks deck states in one Chromium session; the level picks the passes."""
     command: list[str | Path] = [node(), ROOT / "scripts/deck_probe.mjs", index, "--passes", DECK_PASSES[level]]
     command += ["--viewports", ",".join(f"{width}x{height}" for width, height in VIEWPORTS)]
     if shots:
         command += ["--shots", shots]
+    if only:
+        command += ["--only", only]
     report = json.loads(run(*command).stdout)
     for item in report["warnings"]:
         print(f"! {format_issue(item)}")
@@ -328,6 +330,7 @@ def main() -> None:
     parser.add_argument("--resource-root", type=Path, help="Root of the standalone package when the catalog sits deeper than the assets")
     parser.add_argument("--shots", type=Path, help="Deck: save a screenshot of each state to this folder")
     parser.add_argument("--report", type=Path, help="Deck: save the JSON report of the state pass")
+    parser.add_argument("--only", help="Deck: walk only these slide keys, comma-separated; deck-wide comparisons wait for a full run")
     args = parser.parse_args()
 
     try:
@@ -338,18 +341,22 @@ def main() -> None:
 
 def run_checks(args: argparse.Namespace) -> None:
     index = project_index(args.project)
+    assert not (args.only and args.static_only), "--only walks deck pages in Chromium; it does nothing with --static-only"
     surface = check_static(index, args.resource_root)
+    assert not args.only or surface == "slides", "--only works on a deck only"
     print(f"✓ static contracts: {surface}")
     if args.static_only:
         print(f"Done: contracts checked, browser skipped: {index}")
         return
     level = "full" if args.full else "render"
     if surface == "slides":
-        report = check_deck(index, level, args.shots)
+        report = check_deck(index, level, args.shots, args.only)
         if args.report:
             args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print("✓ Chromium: 1440, 390 and 320 px, theme and accessibility")
         line = f"✓ deck states: {len(report['pages'])} pages, {report['sources']} slides"
+        if args.only:
+            line += f", walked only {args.only}; deck-wide comparisons need a run without --only"
         if report["pdf"]:
             line += f", PDF {report['pdf']['steps']} and {report['pdf']['final']} pages"
         print(line)
