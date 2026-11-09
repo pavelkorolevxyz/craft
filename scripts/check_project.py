@@ -330,7 +330,7 @@ def main() -> None:
     parser.add_argument("--resource-root", type=Path, help="Root of the standalone package when the catalog sits deeper than the assets")
     parser.add_argument("--shots", type=Path, help="Deck: save a screenshot of each state to this folder")
     parser.add_argument("--report", type=Path, help="Deck: save the JSON report of the state pass")
-    parser.add_argument("--only", help="Deck: walk only these slide keys, comma-separated; deck-wide comparisons wait for a full run")
+    parser.add_argument("--only", help="Deck: walk only these slide keys, comma-separated; deck-wide comparisons wait for a full run. With --full, the PDF, motion, video and navigation passes still cover the whole deck")
     args = parser.parse_args()
 
     try:
