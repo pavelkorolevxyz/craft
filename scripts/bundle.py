@@ -20,6 +20,7 @@ MIME = {
 }
 LINK_TAG = re.compile(r"<link\b[^>]*>")
 SCRIPT_TAG = re.compile(r"<script\b([^>]*)></script>")
+IMG_TAG = re.compile(r"<img\b[^>]*>")
 ATTRIBUTE = re.compile(r"([a-z-]+)\s*=\s*\"([^\"]*)\"")
 CSS_URL = re.compile(r"url\(\s*[\"']?([^\"')]+?)[\"']?\s*\)")
 LOCAL_REF = re.compile(r"\b(?:href|src)\s*=\s*\"(?!#|data:|https?:)[^\"]+\"")
@@ -82,11 +83,20 @@ def replace_script(match: re.Match[str], base: Path) -> str:
     return f"<script>\n{body}\n</script>"
 
 
+def replace_img(match: re.Match[str], base: Path) -> str:
+    tag = match.group(0)
+    reference = dict(ATTRIBUTE.findall(tag)).get("src", "")
+    if not reference or not is_local(reference):
+        return tag
+    return tag.replace(f'src="{reference}"', f'src="{data_uri(resolve(base, reference))}"')
+
+
 def bundle(index: Path) -> str:
     base = index.parent
     html = index.read_text(encoding="utf-8")
     html = LINK_TAG.sub(lambda match: replace_link(match, base), html)
     html = SCRIPT_TAG.sub(lambda match: replace_script(match, base), html)
+    html = IMG_TAG.sub(lambda match: replace_img(match, base), html)
     leftover = LOCAL_REF.search(html)
     assert not leftover, f"local asset left over: {leftover.group(0)}"
     return html
