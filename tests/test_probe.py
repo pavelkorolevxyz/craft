@@ -148,6 +148,9 @@ CASES: list[tuple[str, str, str, str, str | None]] = [
     ("counter wraps the number",
      METRIC.replace('class="scoreboard"', 'class="scoreboard" style="width:6cqw"').replace("12,400", "11 111"),
      "[data-count] { white-space: normal !important; font-variant-numeric: proportional-nums !important; }", "", "counter number takes"),
+    ("data series collide", GOOD, ":root, :root[data-theme] { --craft-data-amber: var(--craft-accent-mark); }", "", "too close to tell apart"),
+    ("muted role too faint", GOOD, ":root, :root[data-theme] { --craft-muted: color-mix(in oklch, var(--craft-text) 25%, var(--craft-bg)); }", "", "muted labels on the page"),
+    ("role is not a color", GOOD, ":root, :root[data-theme] { --craft-data-green: not-a-color; }", "", "--craft-data-green is not a color"),
 ]
 
 # Source rules the static check catches without a browser.
@@ -194,6 +197,9 @@ CASE_PASSES = {
     "print loses a page": "print",
     "bento tiles of different heights": "frames",
     "counter wraps the number": "motion",
+    "data series collide": "",
+    "muted role too faint": "",
+    "role is not a color": "",
 }
 
 
