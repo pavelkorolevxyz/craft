@@ -17,6 +17,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { launch, sleep } from './cdp.mjs';
 import { probeViewports } from './page_check.mjs';
+import { PALETTE, judgePalette } from './contrast.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -544,6 +545,15 @@ try {
   const keys = new Set(report.pages.map((item) => item.key));
   for (const key of only || []) if (!keys.has(key)) throw Error(`--only: no slide with data-key ${key}`);
   const wanted = (n) => !only || only.includes(report.pages[n - 1].key);
+
+  // Theme roles in both themes: contrast of role pairs and distinct data series.
+  for (const theme of ['dark', 'light']) {
+    await page.evaluate(`document.documentElement.dataset.theme = '${theme}'`);
+    const verdict = judgePalette(await page.evaluate(PALETTE), theme);
+    verdict.errors.forEach((message) => error('palette', null, message));
+    verdict.warnings.forEach((message) => warn('palette', null, message));
+  }
+  await page.evaluate("document.documentElement.dataset.theme = 'dark'");
 
   const sources = await page.evaluate('__probe.sourceChecks().map(({ matches, ...rest }) => rest)');
   report.sources = sources.length;
