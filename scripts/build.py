@@ -23,6 +23,7 @@ RUNTIME_SCRIPTS = (
     "scripts/page_check.mjs",
     "scripts/cdp.mjs",
     "scripts/deck_probe.mjs",
+    "scripts/contrast.mjs",
     "scripts/qr.py",
     "scripts/deck_map.py",
     "scripts/release.py",
