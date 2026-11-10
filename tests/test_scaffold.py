@@ -208,6 +208,10 @@ def test_delivery_and_bundle(root: Path) -> None:
 
     bundled = root / "delivery-bundle"
     scaffold(bundled, "interface", "blank")
+    (bundled / "media").mkdir()
+    shutil.copy2(ROOT / "tests/fixtures/media/clip-poster.png", bundled / "media/poster.png")
+    bundled_index = bundled / "index.html"
+    bundled_index.write_text(bundled_index.read_text(encoding="utf-8").replace("</main>", '<img src="media/poster.png" alt="Poster"></main>'), encoding="utf-8")
     run(sys.executable, ROOT / "scripts/bundle.py", bundled)
     single = root / "delivery-single"
     single.mkdir()
@@ -215,6 +219,7 @@ def test_delivery_and_bundle(root: Path) -> None:
     run(sys.executable, CHECK_PROJECT, single, "--static-only")
     text = (single / "index.html").read_text(encoding="utf-8")
     assert "base64," in text and "<style>" in text and 'href="tokens.css"' not in text, "the bundle did not inline the assets"
+    assert 'src="data:image/png;base64,' in text and 'src="media/' not in text, "the bundle did not inline the image"
 
 
 def test_project_check_batches_browser(root: Path) -> None:
