@@ -84,8 +84,8 @@
      light background. --craft-accent-fill-hover is hover on the fill. */
   --craft-accent: #ff6672;
   --craft-accent-mark: #ff3f4d;
-  --craft-accent-fill: #c5303d;
-  --craft-accent-fill-hover: #a92633;
+  --craft-accent-fill: #b02b37;
+  --craft-accent-fill-hover: #94212d;
   --craft-accent-tint: rgb(255 63 77 / .14);
   --craft-accent-base: #e63946;
 
@@ -185,8 +185,8 @@
   --craft-light-muted: rgb(32 32 30 / .72);
   --craft-light-accent: #b21c2a;
   --craft-light-accent-mark: #e12b3a;
-  --craft-light-accent-fill: #c5303d;
-  --craft-light-accent-fill-hover: #a81f2c;
+  --craft-light-accent-fill: #b02b37;
+  --craft-light-accent-fill-hover: #921b26;
   --craft-light-accent-tint: rgb(225 43 58 / .1);
   --craft-light-fill-quiet: rgb(32 32 30 / .07);
   --craft-light-selection: rgb(225 43 58 / .22);
