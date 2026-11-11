@@ -148,6 +148,14 @@ CASES: list[tuple[str, str, str, str, str | None]] = [
     ("counter wraps the number",
      METRIC.replace('class="scoreboard"', 'class="scoreboard" style="width:6cqw"').replace("12,400", "11 111"),
      "[data-count] { white-space: normal !important; font-variant-numeric: proportional-nums !important; }", "", "counter number takes"),
+    ("decor under the text",
+     STATEMENT.format(key="decor", body='<h2 class="type-hero">Statement</h2>'),
+     ".slide { background: repeating-linear-gradient(45deg, rgb(40 0 90) 0 3px, transparent 3px 12px), var(--bg) !important; }",
+     "", "warn:shows under the text"),
+    ("text on a fill of its own color",
+     STATEMENT.format(key="fade", body='<h2 class="type-hero">Statement</h2>'),
+     ".slide { background: linear-gradient(var(--craft-text), var(--craft-text)) !important; }",
+     "", 'on its real backdrop is 1.00:1, needs 3:1: "Statement"'),
     ("data series collide", GOOD, ":root, :root[data-theme] { --craft-data-amber: var(--craft-accent-mark); }", "", "too close to tell apart"),
     ("muted role too faint", GOOD, ":root, :root[data-theme] { --craft-muted: color-mix(in oklch, var(--craft-text) 25%, var(--craft-bg)); }", "", "muted labels on the page"),
     ("role is not a color", GOOD, ":root, :root[data-theme] { --craft-data-green: not-a-color; }", "", "--craft-data-green is not a color"),
@@ -197,6 +205,8 @@ CASE_PASSES = {
     "print loses a page": "print",
     "bento tiles of different heights": "frames",
     "counter wraps the number": "motion",
+    "decor under the text": "frames",
+    "text on a fill of its own color": "frames",
     "data series collide": "",
     "muted role too faint": "",
     "role is not a color": "",
@@ -222,6 +232,12 @@ def run_case(root: Path, case: tuple[str, str, str, str, str | None]) -> str:
             assert report["pdf"] == {"steps": len(report["pages"]), "final": report["sources"]}, f"{name}: wrong PDF {report['pdf']}"
         videos = [item for item in report["warnings"] if item["kind"] == "video"]
         assert not videos, f"{name}: video warnings: {videos}"
+        decor = [item for item in report["warnings"] if item["kind"] == "contrast"]
+        assert not decor, f"{name}: decor warnings on a clean deck: {decor}"
+    elif expected.startswith("warn:"):
+        # Decor under text warns; the run fails only on real contrast.
+        warnings = [item["message"] for item in report["warnings"]]
+        assert any(expected[5:] in message for message in warnings) and not messages, f"{name}: expected only warning \"{expected[5:]}\", got errors:\n" + "\n".join(messages) + "\nwarnings:\n" + "\n".join(warnings)
     else:
         assert any(expected in message for message in messages), f"{name}: expected error \"{expected}\", got:\n" + "\n".join(messages or ["no errors"])
     return name

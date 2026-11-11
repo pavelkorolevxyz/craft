@@ -17,7 +17,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { launch, sleep } from './cdp.mjs';
 import { probeViewports } from './page_check.mjs';
-import { PALETTE, judgePalette } from './contrast.mjs';
+import { HIDE_TEXT, PALETTE, TEXT_BOXES, backdropStats, decodePng, judgePalette } from './contrast.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -640,6 +640,30 @@ try {
         if (moved.length) error('shift', at, `reveal shifts content already shown: ${moved.slice(0, 3).map((item) => item[5]).join('; ')}`);
       }
       previousGeometry = geometry;
+
+      // Real backdrop under the text: hide the letters, take a frame, measure.
+      // Once per slide, on its last step: every text of the slide is shown by
+      // then, and a frame per step cost +60% on catalog/slides. Text that a
+      // later step swaps out is not measured. Dark theme
+      // only: the light theme repeats the frame cost, and its role pairs are
+      // covered by the palette check above.
+      if (at.step === at.steps) {
+        const text = await page.evaluate(TEXT_BOXES);
+        if (text.boxes.length) {
+          await page.evaluate(`(() => { const style = document.createElement('style'); style.id = '__probe_hide'; style.textContent = ${JSON.stringify(HIDE_TEXT)}; document.head.append(style); })()`);
+          const frame = await page.send('Page.captureScreenshot', { format: 'png' });
+          await page.evaluate("document.getElementById('__probe_hide').remove()");
+          const image = decodePng(Buffer.from(frame.data, 'base64'));
+          for (const box of text.boxes) {
+            const stats = backdropStats(image, box, text.ratio);
+            if (!stats) continue;
+            const min = box.large ? 3 : 4.5;
+            // Only real contrast fails the run. Decor under text may be intended.
+            if (stats.contrast < min - 0.01) error('contrast', at, `text on its real backdrop is ${stats.contrast.toFixed(2)}:1, needs ${min}:1: "${box.text}"`);
+            else if (stats.busy > 0.03) warn('contrast', at, `decor or a picture shows under the text (${Math.round(stats.busy * 100)}% of its backdrop); contrast holds, check that it reads: "${box.text}"`);
+          }
+        }
+      }
       if (shots) {
         const shot = await page.send('Page.captureScreenshot', { format: 'png' });
         await writeFile(path.join(shots, `dark-${String(n).padStart(3, '0')}.png`), Buffer.from(shot.data, 'base64'));
