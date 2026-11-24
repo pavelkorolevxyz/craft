@@ -23,7 +23,9 @@ SCRIPT_TAG = re.compile(r"<script\b([^>]*)></script>")
 IMG_TAG = re.compile(r"<img\b[^>]*>")
 ATTRIBUTE = re.compile(r"([a-z-]+)\s*=\s*\"([^\"]*)\"")
 CSS_URL = re.compile(r"url\(\s*[\"']?([^\"')]+?)[\"']?\s*\)")
-LOCAL_REF = re.compile(r"\b(?:href|src)\s*=\s*\"(?!#|data:|https?:)[^\"]+\"")
+# srcset and poster are not inlined, so a local one must stop the bundle
+# instead of leaving a broken picture in the file.
+LOCAL_REF = re.compile(r"\b(?:href|src|srcset|poster)\s*=\s*\"(?!#|data:|https?:)[^\"]+\"")
 
 
 def is_local(reference: str) -> bool:
