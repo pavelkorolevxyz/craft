@@ -220,6 +220,10 @@ def test_delivery_and_bundle(root: Path) -> None:
     text = (single / "index.html").read_text(encoding="utf-8")
     assert "base64," in text and "<style>" in text and 'href="tokens.css"' not in text, "the bundle did not inline the assets"
     assert 'src="data:image/png;base64,' in text and 'src="media/' not in text, "the bundle did not inline the image"
+    # srcset is not inlined: the bundle stops instead of shipping a broken picture.
+    bundled_index.write_text(bundled_index.read_text(encoding="utf-8").replace('alt="Poster"', 'srcset="media/poster.png 2x" alt="Poster"'), encoding="utf-8")
+    result = subprocess.run([sys.executable, str(ROOT / "scripts/bundle.py"), str(bundled)], cwd=ROOT, text=True, capture_output=True)
+    assert result.returncode != 0 and 'srcset="media/poster.png 2x"' in result.stderr, "a local srcset passed the bundle: " + result.stdout + result.stderr
 
 
 def test_project_check_batches_browser(root: Path) -> None:
