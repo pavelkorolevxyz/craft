@@ -64,7 +64,10 @@ const toLab = ({ r, g, b }) => {
   const f = (t) => (t > 216 / 24389 ? Math.cbrt(t) : (24389 / 27 * t + 16) / 116);
   return [116 * f(y) - 16, 500 * (f(x) - f(y)), 200 * (f(y) - f(z))];
 };
-const distance = (a, b) => Math.hypot(...toLab(a).map((v, i) => v - toLab(b)[i]));
+const distance = (a, b) => {
+  const [la, lb] = [toLab(a), toLab(b)];
+  return Math.hypot(la[0] - lb[0], la[1] - lb[1], la[2] - lb[2]);
+};
 const deuteranopia = ({ r, g, b }) => {
   const [lr, lg, lb] = [channel(r), channel(g), channel(b)];
   const out = [0.367322 * lr + 0.860646 * lg - 0.227968 * lb, 0.280085 * lr + 0.672501 * lg + 0.047413 * lb, -0.01182 * lr + 0.04294 * lg + 0.968881 * lb];
@@ -78,6 +81,8 @@ const PAIRS = [
   ['--craft-muted', '--craft-bg', 4.5, 'muted labels on the page'],
   ['--craft-accent', '--craft-bg', 4.5, 'accent text on the page'],
   ['--craft-text', '--craft-surface', 4.5, 'text on a panel'],
+  ['--craft-text-body', '--craft-surface', 4.5, 'body text on a panel'],
+  ['--craft-muted', '--craft-surface', 4.5, 'muted labels on a panel'],
   ['--craft-on-accent', '--craft-accent-fill', 4.5, 'text on the accent fill'],
   ['--craft-accent-mark', '--craft-bg', 3, 'accent marks on the page'],
   ['--craft-line-strong', '--craft-bg', 3, 'axes and strong lines on the page'],
