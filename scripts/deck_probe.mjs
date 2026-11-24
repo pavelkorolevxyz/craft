@@ -547,13 +547,15 @@ try {
   const wanted = (n) => !only || only.includes(report.pages[n - 1].key);
 
   // Theme roles in both themes: contrast of role pairs and distinct data series.
+  // The deck's own theme comes back afterwards, so the frames below see what deck.js set.
+  const deckTheme = await page.evaluate('document.documentElement.dataset.theme ?? null');
   for (const theme of ['dark', 'light']) {
     await page.evaluate(`document.documentElement.dataset.theme = '${theme}'`);
     const verdict = judgePalette(await page.evaluate(PALETTE), theme);
     verdict.errors.forEach((message) => error('palette', null, message));
     verdict.warnings.forEach((message) => warn('palette', null, message));
   }
-  await page.evaluate("document.documentElement.dataset.theme = 'dark'");
+  await page.evaluate(`(() => { const root = document.documentElement; const theme = ${JSON.stringify(deckTheme)}; if (theme === null) delete root.dataset.theme; else root.dataset.theme = theme; })()`);
 
   const sources = await page.evaluate('__probe.sourceChecks().map(({ matches, ...rest }) => rest)');
   report.sources = sources.length;

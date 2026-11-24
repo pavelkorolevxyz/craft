@@ -159,6 +159,7 @@ CASES: list[tuple[str, str, str, str, str | None]] = [
     ("data series collide", GOOD, ":root, :root[data-theme] { --craft-data-amber: var(--craft-accent-mark); }", "", "too close to tell apart"),
     ("muted role too faint", GOOD, ":root, :root[data-theme] { --craft-muted: color-mix(in oklch, var(--craft-text) 25%, var(--craft-bg)); }", "", "muted labels on the page"),
     ("role is not a color", GOOD, ":root, :root[data-theme] { --craft-data-green: not-a-color; }", "", "--craft-data-green is not a color"),
+    ("quiet text on the accent fill too faint", GOOD, ":root, :root[data-theme] { --craft-on-accent-muted: rgb(255 255 255 / .6); }", "", "quiet text on the accent fill"),
 ]
 
 # Source rules the static check catches without a browser.
@@ -210,6 +211,7 @@ CASE_PASSES = {
     "data series collide": "",
     "muted role too faint": "",
     "role is not a color": "",
+    "quiet text on the accent fill too faint": "",
 }
 
 

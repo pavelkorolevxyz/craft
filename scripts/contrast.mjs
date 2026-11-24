@@ -40,7 +40,7 @@ export const PALETTE = String.raw`(() => {
   };
   const roles = {};
   for (const name of ['--craft-bg', '--craft-surface', '--craft-text', '--craft-text-body', '--craft-muted', '--craft-accent',
-    '--craft-accent-mark', '--craft-accent-fill', '--craft-on-accent', '--craft-line-strong',
+    '--craft-accent-mark', '--craft-accent-fill', '--craft-on-accent', '--craft-on-accent-muted', '--craft-line-strong',
     '--craft-data-blue', '--craft-data-amber', '--craft-data-green']) roles[name] = role(name);
   wrapper.remove();
   return roles;
@@ -113,7 +113,10 @@ const toLab = ({ r, g, b }) => {
   const f = (t) => (t > 216 / 24389 ? Math.cbrt(t) : (24389 / 27 * t + 16) / 116);
   return [116 * f(y) - 16, 500 * (f(x) - f(y)), 200 * (f(y) - f(z))];
 };
-const distance = (a, b) => Math.hypot(...toLab(a).map((v, i) => v - toLab(b)[i]));
+const distance = (a, b) => {
+  const [la, lb] = [toLab(a), toLab(b)];
+  return Math.hypot(la[0] - lb[0], la[1] - lb[1], la[2] - lb[2]);
+};
 const deuteranopia = ({ r, g, b }) => {
   const [lr, lg, lb] = [channel(r), channel(g), channel(b)];
   const out = [0.367322 * lr + 0.860646 * lg - 0.227968 * lb, 0.280085 * lr + 0.672501 * lg + 0.047413 * lb, -0.01182 * lr + 0.04294 * lg + 0.968881 * lb];
@@ -128,6 +131,7 @@ const PAIRS = [
   ['--craft-accent', '--craft-bg', 4.5, 'accent text on the page'],
   ['--craft-text', '--craft-surface', 4.5, 'text on a panel'],
   ['--craft-on-accent', '--craft-accent-fill', 4.5, 'text on the accent fill'],
+  ['--craft-on-accent-muted', '--craft-accent-fill', 4.5, 'quiet text on the accent fill'],
   ['--craft-accent-mark', '--craft-bg', 3, 'accent marks on the page'],
   ['--craft-line-strong', '--craft-bg', 3, 'axes and strong lines on the page'],
   ['--craft-data-blue', '--craft-bg', 3, 'data series blue'],
