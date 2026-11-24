@@ -130,6 +130,8 @@ const PAIRS = [
   ['--craft-muted', '--craft-bg', 4.5, 'muted labels on the page'],
   ['--craft-accent', '--craft-bg', 4.5, 'accent text on the page'],
   ['--craft-text', '--craft-surface', 4.5, 'text on a panel'],
+  ['--craft-text-body', '--craft-surface', 4.5, 'body text on a panel'],
+  ['--craft-muted', '--craft-surface', 4.5, 'muted labels on a panel'],
   ['--craft-on-accent', '--craft-accent-fill', 4.5, 'text on the accent fill'],
   ['--craft-on-accent-muted', '--craft-accent-fill', 4.5, 'quiet text on the accent fill'],
   ['--craft-accent-mark', '--craft-bg', 3, 'accent marks on the page'],
