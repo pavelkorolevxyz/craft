@@ -831,8 +831,8 @@
       ],
       "fragmentTarget": ".slides",
       "catalog": "catalog/slides/index.html",
-      "catalogPages": 68,
-      "catalogPrintPages": 68,
+      "catalogPages": 71,
+      "catalogPrintPages": 71,
       "catalogLayouts": [
         "title",
         "cover",
@@ -1899,6 +1899,14 @@
           "job": "Arrows show handoff or transformation between nodes",
           "useWhen": "Use when every link has a concrete meaning",
           "variable": "Change the direction, branching and nodes to match the real links. Neutral nodes are the default; the accent is not tied to the center"
+        },
+        {
+          "id": "flow-branch",
+          "name": "Fork and join",
+          "layout": "flow",
+          "job": "A step splits into two parallel nodes that meet again at the next step",
+          "useWhen": "Use when the process runs two branches side by side and joins them",
+          "variable": "Change the nodes; keep two branch nodes of one kind"
         },
         {
           "id": "visual-comparison",
