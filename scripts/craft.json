@@ -2133,10 +2133,6 @@
         "references/slides/selection.md",
         "references/slides/design-language.md",
         "references/slides/authoring.md",
-        "references/slides/charts.md",
-        "references/slides/motion.md",
-        "references/slides/media.md",
-        "references/slides/code.md",
         "references/slides/qr.md"
       ],
       "slides-talk-ru": [
@@ -2147,8 +2143,18 @@
         "references/slides/narrative.md",
         "references/slides/selection.md",
         "references/slides/design-language.md",
+        "references/slides/authoring.md"
+      ],
+      "slides-data": [
+        "SKILL.md",
+        "references/identity.md",
+        "references/workflow.md",
+        "references/slides/selection.md",
+        "references/slides/design-language.md",
         "references/slides/authoring.md",
         "references/slides/charts.md",
+        "references/slides/motion.md",
+        "references/slides/media.md",
         "references/slides/code.md"
       ],
       "slides-review": [
