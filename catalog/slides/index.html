@@ -168,6 +168,31 @@ function example(input) {
     <p class="slide-number"></p>
   </section>
 
+  <!-- 10b · Pair: the same thing in two windows -->
+  <section class="slide" data-slide-layout="pair" data-catalog-example="pair" data-key="pair">
+    <div class="pad">
+      <p class="slide-title">One review finding, two voices</p>
+      <div class="code-windows code-windows--pair">
+        <figure class="code-window">
+          <figcaption class="code-window-bar"><i></i><i></i><i></i><span>Bot thread · 412 characters</span></figcaption>
+          <div class="window-text">
+            <p><strong>Blocking.</strong> The result of <code>router.create()</code> is discarded at line 41, so the tap on the card opens nothing.</p>
+            <p>Analytics at lines 37-39 still fire, so the metrics will show the button as working while users see no reaction.</p>
+            <p>Suggested fix: pass the route to <code>navigator.navigateTo()</code>, as in <code>QuickActions.kt:83</code>.</p>
+          </div>
+        </figure>
+        <figure class="code-window frag">
+          <figcaption class="code-window-bar"><i></i><i></i><i></i><span>Same thread in the author's voice · 160 characters</span></figcaption>
+          <div class="window-text">
+            <p>Blocker: <code>router.create()</code> only builds the route and it is dropped here. Wrap it: <code>navigator.navigateTo(router.create())</code></p>
+          </div>
+        </figure>
+      </div>
+      <p class="type-note frag">The finding stays the same, only the wording changes</p>
+    </div>
+    <p class="slide-number"></p>
+  </section>
+
   <!-- 11 · Figure with caption -->
   <section class="slide s-figure" data-slide-layout="figure" data-catalog-example="figure" data-key="figure">
     <div class="pad">

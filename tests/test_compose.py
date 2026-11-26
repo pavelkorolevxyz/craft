@@ -115,7 +115,7 @@ def test_slides(root: Path) -> None:
     project = root / "slides"
     scaffold(project, "slides", "deck", "Composition check")
     available = command(project, "--list-fragments")
-    assert len(available.stdout.splitlines()) == 15
+    assert len(available.stdout.splitlines()) == 16
     assert "comparison:" in available.stdout and "quote:" not in available.stdout
     unknown = command(project, "--fragment", "quote", "--list-placeholders", success=False)
     assert "Available:" in unknown.stderr and "comparison" in unknown.stderr

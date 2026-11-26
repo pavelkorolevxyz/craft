@@ -402,16 +402,49 @@
   tab-size: 4;
 }
 .code code { display: block; font: inherit; }
+/* A long line wraps under itself with a hanging indent instead of being
+   cut off by the slide. A typed command keeps one line. */
 .code-line {
   position: relative;
   display: block;
   min-height: 1.65em;
-  padding: 0;
-  white-space: pre;
+  padding: 0 0 0 2ch;
+  text-indent: -2ch;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
+.code-run .code-line { white-space: pre; padding: 0; text-indent: 0; }
 .code:has(.code-line.is-highlighted) .code-line:not(.is-highlighted) {
   opacity: .18;
 }
+
+/* Code window: a title bar with three dots over sunken code, like a
+   terminal screenshot. .code-windows stacks windows; --pair puts two
+   side by side. */
+.code-windows { display: grid; gap: 3cqh; }
+.code-windows--pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2cqw; align-items: start; }
+.code-window {
+  margin: 0; overflow: hidden;
+  border-radius: 1.2cqw;
+  background: var(--surface-sunken);
+  box-shadow: 0 0 0 1px var(--line), 0 2cqh 5cqh var(--craft-window-shadow);
+}
+.code-window-bar {
+  display: flex; align-items: center; gap: .7cqw;
+  padding: 1.4cqh 1.4cqw;
+  background: var(--surface);
+  color: var(--muted);
+  font: 500 1.5cqw/1 var(--font-text);
+}
+.code-window-bar i { width: .9cqw; aspect-ratio: 1; border-radius: 50%; background: var(--craft-window-close); }
+.code-window-bar i:nth-child(2) { background: var(--craft-window-minimize); }
+.code-window-bar i:nth-child(3) { background: var(--craft-window-zoom); }
+.code-window-bar span { margin-left: 1cqw; }
+.code-window .code { padding: 2.6cqh 2cqw; }
+/* Prose in a window: a review thread, a chat reply, a commit message. */
+.window-text { padding: 2.2cqh 2cqw; display: grid; gap: 1.2cqh; }
+.window-text p { margin: 0; font: 400 1.5cqw/1.45 var(--font-text); color: var(--text); overflow-wrap: anywhere; }
+.window-text code { font: 400 .92em var(--font-mono); color: var(--accent); overflow-wrap: anywhere; }
 
 /* The accent palette separates keywords, values and numbers.
    It has to read from a projector instead of blending into a monochrome listing. */

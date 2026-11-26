@@ -127,6 +127,12 @@
   --craft-code-text: #d4d0cc;
   --craft-code-gold: #c9a96e;
   --craft-code-blue: #7a9ab5;
+  /* The three dots of a code window title bar, as on a desktop terminal,
+     and the shadow that lifts the window off the slide. */
+  --craft-window-close: #ff5f57;
+  --craft-window-minimize: #febc2e;
+  --craft-window-zoom: #28c840;
+  --craft-window-shadow: rgb(0 0 0 / .45);
 
   /* Statuses. Three states and no more: ok, warning, error.
      Error is the same red as any mark, with no separate shade.
