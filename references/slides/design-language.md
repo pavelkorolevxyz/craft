@@ -60,4 +60,4 @@ Reuse the roles. Do not invent a new font size and caption style for each layout
 | `.iterations` | The current `.iteration.is-current` large, earlier `.iteration` items beside it |
 | `.shot--scroll` | A fixed `.shot-head` and a scrolling `.shot-body` |
 
-`.flow-node--accent` gives a permanent fill, not a moving focus. The conditions for accents and reveals are in the [selection rules](selection.md). Do not assign them because an example looks that way.
+Two parallel nodes that meet again go in one `.flow-step` as `.flow-branch` with two `.flow-node`. `.flow-node--accent` gives a permanent fill, not a moving focus. The conditions for accents and reveals are in the [selection rules](selection.md). Do not assign them because an example looks that way.

@@ -1084,6 +1084,46 @@
   transform: translateX(-50%);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
+/* Fork and join: a step splits into two parallel nodes that meet again at
+   the next step. A bracket on each side carries the links; the incoming
+   arrow ends on the left bracket, stubs with heads lead into the nodes. */
+.flow-branch {
+  --branch-gap: 4cqh;
+  --branch-stub: 2cqw;
+  position: relative;
+  display: grid;
+  grid-auto-rows: 1fr;
+  row-gap: var(--branch-gap);
+  padding-inline: var(--branch-stub);
+}
+.flow-branch::before, .flow-branch::after {
+  content: "";
+  position: absolute;
+  top: calc((100% - var(--branch-gap)) / 4);
+  bottom: calc((100% - var(--branch-gap)) / 4);
+  width: var(--rule);
+  background: var(--muted);
+}
+.flow-branch::before { left: 0; }
+.flow-branch::after { right: 0; }
+.flow-branch > .flow-node { position: relative; }
+.flow-branch > .flow-node::before, .flow-branch > .flow-node::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: var(--branch-stub);
+  background: var(--muted);
+}
+.flow-branch > .flow-node::before {
+  right: calc(100% + var(--rule));
+  height: var(--flow-head);
+  margin-top: calc(var(--flow-head) / -2);
+  clip-path: polygon(0 calc(50% - var(--rule) / 2), calc(100% - var(--flow-head)) calc(50% - var(--rule) / 2), calc(100% - var(--flow-head)) 0, 100% 50%, calc(100% - var(--flow-head)) 100%, calc(100% - var(--flow-head)) calc(50% + var(--rule) / 2), 0 calc(50% + var(--rule) / 2));
+}
+.flow-branch > .flow-node::after { left: calc(100% + var(--rule)); height: var(--rule); margin-top: calc(var(--rule) / -2); }
+.flow-step:has(> .flow-branch) > .flow-arrow::before { inset: 0; }
+.flow-step:has(> .flow-branch) > .flow-arrow::after { display: none; }
+
 /* Back link: a rectangular detour over the top from the last node to the first. */
 .flow-return {
   grid-row: 1;
@@ -1393,7 +1433,7 @@
 :is(.flow-step[data-reveal], [data-reveal] .flow-step) > .flow-arrow::after {
   animation: head-in 80ms linear calc(var(--flow-delay) + 220ms) both;
 }
-:is(.flow-step[data-reveal], [data-reveal] .flow-step) > .flow-node {
+:is(.flow-step[data-reveal], [data-reveal] .flow-step) > :is(.flow-node, .flow-branch) {
   animation: node-arrive 300ms ease-out calc(var(--flow-delay) + 300ms) both;
 }
 /* The back link runs up from the last node, across the top, down to the first. */

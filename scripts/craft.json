@@ -831,8 +831,8 @@
       ],
       "fragmentTarget": ".slides",
       "catalog": "catalog/slides/index.html",
-      "catalogPages": 68,
-      "catalogPrintPages": 68,
+      "catalogPages": 71,
+      "catalogPrintPages": 71,
       "catalogLayouts": [
         "title",
         "cover",
@@ -1901,6 +1901,14 @@
           "variable": "Change the direction, branching and nodes to match the real links. Neutral nodes are the default; the accent is not tied to the center"
         },
         {
+          "id": "flow-branch",
+          "name": "Fork and join",
+          "layout": "flow",
+          "job": "A step splits into two parallel nodes that meet again at the next step",
+          "useWhen": "Use when the process runs two branches side by side and joins them",
+          "variable": "Change the nodes; keep two branch nodes of one kind"
+        },
+        {
           "id": "visual-comparison",
           "name": "Image comparison",
           "layout": "visual-comparison",
@@ -2133,10 +2141,6 @@
         "references/slides/selection.md",
         "references/slides/design-language.md",
         "references/slides/authoring.md",
-        "references/slides/charts.md",
-        "references/slides/motion.md",
-        "references/slides/media.md",
-        "references/slides/code.md",
         "references/slides/qr.md"
       ],
       "slides-talk-ru": [
@@ -2147,8 +2151,18 @@
         "references/slides/narrative.md",
         "references/slides/selection.md",
         "references/slides/design-language.md",
+        "references/slides/authoring.md"
+      ],
+      "slides-data": [
+        "SKILL.md",
+        "references/identity.md",
+        "references/workflow.md",
+        "references/slides/selection.md",
+        "references/slides/design-language.md",
         "references/slides/authoring.md",
         "references/slides/charts.md",
+        "references/slides/motion.md",
+        "references/slides/media.md",
         "references/slides/code.md"
       ],
       "slides-review": [
