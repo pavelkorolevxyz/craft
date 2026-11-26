@@ -32,7 +32,7 @@ python3 scripts/check_project.py <target-folder>          # while editing
 python3 scripts/check_project.py <target-folder> --full   # before handoff
 ```
 
-You need Chromium (`CHROMIUM`) and Node.js. `--static-only` skips the browser. The default renders three widths in both themes and every deck state, final frame and phone: text inside, no shifts, QR scans. `--full` adds the PDF, and for a deck motion, counters, video, the panel, light theme and deep links. `--shots` saves each page. `--only a,b` walks those slides.
+You need Chromium (`CHROMIUM`) and Node.js. `--static-only` skips the browser. The default renders three widths in both themes and every deck state, final frame and phone: text inside, no shifts, QR scans. `--full` adds the PDF, and for a deck motion, counters, video, the panel, light theme and deep links. `--shots` saves each page. `--only a,b` walks those slides. On `.deck[data-target="desktop"]` slides are checked at desktop width only; the panel still on every screen.
 
 Automation does not check meaning. Also check:
 

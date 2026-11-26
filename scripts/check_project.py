@@ -292,10 +292,34 @@ DECK_PASSES = {
 }
 
 
+class DeckTargetParser(HTMLParser):
+    """Reads data-target from the first .deck element; comments are skipped."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.target: str | None = None
+        self.found = False
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = dict(attrs)
+        if not self.found and "deck" in (values.get("class") or "").split():
+            self.found = True
+            self.target = values.get("data-target")
+
+
+def deck_viewports(index: Path) -> tuple[tuple[int, int], ...]:
+    """A deck marked data-target="desktop" is shown from a computer: no phone widths."""
+    parser = DeckTargetParser()
+    parser.feed(index.read_text(encoding="utf-8"))
+    return VIEWPORTS[:1] if parser.target == "desktop" else VIEWPORTS
+
+
 def check_deck(index: Path, level: str = "full", shots: Path | None = None, only: str | None = None) -> dict:
     """Walks deck states in one Chromium session; the level picks the passes."""
-    command: list[str | Path] = [node(), ROOT / "scripts/deck_probe.mjs", index, "--passes", DECK_PASSES[level]]
-    command += ["--viewports", ",".join(f"{width}x{height}" for width, height in VIEWPORTS)]
+    viewports = deck_viewports(index)
+    passes = DECK_PASSES[level] if len(viewports) > 1 else ",".join(name for name in DECK_PASSES[level].split(",") if name != "phone")
+    command: list[str | Path] = [node(), ROOT / "scripts/deck_probe.mjs", index, "--passes", passes]
+    command += ["--viewports", ",".join(f"{width}x{height}" for width, height in viewports)]
     if shots:
         command += ["--shots", shots]
     if only:
@@ -353,7 +377,8 @@ def run_checks(args: argparse.Namespace) -> None:
         report = check_deck(index, level, args.shots, args.only)
         if args.report:
             args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        print("✓ Chromium: 1440, 390 and 320 px, theme and accessibility")
+        widths = ", ".join(str(width) for width, _ in deck_viewports(index))
+        print(f"✓ Chromium: {widths} px, theme and accessibility")
         line = f"✓ deck states: {len(report['pages'])} pages, {report['sources']} slides"
         if args.only:
             line += f", walked only {args.only}; deck-wide comparisons need a run without --only"

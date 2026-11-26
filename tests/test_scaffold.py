@@ -248,6 +248,34 @@ def test_project_check_batches_browser(root: Path) -> None:
     assert "--pdf" in calls[0], "the full check did not print the PDF in the same session"
 
 
+def test_deck_target_desktop(deck: Path, root: Path) -> None:
+    project = root / "desktop-deck"
+    shutil.copytree(deck, project)
+    index = project / "index.html"
+    calls: list[tuple[str, ...]] = []
+
+    def fake_run(*arguments: object) -> SimpleNamespace:
+        command = tuple(map(str, arguments))
+        calls.append(command)
+        widths = [int(size.split("x")[0]) for size in command[command.index("--viewports") + 1].split(",")]
+        viewports = [{"scroll": width, "viewport": width, "spill": 0, "unnamed": 0, "jumps": 0, "themeChanged": True, "slides": 1, "undeclared": 0, "active": 1} for width in widths]
+        return SimpleNamespace(stdout=json.dumps({"warnings": [], "errors": [], "viewports": viewports}))
+
+    with patch.object(check_project_module, "run", side_effect=fake_run):
+        check_project_module.check_deck(index, "full")
+        index.write_text(index.read_text(encoding="utf-8").replace('<div class="deck"', '<div class="deck" data-target="desktop"', 1), encoding="utf-8")
+        check_project_module.check_deck(index, "full")
+    every, desktop = (dict(zip(command[3::2], command[4::2])) for command in calls)
+    assert every["--viewports"] == "1440x900,390x844,320x720" and "phone" in every["--passes"].split(","), "a deck without data-target lost a width or the phone pass"
+    assert desktop["--viewports"] == "1440x900" and "phone" not in desktop["--passes"].split(","), 'a data-target="desktop" deck is still checked at phone widths'
+    # The attribute is read from the real .deck element: quotes do not matter, a comment does not count.
+    source = index.read_text(encoding="utf-8")
+    index.write_text(source.replace('<div class="deck" data-target="desktop"', "<div class='deck' data-target='desktop'", 1), encoding="utf-8")
+    assert check_project_module.deck_viewports(index) == ((1440, 900),), "a single-quoted data-target is ignored"
+    index.write_text(source.replace('<div class="deck" data-target="desktop"', '<!-- <div class="deck" data-target="desktop"> --><div class="deck"', 1), encoding="utf-8")
+    assert len(check_project_module.deck_viewports(index)) == 3, "a commented-out data-target turned off the phone widths"
+
+
 def test_project_check_rejects_double_boundaries(root: Path) -> None:
     project = root / "double-boundary"
     project.mkdir()
@@ -561,6 +589,7 @@ def main() -> None:
         test_static_resources(root)
         test_delivery_and_bundle(root)
         test_project_check_batches_browser(root)
+        test_deck_target_desktop(outputs["slides-deck"], root)
         test_project_check_rejects_double_boundaries(root)
         test_project_check_rejects_detached_page_tabs(root)
         test_project_check_finds_overlaps_below_the_fold(root)
