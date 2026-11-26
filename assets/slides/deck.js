@@ -779,8 +779,18 @@
     }
   });
 
+  // A still pointer hides on the slide, so it does not hang on the projector.
+  let idleTimer = 0;
+  const wakePointer = () => {
+    delete deck.dataset.idle;
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => { deck.dataset.idle = ''; }, 2500);
+  };
+  wakePointer();
+
   document.addEventListener('pointermove', (event) => {
     if (event.pointerType !== 'mouse') return;
+    wakePointer();
     if (deck.dataset.input) delete deck.dataset.input;
     lastMousePosition = { x: event.clientX, y: event.clientY };
     updateHelpReveal(event.clientX, event.clientY);

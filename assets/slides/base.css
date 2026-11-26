@@ -33,6 +33,12 @@ body {
   padding: var(--stage-pad, 0);
 }
 
+/* The pointer hides after a pause on a slide; the overviews keep it. */
+.deck[data-idle]:not([data-mode="grid"]):not([data-mode="strip"]),
+.deck[data-idle]:not([data-mode="grid"]):not([data-mode="strip"]) * {
+  cursor: none;
+}
+
 .slides {
   width: 100%;
   height: 100%;
